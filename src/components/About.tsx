@@ -12,6 +12,7 @@ const About: React.FC = () => {
   const hoverIndicatorRef = useRef<HTMLDivElement>(null);
   const [showHoverIndicator, setShowHoverIndicator] = useState(true);
   const idleTimerRef = useRef<number | null>(null);
+  const [isTouch, setIsTouch] = useState(false);
 
   const images = Array.from({ length: 10 }, (_, i) => `/images/${i + 1}.png`);
 
@@ -135,23 +136,35 @@ const About: React.FC = () => {
     }
   }, [showHoverIndicator]);
 
+  useEffect(() => {
+    const checkTouch = () => {
+      setIsTouch(
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0
+      );
+    };
+    checkTouch();
+    window.addEventListener('resize', checkTouch);
+    return () => window.removeEventListener('resize', checkTouch);
+  }, []);
+
   return (
     <section
       id="about"
       ref={sectionRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="min-h-screen relative px-8 py-24 flex items-center justify-center text-center max-w-full mx-auto overflow-hidden z-1000"
+      onMouseMove={!isTouch ? handleMouseMove : undefined}
+      onMouseLeave={!isTouch ? handleMouseLeave : undefined}
+      className=" relative px-7 sm:px-6 md:px-8 py-16 sm:py-0 md:py-12 pb-16 flex items-center justify-center text-center max-w-full mx-auto overflow-hidden z-1000"
     >
       {/* Trail container */}
-      <div ref={stackContainerRef} className="absolute inset-0 z-30" />
+      {!isTouch && <div ref={stackContainerRef} className="absolute inset-0 z-30" />}
 
       {/* Main content */}
-      <div ref={contentRef} className="space-y-8 relative z-10">
-      <h2 className="text-4xl md:text-6xl font-light tracking-tight mb-16">
-            About Me
-          </h2>
-        <div className="space-y-6 text-lg md:text-2xl text-gray-700 dark:text-gray-300 font-light leading-relaxed max-w-3xl">
+      <div ref={contentRef} className="space-y-6 sm:space-y-8 relative z-10 w-full max-w-xl sm:max-w-2xl md:max-w-3xl">
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tight mb-8 sm:mb-16">
+          About Me
+        </h2>
+        <div className="space-y-4 sm:space-y-6 text-base sm:text-lg md:text-2xl text-gray-700 dark:text-gray-300 font-light leading-relaxed">
           <p>
             I'm a passionate Full-Stack Developer who thrives on building seamless digital experiences with elegance and functionality.
           </p>
@@ -162,36 +175,38 @@ const About: React.FC = () => {
             My work philosophy is inspired by Swiss design — clean, purposeful, and minimal. Every pixel and line of code has intention.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-10 pt-10">
-          <div>
-            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 pt-6 sm:pt-10">
+          <div className="flex flex-col items-center sm:items-center">
+            <p className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400">
               EXPERIENCE
             </p>
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
+            <p className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">
               2+ Years
             </p>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col items-center sm:items-center">
+            <p className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400">
               PROJECTS
             </p>
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
+            <p className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">
               5+ Completed
             </p>
           </div>
         </div>
       </div>
       {/* MOVE CURSOR Indicator: right side, vertically centered, floating, fades in/out */}
-      <div
-        ref={hoverIndicatorRef}
-        style={{ right: 0, top: '50%', transform: 'translateY(-50%)' }}
-        className="absolute flex flex-col items-center z-40"
-      >
-        <div className="w-px h-16 bg-gray-400 dark:bg-gray-600 mb-10"></div>
-        <p className="text-xs font-light tracking-widest transform -rotate-90 origin-center">
-          MOVE CURSOR
-        </p>
-      </div>
+      {!isTouch && (
+        <div
+          ref={hoverIndicatorRef}
+          style={{ right: 0, top: '50%', transform: 'translateY(-50%)' }}
+          className="hidden sm:flex absolute flex-col items-center z-40"
+        >
+          <div className="w-px h-16 bg-gray-400 dark:bg-gray-600 mb-10"></div>
+          <p className="text-xs font-light tracking-widest transform -rotate-90 origin-center">
+            MOVE CURSOR
+          </p>
+        </div>
+      )}
     </section>
   );
 };
