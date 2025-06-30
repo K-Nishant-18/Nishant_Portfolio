@@ -213,18 +213,18 @@ const GitHubActivity: React.FC = () => {
   }));
 
   return (
-    <section ref={sectionRef} className="min-h-screen flex items-center px-8 py-32 max-w-7xl mx-auto">
+    <section ref={sectionRef} className="min-h-screen flex items-center px-4 sm:px-6 py-20 sm:py-24 max-w-7xl mx-auto">
       <div className="w-full">
-        <div className="mb-16">
-          <h2 className="text-4xl md:text-6xl font-light tracking-tight mb-8">
+        <div className="mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tight mb-4 sm:mb-8">
             GitHub Activity
           </h2>
-          <p className="text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
+          <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
             Development metrics and open source contributions
           </p>
         </div>
 
-        <div ref={cardsRef} className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-20">
+        <div ref={cardsRef} className="flex flex-col gap-4 sm:gap-5 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-10 sm:mb-20">
           <MetricCard 
             icon={<FiStar className="text-yellow-400" />} 
             title="Total Stars" 
@@ -251,18 +251,18 @@ const GitHubActivity: React.FC = () => {
           />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="flex flex-col gap-8 mb-12 sm:mb-16 lg:grid lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div>
-              <h3 className="text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-4">
+              <h3 className="text-xs sm:text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-2 sm:mb-4">
                 Language Distribution
               </h3>
-              <div ref={languageBarsRef} className="space-y-4">
+              <div ref={languageBarsRef} className="space-y-3 sm:space-y-4">
                 {languagePercentages.map(({ lang, percentage, color }) => (
                   <div key={lang} className="group">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-light">{lang}</span>
-                      <span className="text-sm font-light text-gray-500 dark:text-gray-500">
+                    <div className="flex justify-between items-center mb-1 sm:mb-2">
+                      <span className="font-light text-sm sm:text-base">{lang}</span>
+                      <span className="text-xs sm:text-sm font-light text-gray-500 dark:text-gray-500">
                         {percentage}%
                       </span>
                     </div>
@@ -282,10 +282,10 @@ const GitHubActivity: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-4">
+            <h3 className="text-xs sm:text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-2 sm:mb-4">
               Recent Projects
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {data.repos.slice(0, 2).map((repo) => (
                 <RepoCard 
                   key={repo.name}
@@ -301,12 +301,12 @@ const GitHubActivity: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-center">
+        <div className="text-center mt-8 sm:mt-12">
           <a
             href="https://github.com/K-Nishant-18"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
+            className="inline-flex items-center text-base sm:text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
           >
             View Full GitHub Profile
             <FiArrowUpRight className="ml-2" size={20} />
