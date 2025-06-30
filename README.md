@@ -9,7 +9,6 @@
   <img src="https://img.shields.io/badge/React-18-blue?logo=react" />
   <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-38bdf8?logo=tailwindcss" />
-<!--   <img src="https://img.shields.io/badge/License-MIT-green" /> -->
   <img src="https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel" />
 </p>
 
@@ -86,12 +85,8 @@ npm run lint
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License.
-
----
 
 <p align="center">
-  <b>Made with ❤️ by <a href="https://github.com/itsnishant19">Kumar Nishant</a></b>
+  <b>Made with ❤️ by <a href="https://github.com/K-Nishant-18">Kumar Nishant</a></b>
 </p> 
