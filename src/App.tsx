@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,11 +11,18 @@ import Collaborate from './pages/Collaborate';
 import ThemeProvider from './context/ThemeContext';
 import CustomCursor from './components/CustomCursor';
 import Gallery from './components/Gallery';
+import Loader from './components/Loader';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const lenisRef = useRef<Lenis | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Initialize Lenis smooth scrolling
@@ -54,6 +61,10 @@ function App() {
       });
     };
   }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <ThemeProvider>
