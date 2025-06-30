@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="public/Logo.png" alt="Portfolio Logo" width="120" />
-</p>
-
-<h1 align="center">Nishant's Portfolio 🚀</h1>
+<h1 align="center">✨ Nishant's Portfolio ✨</h1>
 
 <p align="center">
   <b>Modern. Minimal. Memorable.</b><br/>
@@ -13,14 +9,15 @@
   <img src="https://img.shields.io/badge/React-18-blue?logo=react" />
   <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-38bdf8?logo=tailwindcss" />
-  <img src="https://img.shields.io/badge/License-MIT-green" />
+<!--   <img src="https://img.shields.io/badge/License-MIT-green" /> -->
   <img src="https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel" />
 </p>
 
 ---
 
 <p align="center">
-  <img src="public/previews/Untitled design (1).png" alt="Portfolio Preview" width="700" />
+  <img src="public/previews/LightTheme.png" alt="Portfolio Preview" width="700" />
+  
 </p>
 
 ---
@@ -85,54 +82,6 @@ npm run build
 npm run lint
 ```
 
----
-
-## 🌐 Deployment
-
-- <b>Vercel</b> (recommended)
-- <b>Netlify</b>
-- <b>GitHub Pages</b>
-
-To build for production:
-```bash
-npm run build
-```
-To preview locally:
-```bash
-npm run preview
-```
-
----
-
-## 📱 Responsive & Accessible
-
-- Mobile, tablet, and desktop breakpoints
-- Touch-friendly and optimized layouts
-- Semantic HTML & accessible navigation
-
----
-
-## 🎨 Design System
-
-- System font stack, clear hierarchy
-- Light/Dark themes, accent colors
-- Consistent spacing and layout
-
----
-
-## 🔒 Security & Best Practices
-
-- Content Security Policy, HTTPS, input validation
-- Regular dependency updates
-
----
-
-## 🤝 Contributing
-
-1. Fork the repo
-2. Create a feature branch
-3. Make changes and test
-4. Submit a pull request
 
 ---
 
