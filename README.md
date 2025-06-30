@@ -17,6 +17,7 @@
 
 <p align="center">
   <img src="public/previews/LightTheme.png" alt="Portfolio Preview" width="700" />
+   <img src="public/previews/DarkTheme.png" alt="Portfolio Preview" width="700" />
   
 </p>
 
