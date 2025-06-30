@@ -19,8 +19,9 @@ const Home: React.FC = () => {
       <About />
       <Skills />
       <Projects />
-      <Timeline />
+      
       <DevActivity />
+      <Timeline />
       <BlogSection />
       <TestimonialPreview />
       <Contact />
