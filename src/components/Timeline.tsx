@@ -1,0 +1,211 @@
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FiArrowUpRight } from 'react-icons/fi';
+
+// Register plugin
+gsap.registerPlugin(ScrollTrigger);
+
+const Timeline: React.FC = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  const milestones = [
+    {
+      year: '2018',
+      title: 'First Lines of Code',
+      description: 'Discovered programming through Java fundamentals',
+      tags: ['Java', 'OOP'],
+    },
+    {
+      year: '2020',
+      title: 'Web Development Beginnings',
+      description: 'Built first full-stack project with Spring MVC',
+      tags: ['Spring', 'MySQL', 'Thymeleaf'],
+    },
+    {
+      year: '2021',
+      title: 'Freelance Journey',
+      description: 'Started taking client projects on Upwork',
+      tags: ['Freelancing', 'Client Work'],
+    },
+    {
+      year: '2022',
+      title: 'React Specialization',
+      description: 'Focused on modern frontend development',
+      tags: ['React.js', 'TypeScript'],
+    },
+    {
+      year: '2023',
+      title: 'Full-Stack Mastery',
+      description: 'Developed complex applications with Spring Boot + React',
+      tags: ['Spring Boot', 'JWT', 'Docker'],
+    },
+    {
+      year: '2024',
+      title: 'Open Source Contributions',
+      description: 'Started contributing to OSS and publishing packages',
+      tags: ['GitHub', 'NPM'],
+    },
+  ];
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const timeline = timelineRef.current;
+      const section = sectionRef.current;
+      const items = gsap.utils.toArray('.timeline-item');
+      const totalWidth = items.length * 400;
+
+      if (timeline && section) {
+        // Horizontal scroll
+        gsap.to(timeline, {
+          x: () => -Math.max(0, totalWidth - window.innerWidth + 200),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            pin: true,
+            scrub: 1,
+            end: () => `+=${totalWidth}`,
+          },
+        });
+
+        // Line animation
+        if (lineRef.current) {
+          gsap.fromTo(
+            lineRef.current,
+            { scaleX: 0 },
+            {
+              scaleX: 1,
+              transformOrigin: 'left center',
+              scrollTrigger: {
+                trigger: section,
+                start: 'top center',
+                end: () => `+=${totalWidth}`,
+                scrub: 1,
+              },
+            }
+          );
+        }
+
+        // Animate each item
+        items.forEach((item: any) => {
+          gsap.fromTo(
+            item,
+            { opacity: 0, y: 50 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              scrollTrigger: {
+                trigger: item,
+                start: 'left 80%',
+                end: 'left 20%',
+                toggleActions: 'play none none reverse',
+              },
+            }
+          );
+        });
+
+        ScrollTrigger.refresh();
+      }
+    }, sectionRef);
+
+    const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 500);
+
+    return () => {
+      ctx.revert();
+      clearTimeout(delayRefresh);
+    };
+  }, []);
+
+  return (
+    <section
+      id="timeline"
+      ref={sectionRef}
+      className="min-h-screen flex flex-col justify-center px-8 py-32 overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto w-full mb-16">
+        <h2 className="text-4xl md:text-6xl font-light tracking-tight mb-8">
+          Changelog
+        </h2>
+        <p className="text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
+          A chronological journey through my development career
+        </p>
+      </div>
+
+      {/* Timeline line */}
+      <div className="relative h-1 w-full bg-gray-200 dark:bg-gray-800 mb-24">
+        <div
+          ref={lineRef}
+          className="absolute top-0 left-0 h-full w-full bg-gray-900 dark:bg-gray-100 origin-left"
+        ></div>
+      </div>
+
+      {/* Scrollable timeline */}
+      <div className="relative">
+        <div
+          ref={timelineRef}
+          className="flex space-x-24 pl-8"
+        >
+          {milestones.map((milestone, index) => (
+            <div
+              key={index}
+              className="timeline-item flex-shrink-0 w-80 relative"
+            >
+              <div className="mb-6">
+                <span className="text-6xl font-light text-gray-300 dark:text-gray-700">
+                  {milestone.year}
+                </span>
+              </div>
+
+              <h3 className="text-2xl font-light tracking-tight mb-4">
+                {milestone.title}
+              </h3>
+
+              <p className="text-lg font-light text-gray-600 dark:text-gray-400 mb-6">
+                {milestone.description}
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                {milestone.tags.map((tag, tagIndex) => (
+                  <span
+                    key={tagIndex}
+                    className="text-sm font-light tracking-wide text-gray-500 dark:text-gray-500 px-3 py-1 border border-gray-200 dark:border-gray-800"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Connector dot */}
+              <div className="absolute -top-16 left-0 w-4 h-4 rounded-full bg-gray-900 dark:bg-gray-100 -ml-1.5"></div>
+            </div>
+          ))}
+
+          {/* Final card */}
+          <div className="timeline-item flex-shrink-0 w-80 flex flex-col justify-center relative">
+            <div className="border rounded-md border-red-600 dark:border-red-800 p-8 group hover:border-green-600 dark:hover:border-green-600 transition-colors duration-300">
+              <h3 className="text-2xl font-light tracking-tight mb-4">
+                What's Next?
+              </h3>
+              <p className="text-lg font-light text-gray-600 dark:text-gray-400 mb-6">
+                Let's build something remarkable together
+              </p>
+              <a
+                href="#contact"
+                className="inline-flex items-center text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
+              >
+                Get in touch
+                <FiArrowUpRight className="ml-2" size={20} />
+              </a>
+            </div>
+            <div className="absolute -top-16 left-0 w-4 h-4 rounded-full bg-gray-900 dark:bg-gray-100 -ml-1.5"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Timeline;
