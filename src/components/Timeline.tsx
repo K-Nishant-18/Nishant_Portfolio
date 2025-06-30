@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiArrowUpRight } from 'react-icons/fi';
+import { FiArrowUpRight, FiMapPin } from 'react-icons/fi';
 
 // Register plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -51,45 +51,95 @@ const Timeline: React.FC = () => {
   ];
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const timeline = timelineRef.current;
-      const section = sectionRef.current;
-      const items = gsap.utils.toArray('.timeline-item');
-      const totalWidth = items.length * 400;
+    const timeline = timelineRef.current;
+    const section = sectionRef.current;
+    const items = gsap.utils.toArray('.timeline-item') as HTMLElement[];
 
-      if (timeline && section) {
-        // Horizontal scroll
-        gsap.to(timeline, {
-          x: () => -Math.max(0, totalWidth - window.innerWidth + 200),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            pin: true,
-            scrub: 1,
-            end: () => `+=${totalWidth}`,
-          },
-        });
+    if (window.innerWidth >= 1024) {
+      // Desktop: horizontal scroll, pin, horizontal line
+      const ctx = gsap.context(() => {
+        const totalWidth = items.length * 400;
+        if (timeline && section) {
+          // Horizontal scroll
+          gsap.to(timeline, {
+            x: () => -Math.max(0, totalWidth - window.innerWidth + 200),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              pin: true,
+              scrub: 1,
+              end: () => `+=${totalWidth}`,
+            },
+          });
 
-        // Line animation
+          // Line animation (horizontal)
+          if (lineRef.current) {
+            gsap.fromTo(
+              lineRef.current,
+              { scaleX: 0 },
+              {
+                scaleX: 1,
+                transformOrigin: 'left center',
+                scrollTrigger: {
+                  trigger: section,
+                  start: 'top center',
+                  end: () => `+=${totalWidth}`,
+                  scrub: 1,
+                },
+              }
+            );
+          }
+
+          // Animate each item (horizontal)
+          items.forEach((item) => {
+            gsap.fromTo(
+              item,
+              { opacity: 0, y: 50 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                scrollTrigger: {
+                  trigger: item,
+                  start: 'left 80%',
+                  end: 'left 20%',
+                  toggleActions: 'play none none reverse',
+                },
+              }
+            );
+          });
+
+          ScrollTrigger.refresh();
+        }
+      }, sectionRef);
+
+      const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 500);
+      return () => {
+        ctx.revert();
+        clearTimeout(delayRefresh);
+      };
+    } else {
+      // Mobile: vertical scroll, vertical line
+      const ctx = gsap.context(() => {
+        // Animate vertical line
         if (lineRef.current) {
           gsap.fromTo(
             lineRef.current,
-            { scaleX: 0 },
+            { scaleY: 0 },
             {
-              scaleX: 1,
-              transformOrigin: 'left center',
+              scaleY: 1,
+              transformOrigin: 'top center',
               scrollTrigger: {
                 trigger: section,
                 start: 'top center',
-                end: () => `+=${totalWidth}`,
+                end: 'bottom bottom',
                 scrub: 1,
               },
             }
           );
         }
-
-        // Animate each item
-        items.forEach((item: any) => {
+        // Animate each item (vertical)
+        items.forEach((item) => {
           gsap.fromTo(
             item,
             { opacity: 0, y: 50 },
@@ -99,108 +149,121 @@ const Timeline: React.FC = () => {
               duration: 0.8,
               scrollTrigger: {
                 trigger: item,
-                start: 'left 80%',
-                end: 'left 20%',
+                start: 'top 90%',
+                end: 'top 60%',
                 toggleActions: 'play none none reverse',
               },
             }
           );
         });
-
         ScrollTrigger.refresh();
-      }
-    }, sectionRef);
-
-    const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 500);
-
-    return () => {
-      ctx.revert();
-      clearTimeout(delayRefresh);
-    };
+      }, sectionRef);
+      const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 500);
+      return () => {
+        ctx.revert();
+        clearTimeout(delayRefresh);
+      };
+    }
   }, []);
 
   return (
     <section
       id="timeline"
       ref={sectionRef}
-      className="min-h-screen flex flex-col justify-center px-8 py-32 overflow-hidden"
+      className="min-h-screen flex flex-col justify-center px-4 sm:px-8 py-16 sm:py-32 overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto w-full mb-16">
-        <h2 className="text-4xl md:text-6xl font-light tracking-tight mb-8">
+      <div className="max-w-7xl mx-auto w-full mb-10 sm:mb-16">
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tight mb-4 sm:mb-8">
           Changelog
         </h2>
-        <p className="text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
+        <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
           A chronological journey through my development career
         </p>
       </div>
 
-      {/* Timeline line */}
-      <div className="relative h-1 w-full bg-gray-200 dark:bg-gray-800 mb-24">
+      {/* Timeline line: horizontal for large screens, vertical for small screens */}
+      <div className="relative w-full sm:h-1 h-full sm:w-full flex sm:block justify-center mb-10 sm:mb-24">
+        {/* Vertical line for mobile */}
         <div
           ref={lineRef}
-          className="absolute top-0 left-0 h-full w-full bg-gray-900 dark:bg-gray-100 origin-left"
+          className="absolute sm:hidden left-6 top-0 w-1 h-full bg-gray-200 dark:bg-gray-800 origin-top"
+        ></div>
+        {/* Horizontal line for desktop */}
+        <div
+          ref={lineRef}
+          className="hidden sm:block absolute top-0 left-0 h-full w-full bg-gray-900 dark:bg-gray-100 origin-left"
         ></div>
       </div>
 
-      {/* Scrollable timeline */}
+      {/* Timeline items: vertical for mobile, horizontal scroll for desktop */}
       <div className="relative">
         <div
           ref={timelineRef}
-          className="flex space-x-24 pl-8"
+          className="flex sm:flex-row flex-col sm:space-x-24 space-x-0 sm:pl-8 pl-0"
         >
           {milestones.map((milestone, index) => (
             <div
               key={index}
-              className="timeline-item flex-shrink-0 w-80 relative"
+              className="timeline-item flex-shrink-0 sm:w-80 w-full relative flex sm:block items-start sm:items-stretch mb-12 sm:mb-0"
             >
-              <div className="mb-6">
-                <span className="text-6xl font-light text-gray-300 dark:text-gray-700">
-                  {milestone.year}
-                </span>
-              </div>
-
-              <h3 className="text-2xl font-light tracking-tight mb-4">
-                {milestone.title}
-              </h3>
-
-              <p className="text-lg font-light text-gray-600 dark:text-gray-400 mb-6">
-                {milestone.description}
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                {milestone.tags.map((tag, tagIndex) => (
-                  <span
-                    key={tagIndex}
-                    className="text-sm font-light tracking-wide text-gray-500 dark:text-gray-500 px-3 py-1 border border-gray-200 dark:border-gray-800"
-                  >
-                    {tag}
+              {/* Connector pin */}
+              <FiMapPin
+                className="absolute sm:-top-7 sm:left-3 sm:-translate-x-1/2 left-1.5 top-1.5 text-gray-900 dark:text-gray-100"
+                size={24}
+              />
+              <div className="ml-10 sm:ml-0">
+                <div className="mb-2 sm:mb-6">
+                  <span className="text-3xl sm:text-6xl font-light text-gray-300 dark:text-gray-700">
+                    {milestone.year}
                   </span>
-                ))}
-              </div>
+                </div>
 
-              {/* Connector dot */}
-              <div className="absolute -top-16 left-0 w-4 h-4 rounded-full bg-gray-900 dark:bg-gray-100 -ml-1.5"></div>
+                <h3 className="text-xl sm:text-2xl font-light tracking-tight mb-2 sm:mb-4">
+                  {milestone.title}
+                </h3>
+
+                <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
+                  {milestone.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {milestone.tags.map((tag, tagIndex) => (
+                    <span
+                      key={tagIndex}
+                      className="text-xs sm:text-sm font-light tracking-wide text-gray-500 dark:text-gray-500 px-3 py-1 border border-gray-200 dark:border-gray-800"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
 
           {/* Final card */}
-          <div className="timeline-item flex-shrink-0 w-80 flex flex-col justify-center relative">
-            <div className="border rounded-md border-red-600 dark:border-red-800 p-8 group hover:border-green-600 dark:hover:border-green-600 transition-colors duration-300">
-              <h3 className="text-2xl font-light tracking-tight mb-4">
-                What's Next?
-              </h3>
-              <p className="text-lg font-light text-gray-600 dark:text-gray-400 mb-6">
-                Let's build something remarkable together
-              </p>
-              <a
-                href="#contact"
-                className="inline-flex items-center text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-              >
-                Get in touch
-                <FiArrowUpRight className="ml-2" size={20} />
-              </a>
+          <div className="timeline-item flex-shrink-0 sm:w-80 w-full flex flex-col justify-center relative mb-12 sm:mb-0">
+            {/* Connector pin */}
+            <FiMapPin
+              className="absolute sm:-top-7 sm:left-3 sm:-translate-x-1/2 left-1.5 top-1.5 text-gray-900 dark:text-gray-100"
+              size={24}
+            />
+            <div className="ml-10 sm:ml-0">
+              <div className="border rounded-md border-red-600 dark:border-red-800 p-6 sm:p-8 group hover:border-green-600 dark:hover:border-green-600 transition-colors duration-300">
+                <h3 className="text-xl sm:text-2xl font-light tracking-tight mb-2 sm:mb-4">
+                  What's Next?
+                </h3>
+                <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
+                  Let's build something remarkable together
+                </p>
+                <a
+                  href="#contact"
+                  className="inline-flex items-center text-base sm:text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
+                >
+                  Get in touch
+                  <FiArrowUpRight className="ml-2" size={20} />
+                </a>
+              </div>
             </div>
-            <div className="absolute -top-16 left-0 w-4 h-4 rounded-full bg-gray-900 dark:bg-gray-100 -ml-1.5"></div>
           </div>
         </div>
       </div>
