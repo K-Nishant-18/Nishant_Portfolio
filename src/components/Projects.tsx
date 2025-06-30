@@ -115,101 +115,155 @@ const Projects: React.FC = () => {
     <section
       id="projects"
       ref={sectionRef}
-      className="relative min-h-screen flex items-center px-6 py-32 max-w-7xl mx-auto"
+      className="relative min-h-screen flex items-center px-2 sm:px-4 md:px-6 py-20 md:py-32 max-w-7xl mx-auto"
     >
       <div className="w-full">
-        <div className="mb-20">
-          <h2 className="text-5xl md:text-7xl font-light tracking-tight mb-6 leading-tight">
+        <div className="mb-12 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-light tracking-tight mb-4 md:mb-6 leading-tight">
             Work Showcase
           </h2>
-          <p className="text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl">
+          <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl">
             A curated collection of projects blending creativity, logic, and engineering.
           </p>
         </div>
 
-        <div ref={projectsRef} className="space-y-28 relative z-10">
+        {/* Mobile Layout: Card style, only visible on small screens */}
+        <div className="flex flex-col gap-8 md:hidden px-2 sm:px-4">
+          {projects.map((project, index) => (
+            <a
+              key={index}
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-[1.02]"
+            >
+              <img
+                src={project.preview}
+                alt={project.title + ' preview'}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-5 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-light text-gray-300 dark:text-gray-700">
+                    {project.number}
+                  </span>
+                  <span className="inline-block px-3 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                    {project.status}
+                  </span>
+                </div>
+                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+                  {project.title}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {project.description}
+                </p>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {project.tech.map((tech, i) => (
+                    <span
+                      key={i}
+                      className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">Year: {project.year}</span>
+                  <span className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 font-medium">
+                    View <FiArrowUpRight size={16} />
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {/* Desktop Layout: Only visible on md and up */}
+        <div ref={projectsRef} className="hidden md:block space-y-16 md:space-y-28 relative z-10">
           {projects.map((project, index) => (
             <div
               key={index}
-              className="group relative border-t border-gray-300 dark:border-gray-700 pt-14 cursor-pointer transition-colors duration-500"
+              className="group relative border-t border-gray-300 dark:border-gray-700 pt-8 md:pt-14 cursor-pointer transition-colors duration-500"
               onMouseMove={(e) => handleMouseEnter(e, project, index)}
               onMouseLeave={handleMouseLeave}
             >
-              <div className="grid lg:grid-cols-12 gap-10 items-start">
-                <div className="lg:col-span-2">
-                  <span className="text-6xl font-light text-gray-300 dark:text-gray-700 group-hover:text-gray-500 transition-colors duration-500">
+              <div className="flex flex-col md:grid md:lg:grid-cols-12 gap-6 md:gap-10 items-start">
+                <div className="md:col-span-2 mb-2 md:mb-0 flex md:block justify-between items-center">
+                  <span className="text-4xl sm:text-5xl md:text-6xl font-light text-gray-300 dark:text-gray-700 group-hover:text-gray-500 transition-colors duration-500">
                     {project.number}
                   </span>
+                  <div className="block md:hidden ml-4 md:ml-0">
+                    <img
+                      src={project.preview}
+                      alt="Preview"
+                      className="w-32 h-20 rounded-lg object-cover shadow-md mt-0"
+                    />
+                  </div>
                 </div>
-
-                <div className="lg:col-span-6 space-y-5">
-                  <h3 className="text-3xl md:text-4xl font-light tracking-tight">
+                <div className="md:col-span-6 space-y-3 md:space-y-5">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-tight">
                     {project.title}
                   </h3>
-                  <p className="text-lg font-light text-gray-700 dark:text-gray-300">
+                  <p className="text-base sm:text-lg font-light text-gray-700 dark:text-gray-300">
                     {project.description}
                   </p>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2 md:gap-3">
                     {project.tech.map((tech, i) => (
                       <span
                         key={i}
-                        className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full"
+                        className="text-xs px-2 py-1 md:px-3 md:py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full"
                       >
                         {tech}
                       </span>
                     ))}
                   </div>
                 </div>
-
-                <div className="lg:col-span-2 space-y-4">
+                <div className="md:col-span-2 flex flex-row md:flex-col gap-4 md:gap-0 mt-4 md:mt-0">
                   <div>
                     <p className="text-xs tracking-wide text-gray-500 mb-1">YEAR</p>
                     <p className="font-light">{project.year}</p>
                   </div>
-                  <div>
+                  <div className="ml-8 md:ml-0">
                     <p className="text-xs tracking-wide text-gray-500 mb-1">STATUS</p>
                     <p className="font-light">{project.status}</p>
                   </div>
                 </div>
-
-                <div className="lg:col-span-2 flex justify-end">
+                <div className="md:col-span-2 flex justify-end mt-4 md:mt-0">
                   <a
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center w-12 h-12 border border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all duration-300"
+                    className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 border border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all duration-300"
                   >
-                    <FiArrowUpRight size={20} />
+                    <FiArrowUpRight size={18} className="md:size-20" />
                   </a>
                 </div>
+                {hoverData?.index === index && (
+                  <div
+                    ref={previewRef}
+                    className="hidden md:block absolute z-30 w-72 h-48 overflow-hidden rounded-xl shadow-xl pointer-events-none"
+                    style={{
+                      top: hoverData.y,
+                      left: hoverData.x,
+                      transform: 'translate(30%, -50%)',
+                    }}
+                  >
+                    <img
+                      src={hoverData.preview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
-
-              {/* Preview Image at Hover Location */}
-              {hoverData?.index === index && (
-                <div
-                  ref={previewRef}
-                  className="absolute z-30 w-72 h-48 overflow-hidden rounded-xl shadow-xl pointer-events-none"
-                  style={{
-                    top: hoverData.y,
-                    left: hoverData.x,
-                    transform: 'translate(30%, -50%)',
-                  }}
-                >
-                  <img
-                    src={hoverData.preview}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
             </div>
           ))}
         </div>
 
-        <div className="mt-28 text-center z-10 relative">
+        <div className="mt-16 md:mt-28 text-center z-10 relative">
           <Link
             to="/projects"
-            className="inline-flex items-center text-lg font-light tracking-wide hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
+            className="inline-flex items-center text-base sm:text-lg font-light tracking-wide hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
           >
             View all Projects
             <FiArrowUpRight className="ml-2" size={20} />
