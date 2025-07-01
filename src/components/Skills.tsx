@@ -20,46 +20,47 @@ const Skills: React.FC = () => {
 
   const skillCategories = [
     {
-      title: 'Frontend Architecture',
+      title: 'Frontend',
       icon: <FiLayers size={28} />,
       skills: [
-        { name: 'React Ecosystem', level: 95 },
-        { name: 'TypeScript', level: 90 },
-        { name: 'State Management', level: 85 },
-        { name: 'Performance Optimization', level: 80 },
+        { name: 'React.js', level: 90 },
+        { name: 'Vite', level: 85 },
+        { name: 'HTML5 / CSS3', level: 90 },
+        { name: 'Tailwind CSS', level: 80 },
       ],
     },
     {
-      title: 'Backend Systems',
+      title: 'Backend & DevOps',
       icon: <FiServer size={28} />,
       skills: [
-        { name: 'Spring Framework', level: 90 },
-        { name: 'REST API Design', level: 85 },
-        { name: 'Microservices', level: 80 },
-        { name: 'Authentication', level: 85 },
+        { name: 'Spring Boot / MVC', level: 90 },
+        { name: 'Docker', level: 75 },
+        { name: 'JWT / Spring Security', level: 85 },
+        { name: 'Git & GitHub', level: 90 },
       ],
     },
     {
-      title: 'Data Engineering',
+      title: 'Databases & Cloud',
       icon: <FiDatabase size={28} />,
       skills: [
-        { name: 'Database Design', level: 85 },
-        { name: 'SQL Optimization', level: 80 },
-        { name: 'NoSQL Solutions', level: 75 },
-        { name: 'Data Pipelines', level: 70 },
+        { name: 'MySQL', level: 85 },
+        { name: 'MongoDB', level: 75 },
+        { name: 'Vercel', level: 80 },
+        { name: 'Heroku', level: 70 },
       ],
     },
     {
-      title: 'Development Practices',
+      title: 'Tools & Productivity',
       icon: <FiCode size={28} />,
       skills: [
-        { name: 'Clean Code', level: 90 },
-        { name: 'Testing', level: 85 },
-        { name: 'CI/CD', level: 80 },
-        { name: 'Agile Methodologies', level: 85 },
+        { name: 'Postman / API Testing', level: 85 },
+        { name: 'Figma / Canva / Spline', level: 80 },
+        { name: 'Notion / MS Office', level: 90 },
+        { name: 'AI Tools (ChatGPT, Claude, etc.)', level: 85 },
       ],
     },
   ];
+  
 
   const logos = [
     { name: 'Java', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
