@@ -24,9 +24,9 @@ const Skills: React.FC = () => {
       icon: <FiLayers size={28} />,
       skills: [
         { name: 'React.js', level: 90 },
-        { name: 'Vite', level: 85 },
-        { name: 'HTML5 / CSS3', level: 90 },
+        { name: 'JavaScript', level: 85 },
         { name: 'Tailwind CSS', level: 80 },
+        { name: 'GSAP / Lenis', level: 70 },
       ],
     },
     {
@@ -55,8 +55,8 @@ const Skills: React.FC = () => {
       skills: [
         { name: 'Postman / API Testing', level: 85 },
         { name: 'Figma / Canva / Spline', level: 80 },
-        { name: 'Notion / MS Office', level: 90 },
-        { name: 'AI Tools (ChatGPT, Claude, etc.)', level: 85 },
+        { name: 'Notion / VS Code/ Intellij', level: 90 },
+        { name: 'AI Tools (Perplexity, Claude, etc.)', level: 85 },
       ],
     },
   ];
