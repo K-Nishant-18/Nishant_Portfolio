@@ -35,7 +35,7 @@ const GuestBook: React.FC = () => {
 
   const fetchEntries = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/guestbook');
+      const res = await fetch('https://nishant-portfolio-1.onrender.com/api/guestbook');
       const data = await res.json();
       setTestimonials(data);
     } catch (err) {
@@ -63,7 +63,7 @@ const GuestBook: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/guestbook', {
+      const response = await fetch('https://nishant-portfolio-1.onrender.com/api/guestbook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
