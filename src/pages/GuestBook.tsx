@@ -96,38 +96,29 @@ const GuestBook: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const response = await fetch('/api/guestbook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const result = await response.json();
-      if (result.success) {
-        const newTestimonial: Testimonial = {
-          id: Date.now().toString(),
-          ...formData,
-          date: new Date().toISOString().split('T')[0],
-          approved: false, // Would be approved by admin
-        };
-        setTestimonials(prev => [newTestimonial, ...prev]);
-        setFormData({
-          name: '',
-          email: '',
-          company: '',
-          role: '',
-          message: '',
-          rating: 5,
-        });
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
-      }
-    } catch (error) {
-      // Optionally handle error
-      alert('There was an error submitting your testimonial. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const newTestimonial: Testimonial = {
+      id: Date.now().toString(),
+      ...formData,
+      date: new Date().toISOString().split('T')[0],
+      approved: false, // Would be approved by admin
+    };
+
+    setTestimonials(prev => [newTestimonial, ...prev]);
+    setFormData({
+      name: '',
+      email: '',
+      company: '',
+      role: '',
+      message: '',
+      rating: 5,
+    });
+
+    setIsSubmitting(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
