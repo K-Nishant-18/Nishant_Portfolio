@@ -40,27 +40,35 @@ const Collaborate: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch('http://localhost:5000/api/collaborate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    // In a real app, you would send this data to your backend
-    console.log('Form submitted:', formData);
+      if (!response.ok) {
+        throw new Error('Failed to submit collaboration request');
+      }
 
-    setIsSubmitting(false);
-    setShowSuccess(true);
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      phone: '',
-      projectType: '',
-      budget: '',
-      timeline: '',
-      description: '',
-      requirements: '',
-    });
-
-    setTimeout(() => setShowSuccess(false), 5000);
+      setShowSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        phone: '',
+        projectType: '',
+        budget: '',
+        timeline: '',
+        description: '',
+        requirements: '',
+      });
+      setTimeout(() => setShowSuccess(false), 5000);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

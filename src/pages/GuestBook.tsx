@@ -15,52 +15,7 @@ interface Testimonial {
 }
 
 const GuestBook: React.FC = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([
-    {
-      id: '1',
-      name: 'Prashant Kumar',
-      email: 'prashant@example.com',
-      company: 'Tech Startup',
-      role: 'Product Manager',
-      message: 'Nishant delivered exceptional work on our platform. His attention to detail and technical expertise made all the difference. The project was completed on time and exceeded our expectations.',
-      rating: 4,
-      date: '2024-12-10',
-      approved: true,
-    },
-    {
-      id: '2',
-      name: 'Gaurav Shaw',
-      email: 'gaurav@example.com',
-      company: 'Software Solutions',
-      role: 'Senior Developer',
-      message: 'Working with Nishant was a pleasure. He brings innovative solutions and maintains high code quality throughout. His communication skills are excellent.',
-      rating: 5,
-      date: '2024-12-08',
-      approved: true,
-    },
-    {
-      id: '3',
-      name: 'Tripti Sharma',
-      email: 'tripti@example.com',
-      company: 'Design Agency',
-      role: 'UI/UX Designer',
-      message: 'Nishant perfectly translated our designs into functional, beautiful web applications. His understanding of both design and development is impressive.',
-      rating: 4,
-      date: '2024-12-05',
-      approved: true,
-    },
-    {
-      id: '4',
-      name: 'Rahul Verma',
-      email: 'rahul@example.com',
-      company: 'E-commerce Startup',
-      role: 'CTO',
-      message: 'Outstanding full-stack development skills. Nishant built our entire e-commerce platform with robust security and excellent performance.',
-      rating: 3,
-      date: '2024-12-01',
-      approved: true,
-    },
-  ]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -78,6 +33,16 @@ const GuestBook: React.FC = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<HTMLDivElement>(null);
 
+  const fetchEntries = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/guestbook');
+      const data = await res.json();
+      setTestimonials(data);
+    } catch (err) {
+      console.error('Failed to fetch guestbook entries:', err);
+    }
+  };
+
   useEffect(() => {
     gsap.fromTo(
       [formRef.current, testimonialsRef.current],
@@ -90,35 +55,41 @@ const GuestBook: React.FC = () => {
         ease: 'power2.out',
       }
     );
+    fetchEntries();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch('http://localhost:5000/api/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    const newTestimonial: Testimonial = {
-      id: Date.now().toString(),
-      ...formData,
-      date: new Date().toISOString().split('T')[0],
-      approved: false, // Would be approved by admin
-    };
+      if (!response.ok) {
+        throw new Error('Failed to submit testimonial');
+      }
 
-    setTestimonials(prev => [newTestimonial, ...prev]);
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      role: '',
-      message: '',
-      rating: 5,
-    });
+      setShowSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        role: '',
+        message: '',
+        rating: 5,
+      });
+      setTimeout(() => setShowSuccess(false), 3000);
 
-    setIsSubmitting(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+      fetchEntries();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -283,11 +254,11 @@ const GuestBook: React.FC = () => {
           {/* Testimonials Display */}
           <div ref={testimonialsRef}>
             <h2 className="text-2xl font-light tracking-tight mb-8">
-              What People Say ({testimonials.filter(t => t.approved).length})
+              What People Say ({testimonials.length})
             </h2>
             
             <div className="space-y-8">
-              {testimonials.filter(t => t.approved).map((testimonial) => (
+              {testimonials.map((testimonial) => (
                 <div
                   key={testimonial.id}
                   className="border border-gray-200 dark:border-gray-800 p-6 hover:border-gray-400 dark:hover:border-gray-600 transition-colors duration-300"
