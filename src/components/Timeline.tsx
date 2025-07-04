@@ -60,19 +60,21 @@ const Timeline: React.FC = () => {
       const ctx = gsap.context(() => {
         const totalWidth = items.length * 400;
         if (timeline && section) {
-          // Horizontal scroll
+          // Horizontal scroll with smoother easing
           gsap.to(timeline, {
             x: () => -Math.max(0, totalWidth - window.innerWidth + 200),
-            ease: 'none',
+            ease: 'power2.out',
             scrollTrigger: {
               trigger: section,
               pin: true,
-              scrub: 1,
+              scrub: 0.5, // Reduced for smoother scrubbing
+              start: 'top top',
               end: () => `+=${totalWidth}`,
+              anticipatePin: 1, // Prevents jerky pinning
             },
           });
 
-          // Line animation (horizontal)
+          // Line animation (horizontal) with better timing
           if (lineRef.current) {
             gsap.fromTo(
               lineRef.current,
@@ -80,30 +82,33 @@ const Timeline: React.FC = () => {
               {
                 scaleX: 1,
                 transformOrigin: 'left center',
+                ease: 'power2.out',
                 scrollTrigger: {
                   trigger: section,
                   start: 'top center',
                   end: () => `+=${totalWidth}`,
-                  scrub: 1,
+                  scrub: 0.5,
                 },
               }
             );
           }
 
-          // Animate each item (horizontal)
+          // Animate each item with staggered timing and better triggers
           items.forEach((item) => {
             gsap.fromTo(
               item,
-              { opacity: 0, y: 50 },
+              { opacity: 0, y: 30 },
               {
                 opacity: 1,
                 y: 0,
-                duration: 0.8,
+                duration: 1,
+                ease: 'power2.out',
                 scrollTrigger: {
                   trigger: item,
-                  start: 'left 80%',
-                  end: 'left 20%',
+                  start: 'left 85%',
+                  end: 'left 15%',
                   toggleActions: 'play none none reverse',
+                  scrub: false, // Disable scrub for individual items
                 },
               }
             );
@@ -113,7 +118,7 @@ const Timeline: React.FC = () => {
         }
       }, sectionRef);
 
-      const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 500);
+      const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 1000);
       return () => {
         ctx.revert();
         clearTimeout(delayRefresh);
@@ -121,7 +126,7 @@ const Timeline: React.FC = () => {
     } else {
       // Mobile: vertical scroll, vertical line
       const ctx = gsap.context(() => {
-        // Animate vertical line
+        // Animate vertical line with better timing
         if (lineRef.current) {
           gsap.fromTo(
             lineRef.current,
@@ -129,36 +134,42 @@ const Timeline: React.FC = () => {
             {
               scaleY: 1,
               transformOrigin: 'top center',
+              ease: 'power2.out',
               scrollTrigger: {
                 trigger: section,
                 start: 'top center',
                 end: 'bottom bottom',
-                scrub: 1,
+                scrub: 0.5,
               },
             }
           );
         }
-        // Animate each item (vertical)
+        
+        // Animate each item with better timing and easing
         items.forEach((item) => {
           gsap.fromTo(
             item,
-            { opacity: 0, y: 50 },
+            { opacity: 0, y: 30 },
             {
               opacity: 1,
               y: 0,
-              duration: 0.8,
+              duration: 1,
+              ease: 'power2.out',
               scrollTrigger: {
                 trigger: item,
-                start: 'top 90%',
-                end: 'top 60%',
+                start: 'top 85%',
+                end: 'top 15%',
                 toggleActions: 'play none none reverse',
+                scrub: false, // Disable scrub for individual items
               },
             }
           );
         });
+        
         ScrollTrigger.refresh();
       }, sectionRef);
-      const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 500);
+      
+      const delayRefresh = setTimeout(() => ScrollTrigger.refresh(), 1000);
       return () => {
         ctx.revert();
         clearTimeout(delayRefresh);
