@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiSun, FiMoon, FiMenu, FiX, FiDownload } from 'react-icons/fi';
+import { FiSun, FiMoon, FiMenu, FiX, FiDownload, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { gsap } from 'gsap';
 import { useTheme } from '../context/ThemeContext';
+import { useMusic } from '../context/MusicContext';
 
 const Navigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
+  const { isMuted, toggleMute } = useMusic();
   const location = useLocation();
   const navRef = useRef<HTMLNavElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -109,6 +111,15 @@ const Navigation: React.FC = () => {
             </button>
 
             <button
+              onClick={toggleMute}
+              className="hidden md:flex p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors duration-300"
+              aria-label="Toggle music"
+              style={{ cursor: 'none' }} // Added cursor none to music toggle
+            >
+              {isMuted ? <FiVolumeX size={18} /> : <FiVolume2 size={18} />}
+            </button>
+
+            <button
               onClick={toggleTheme}
               className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors duration-300"
               aria-label="Toggle theme"
@@ -158,6 +169,18 @@ const Navigation: React.FC = () => {
           >
             <FiDownload size={24} />
             <span>Resume</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              toggleMute();
+              setIsMenuOpen(false);
+            }}
+            className="menu-item flex items-center space-x-2 text-2xl font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
+            style={{ cursor: 'none' }} // Added cursor none to mobile menu music button
+          >
+            {isMuted ? <FiVolumeX size={24} /> : <FiVolume2 size={24} />}
+            <span>{isMuted ? 'Unmute' : 'Mute'}</span>
           </button>
         </div>
       </div>

@@ -9,9 +9,11 @@ import Projects from './pages/Projects';
 import GuestBook from './pages/GuestBook';
 import Collaborate from './pages/Collaborate';
 import ThemeProvider from './context/ThemeContext';
+import { MusicProvider } from './context/MusicContext';
 import CustomCursor from './components/CustomCursor';
 import Gallery from './components/Gallery';
 import Loader from './components/Loader';
+import MusicPrompt from './components/MusicPrompt';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,20 +70,23 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Router>
-        <div className="relative bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
-          <CustomCursor />
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/guestbook" element={<GuestBook />} />
-            <Route path="/collaborate" element={<Collaborate />} />
-            <Route path="/gallery" element={<Gallery />} />
-            
-          </Routes>
-        </div>
-      </Router>
+      <MusicProvider>
+        <Router>
+          <div className="relative bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
+            <CustomCursor />
+            <Navigation />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/guestbook" element={<GuestBook />} />
+              <Route path="/collaborate" element={<Collaborate />} />
+              <Route path="/gallery" element={<Gallery />} />
+              
+            </Routes>
+            <MusicPrompt />
+          </div>
+        </Router>
+      </MusicProvider>
     </ThemeProvider>
   );
 }

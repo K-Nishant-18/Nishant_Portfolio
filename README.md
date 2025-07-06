@@ -37,6 +37,7 @@ A modern, minimalist portfolio website built with <b>React</b>, <b>TypeScript</b
 - 🖼️ <b>Project Gallery</b> — Showcase your best work
 - 💬 <b>GuestBook</b> — Collect testimonials
 - 🤝 <b>Collaboration Form</b> — Easy project inquiries
+- 🎵 <b>Background Music</b> — Ambient music with mute toggle
 - 📱 <b>Fully Responsive</b> — Looks great on any device
 
 ---
