@@ -114,6 +114,7 @@ const BlogSection = () => {
         });
         gsap.to(number, {
           y: -20,
+          scale: 1.5,
           opacity: 0.7,
           duration: 0.4,
           ease: 'power2.out',
@@ -129,6 +130,7 @@ const BlogSection = () => {
         });
         gsap.to(number, {
           y: 0,
+          scale: 1,
           opacity: 0.5,
           duration: 0.4,
           ease: 'power2.out',
