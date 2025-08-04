@@ -141,7 +141,7 @@ const AwardWinningProjects: React.FC = () => {
     };
 
     return (
-        <section ref={sectionRef} className={`relative md:min-h-screen text-[#f1f1f1] px-4 sm:px-8 py-20 md:py-32 ${isDesktop ? 'cursor-none' : ''}`}>
+        <section ref={sectionRef} className={`relative md:min-h-screen  px-4 sm:px-8 py-20 md:py-32 ${isDesktop ? 'cursor-none' : ''}`}>
             {/* These elements are only used by the desktop animations */}
             {isDesktop && (
                 <>
@@ -176,10 +176,10 @@ const AwardWinningProjects: React.FC = () => {
                                 onClick={(e) => handleMobileProjectClick(e, project.number)}
                             >
                                 <div className="relative py-6 md:py-8 transition-colors duration-300">
-                                    <h3 className="text-4xl md:text-8xl font-bold tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px #333' }}>
+                                    <h3 className="text-4xl md:text-8xl font-bold tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px black' }}>
                                         {project.title}
                                     </h3>
-                                    <h3 className="text-mask absolute inset-0 py-6 md:py-8 text-4xl md:text-8xl font-bold tracking-tighter text-[#bdbbbb]">
+                                    <h3 className="text-mask absolute inset-0 py-6 md:py-8 text-4xl md:text-8xl font-bold tracking-tighter text-[white]">
                                         {project.title}
                                     </h3>
                                 </div>
@@ -211,16 +211,19 @@ const AwardWinningProjects: React.FC = () => {
 
             {/* --- Fixed Project Details Panel (Desktop Only) --- */}
             {isDesktop && activeProject && (
-                <div ref={detailsRef} className="fixed bottom-8 right-8 z-30 pointer-events-none">
-                    <div className="text-white p-4 bg-black/30 backdrop-blur-sm rounded-lg">
-                        <p className="text-lg">Nº - {activeProject.number}</p>
-                        <p className="max-w-sm mt-2">{activeProject.description}</p>
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            {activeProject.tech.map(t => <span key={t} className="px-2 py-1 text-sm border border-white/50 rounded-full">{t}</span>)}
-                        </div>
-                    </div>
-                </div>
-            )}
+  <div ref={detailsRef} className="fixed bottom-8 right-8 z-30 pointer-events-none">
+    <div className="text-white p-4 rounded-lg backdrop-blur-sm bg-gradient-to-br from-transparent via-black/10 to-black/60">
+      <p className="text-lg font-bold text-white-800">Nº - {activeProject.number}</p>
+      <p className="max-w-sm mt-2">{activeProject.description}</p>
+      <div className="flex flex-wrap gap-2 mt-4">
+        {activeProject.tech.map(t => (
+          <span key={t} className="px-2 py-1 text-sm border border-white/50 rounded-full">{t}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
         </section>
     );
 };
