@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 
+// Define the shape of the context data
 interface MusicContextType {
   isPlaying: boolean;
   isMuted: boolean;
@@ -9,8 +10,10 @@ interface MusicContextType {
   setVolume: (volume: number) => void;
 }
 
+// Create the context
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
+// Custom hook for easy access to the context
 export const useMusic = () => {
   const context = useContext(MusicContext);
   if (!context) {
@@ -19,6 +22,7 @@ export const useMusic = () => {
   return context;
 };
 
+// Define the props for the provider component
 interface MusicProviderProps {
   children: React.ReactNode;
 }
@@ -26,118 +30,69 @@ interface MusicProviderProps {
 export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0.3);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [volume, setVolume] = useState(0.3); // Default volume at 30%
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Effect to initialize the audio element
   useEffect(() => {
-    // Create audio element
+    // Create the audio object and store it in the ref
     const audio = new Audio('/music/background-music.mp3');
     audio.loop = true;
-    audio.volume = volume;
     audioRef.current = audio;
 
-    // Handle audio loading
-    audio.addEventListener('loadeddata', () => {
-      console.log('Audio loaded successfully');
-    });
-
-    audio.addEventListener('error', (e) => {
-      console.error('Audio loading error:', e);
-    });
-
-    // Start playing when component mounts (may be blocked by browser)
-    const startMusic = async () => {
-      try {
-        await audio.play();
-        setIsPlaying(true);
-        console.log('Music started playing');
-      } catch (error) {
-        console.log('Autoplay prevented by browser:', error);
-        setIsPlaying(false);
-      }
-    };
-
-    // Try to start music after a delay
-    const timer = setTimeout(startMusic, 2000);
-    
+    // Cleanup function to run when the component unmounts
     return () => {
-      clearTimeout(timer);
+      audio.pause();
+      audioRef.current = null;
     };
-  }, []); // Remove dependencies to prevent recreation
+  }, []); // Empty dependency array ensures this runs only once
 
-  // Handle user interaction to start music
-  useEffect(() => {
-    const handleUserInteraction = () => {
-      if (!hasUserInteracted && !isPlaying && audioRef.current) {
-        setHasUserInteracted(true);
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          console.log('Music started on user interaction');
-        }).catch((error) => {
-          console.error('Failed to start music on user interaction:', error);
-        });
-      }
-    };
-
-    // Add event listeners for user interaction
-    document.addEventListener('click', handleUserInteraction, { once: true });
-    document.addEventListener('keydown', handleUserInteraction, { once: true });
-    document.addEventListener('touchstart', handleUserInteraction, { once: true });
-
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-    };
-  }, [hasUserInteracted, isPlaying]);
-
+  // Effect to control the audio element's volume based on state
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
     }
   }, [isMuted, volume]);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-        console.log('Music paused');
-      } else {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          console.log('Music resumed');
-        }).catch((error) => {
-          console.error('Failed to play music:', error);
-        });
-      }
-    }
-  };
+  // Function to toggle play/pause
+  const togglePlay = useCallback(() => {
+    if (!audioRef.current) return;
 
-  const toggleMute = () => {
-    const newMutedState = !isMuted;
-    setIsMuted(newMutedState);
-    if (audioRef.current) {
-      audioRef.current.volume = newMutedState ? 0 : volume;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      console.log('Music paused');
+    } else {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+        console.log('Music started playing');
+      }).catch(error => {
+        console.error('Audio play failed:', error);
+        setIsPlaying(false); // Ensure state is correct if play fails
+      });
     }
-    console.log(newMutedState ? 'Music muted' : 'Music unmuted');
-  };
+  }, [isPlaying]);
 
-  const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : newVolume;
-    }
-  };
+  // Function to toggle mute/unmute
+  const toggleMute = useCallback(() => {
+    setIsMuted(prevMuted => !prevMuted);
+    console.log(isMuted ? 'Music unmuted' : 'Music muted');
+  }, [isMuted]);
 
+  // Function to set a new volume
+  const handleSetVolume = useCallback((newVolume: number) => {
+    const clampedVolume = Math.max(0, Math.min(1, newVolume)); // Ensure volume is between 0 and 1
+    setVolume(clampedVolume);
+  }, []);
+
+  // The value object provided to consuming components
   const value: MusicContextType = {
     isPlaying,
     isMuted,
     togglePlay,
     toggleMute,
     volume,
-    setVolume: handleVolumeChange,
+    setVolume: handleSetVolume,
   };
 
   return (
@@ -145,4 +100,4 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
       {children}
     </MusicContext.Provider>
   );
-}; 
+};
