@@ -5,6 +5,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { FaGithub } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -241,28 +244,28 @@ const AwardWinningProjects: React.FC = () => {
 
                       {/* --- IMPROVED BUTTON CONTAINER --- */}
                       <div className="flex justify-center gap-x-8 mt-4">
-  {project.liveLink && (
-    <a
-      href={project.liveLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="w-40 inline-flex justify-center items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-md text-sm font-semibold transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-    >
-      Live Demo <FiArrowUpRight />
-    </a>
-  )}
+                        {project.liveLink && (
+                          <a
+                            href={project.liveLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-40 inline-flex justify-center items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-md text-sm font-semibold transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                          >
+                            Live Demo <FiArrowUpRight />
+                          </a>
+                        )}
 
-  {project.githubLink && (
-    <a
-      href={project.githubLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="w-40 inline-flex justify-center items-center gap-2 px-4 py-2 bg-transparent border border-neutral-600 text-neutral-300 rounded-md text-sm font-semibold transition-colors hover:bg-neutral-800 hover:border-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
-    >
-      <FaGithub /> GitHub
-    </a>
-  )}
-</div>
+                        {project.githubLink && (
+                          <a
+                            href={project.githubLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-40 inline-flex justify-center items-center gap-2 px-4 py-2 bg-transparent border border-neutral-600 text-neutral-300 rounded-md text-sm font-semibold transition-colors hover:bg-neutral-800 hover:border-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
+                          >
+                            <FaGithub /> GitHub
+                          </a>
+                        )}
+                      </div>
 
                     </div>
                   </div>
@@ -287,6 +290,16 @@ const AwardWinningProjects: React.FC = () => {
           </div>
         </div>
       )}
+
+      <div className="text-center sm:text-right mt-8 sm:mt-16 sm:pr-8">
+        <Link
+          to="/projects"
+          className="inline-flex items-center text-base sm:text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
+        >
+          View more of my work
+          <FiArrowUpRight className="ml-2" size={50} />
+        </Link>
+      </div>
 
     </section>
   );
