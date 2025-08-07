@@ -125,8 +125,8 @@ const AwardWinningProjects: React.FC = () => {
       const xTo = gsap.quickTo(cursor, "x", { duration: 0.5, ease: "power3" });
       const yTo = gsap.quickTo(cursor, "y", { duration: 0.5, ease: "power3" });
 
-      const xImgTo = gsap.quickTo(previewImage, "x", { duration: 1.2, ease: "power4.out" });
-      const yImgTo = gsap.quickTo(previewImage, "y", { duration: 1.2, ease: "power4.out" });
+      // const xImgTo = gsap.quickTo(previewImage, "x", { duration: 1.2, ease: "power4.out" });
+      // const yImgTo = gsap.quickTo(previewImage, "y", { duration: 1.2, ease: "power4.out" });
 
       const handleMouseMove = (e: MouseEvent) => {
         xTo(e.clientX);
@@ -279,12 +279,12 @@ const AwardWinningProjects: React.FC = () => {
       {/* --- Fixed Project Details Panel (Desktop Only) --- */}
       {isDesktop && activeProject && (
         <div ref={detailsRef} className="fixed bottom-8 right-8 z-30 pointer-events-none">
-          <div className="text-white p-4 rounded-lg backdrop-blur-sm bg-gradient-to-br from-transparent via-black/10 to-black/60">
+          <div className="text-white p-4 rounded-lg backdrop-blur-sm bg-gradient-to-br from-transparent via-black/10 to-black/10">
             <p className="text-lg font-bold text-white-800">Nº - {activeProject.number}</p>
             <p className="max-w-sm mt-2">{activeProject.description}</p>
             <div className="flex flex-wrap gap-2 mt-4">
               {activeProject.tech.map(t => (
-                <span key={t} className="px-2 py-1 text-sm border border-white/50 rounded-full">{t}</span>
+                <span key={t} className="px-2 py-1 text-sm border border-red-500 rounded-full">{t}</span>
               ))}
             </div>
           </div>
