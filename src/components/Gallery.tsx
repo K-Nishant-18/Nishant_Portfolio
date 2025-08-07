@@ -247,7 +247,7 @@ export default function Gallery() {
         style={{
           background: 'radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%)',
         }}
-      ></div>
+      >💖</div>
 
       <main className="relative z-10">
         <div className="container mx-auto px-8">
