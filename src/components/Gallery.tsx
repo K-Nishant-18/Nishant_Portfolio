@@ -1,138 +1,306 @@
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from '@studio-freight/lenis';
 
-const Gallery: React.FC = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const galleryRef = useRef<HTMLDivElement>(null);
+// Register GSAP plugin
+gsap.registerPlugin(ScrollTrigger);
 
-  const images = [
-    {
-      src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=600&fit=crop',
-      alt: 'Coding workspace',
-      size: 'w-64 h-80',
-      position: 'top-10 left-10',
-      speed: '2',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&h=400&fit=crop',
-      alt: 'Team collaboration',
-      size: 'w-80 h-60',
-      position: 'top-20 right-20',
-      speed: '-1',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=350&h=500&fit=crop',
-      alt: 'Mobile development',
-      size: 'w-56 h-72',
-      position: 'top-80 left-32',
-      speed: '1.5',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=450&h=350&fit=crop',
-      alt: 'Team meeting',
-      size: 'w-72 h-56',
-      position: 'top-96 right-32',
-      speed: '-0.5',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1559028006-448665bd7c7f?w=300&h=400&fit=crop',
-      alt: 'Design process',
-      size: 'w-48 h-64',
-      position: 'top-[30rem] left-1/2',
-      speed: '1',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&fit=crop',
-      alt: 'Code review',
-      size: 'w-64 h-48',
-      position: 'top-[35rem] right-10',
-      speed: '-2',
-    },
-  ];
+// Image data
+const images = [
+  { id: 1, url: '/portfolio.png', className: 'w-[80vw] h-[40vh] top-[15vh] left-[10vw] lg:w-[32vw] lg:h-[45vh] lg:top-[15vh] lg:left-[5vw]', dataSpeed: 1.3, rotation: -6, zIndex: 10 },
+  { id: 2, url: 'https://images.pexels.com/photos/17131046/pexels-photo-17131046.jpeg', className: 'w-[80vw] h-[40vh] top-[70vh] left-[10vw] lg:w-[28vw] lg:h-[38vh] lg:top-[60vh] lg:right-[8vw] lg:left-auto', dataSpeed: 0.8, rotation: 4, zIndex: 15 },
+  { id: 3, url: 'https://images.pexels.com/photos/33114015/pexels-photo-33114015.jpeg', className: 'w-[80vw] h-[45vh] top-[125vh] left-[10vw] lg:w-[24vw] lg:h-[50vh] lg:top-[30vh] lg:right-[22vw] lg:left-auto', dataSpeed: 1.1, rotation: -3, zIndex: 12 },
+  { id: 4, url: 'https://images.pexels.com/photos/10110994/pexels-photo-10110994.jpeg', className: 'w-[80vw] h-[38vh] top-[185vh] left-[10vw] lg:w-[40vw] lg:h-[34vh] lg:top-[90vh] lg:left-[12vw]', dataSpeed: 1.2, rotation: 5, zIndex: 14 },
+  { id: 5, url: 'https://images.unsplash.com/photo-1593720213428-28a5b9e94613?q=80&w=2070&auto=format&fit=crop', className: 'w-[80vw] h-[48vh] top-[240vh] left-[10vw] lg:w-[30vw] lg:h-[52vh] lg:top-[120vh] lg:right-[5vw] lg:left-auto', dataSpeed: 0.9, rotation: -4, zIndex: 11 },
+  { id: 6, url: 'https://images.pexels.com/photos/12372675/pexels-photo-12372675.jpeg', className: 'w-[80vw] h-[40vh] top-[305vh] left-[10vw] lg:w-[26vw] lg:h-[36vh] lg:top-[150vh] lg:left-[25vw]', dataSpeed: 1.0, rotation: 3, zIndex: 13 },
+  { id: 7, url: 'https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=2070&auto=format&fit=crop', className: 'w-[80vw] h-[40vh] top-[360vh] left-[10vw] lg:w-[36vw] lg:h-[35vh] lg:top-[170vh] lg:left-[8vw]', dataSpeed: 1.25, rotation: -5, zIndex: 16 },
+  { id: 8, url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop', className: 'w-[80vw] h-[42vh] top-[415vh] left-[10vw] lg:w-[31vw] lg:h-[40vh] lg:top-[190vh] lg:right-[12vw] lg:left-auto', dataSpeed: 0.85, rotation: 6, zIndex: 10 },
+  { id: 9, url: 'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?q=80&w=2070&auto=format&fit=crop', className: 'w-[80vw] h-[38vh] top-[470vh] left-[10vw] lg:w-[27vw] lg:h-[33vh] lg:top-[210vh] lg:left-[10vw]', dataSpeed: 1.3, rotation: -2, zIndex: 15 },
+  { id: 10, url: 'https://images.pexels.com/photos/20180722/pexels-photo-20180722.jpeg', className: 'w-[80vw] h-[45vh] top-[525vh] left-[10vw] lg:w-[33vw] lg:h-[44vh] lg:top-[230vh] lg:right-[18vw] lg:left-auto', dataSpeed: 1.0, rotation: 4, zIndex: 12 },
+];
 
-  useEffect(() => {
-    // Parallax effect for images
-    images.forEach((_, index) => {
-      const img = galleryRef.current?.children[index] as HTMLElement;
-      if (img) {
-        gsap.to(img, {
-          y: `${parseFloat(img.dataset.speed || '0') * 100}px`,
+// ✅ UPDATED: Added more shapes for a denser background effect
+const backgroundShapes = [
+    { id: 1, className: 'top-[5vh] left-[5vw] w-[22rem] h-[22rem] bg-cyan-400/10 rounded-full', dataSpeed: 0.2 },
+    { id: 2, className: 'top-[40vh] right-[10vw] w-[32rem] h-[32rem] bg-purple-400/10 rounded-full', dataSpeed: 0.35 },
+    { id: 3, className: 'top-[90vh] left-[15vw] w-[28rem] h-[28rem] bg-yellow-400/10 rounded-full', dataSpeed: 0.25 },
+    { id: 4, className: 'top-[130vh] right-[20vw] w-[18rem] h-[18rem] bg-teal-400/10 rounded-full', dataSpeed: 0.45 },
+    { id: 5, className: 'top-[180vh] left-[10vw] w-[35rem] h-[35rem] bg-pink-400/10 rounded-full', dataSpeed: 0.4 },
+    { id: 6, className: 'top-[240vh] right-[5vw] w-[26rem] h-[26rem] bg-indigo-400/10 rounded-full', dataSpeed: 0.3 },
+    { id: 7, className: 'top-[280vh] left-[25vw] w-[20rem] h-[20rem] bg-green-400/10 rounded-full', dataSpeed: 0.22 },
+    { id: 8, className: 'top-[350vh] right-[15vw] w-[30rem] h-[30rem] bg-orange-400/10 rounded-full', dataSpeed: 0.38 },
+    { id: 9, className: 'top-[420vh] left-[5vw] w-[24rem] h-[24rem] bg-sky-400/10 rounded-full', dataSpeed: 0.33 },
+    { id: 10, className: 'top-[490vh] right-[10vw] w-[28rem] h-[28rem] bg-rose-400/10 rounded-full', dataSpeed: 0.28 },
+    { id: 11, className: 'top-[540vh] left-[20vw] w-[22rem] h-[22rem] bg-lime-400/10 rounded-full', dataSpeed: 0.42 },
+];
+
+// Component for rendering and animating background elements
+const BackgroundElements = () => {
+  const shapesContainerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray<HTMLElement>('.bg-shape').forEach(shape => {
+        const speed = parseFloat(shape.dataset.speed || '1');
+        gsap.to(shape, {
+          yPercent: -60 * speed,
           ease: 'none',
           scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
+            trigger: 'body',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1.5,
           },
         });
-      }
-    });
-
-    // Hover animations
-    const imageElements = galleryRef.current?.children;
-    if (imageElements) {
-      Array.from(imageElements).forEach((img) => {
-        const element = img as HTMLElement;
-        
-        element.addEventListener('mouseenter', () => {
-          gsap.to(element, {
-            scale: 1.1,
-            rotation: 5,
-            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-            duration: 0.3,
-            ease: 'power2.out',
-          });
-        });
-
-        element.addEventListener('mouseleave', () => {
-          gsap.to(element, {
-            scale: 1,
-            rotation: 0,
-            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-            duration: 0.3,
-            ease: 'power2.out',
-          });
-        });
       });
-    }
+    }, shapesContainerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      id="gallery"
-      ref={sectionRef}
-      className="py-20 px-6 relative min-h-screen overflow-hidden"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16 relative z-10">
-          <h2 className="text-4xl md:text-6xl font-bold mb-4">Gallery</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Behind the scenes of development
-          </p>
-        </div>
-
-        <div ref={galleryRef} className="relative h-[150vh]">
-          {images.map((image, index) => (
-            <img
-              key={index}
-              src={image.src}
-              alt={image.alt}
-              data-speed={image.speed}
-              className={`absolute ${image.size} ${image.position} object-cover rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:z-10`}
-            />
-          ))}
-        </div>
-
-        {/* Decorative background shapes */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-red-500 rounded-full opacity-10 animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-48 h-48 bg-blue-500 rounded-full opacity-10 animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-green-500 rounded-full opacity-10 animate-pulse delay-500"></div>
-        </div>
-      </div>
-    </section>
+    <div ref={shapesContainerRef} className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      {backgroundShapes.map(shape => (
+        <div
+          key={shape.id}
+          data-speed={shape.dataSpeed}
+          className={`bg-shape absolute filter blur-3xl ${shape.className}`}
+        ></div>
+      ))}
+    </div>
   );
 };
 
-export default Gallery;
+
+export default function Gallery() {
+  const component = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const [hoveredImage, setHoveredImage] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    // Initialize Lenis for ultra-smooth scrolling
+    const lenis = new Lenis({
+      duration: 1.5,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -12 * t)),
+      smooth: true,
+      smoothTouch: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Custom cursor with dynamic scaling and color shift
+    const cursor = cursorRef.current;
+    const mouseMove = (e: MouseEvent) => {
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.5,
+        ease: 'power4.out',
+      });
+    };
+    window.addEventListener('mousemove', mouseMove);
+
+    // Cursor hover interactions with glow effect
+    const interactiveElements = document.querySelectorAll('.interactive');
+    interactiveElements.forEach((el) => {
+      el.addEventListener('mouseenter', () => {
+        gsap.to(cursor, {
+          scale: 4,
+          background: 'radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(255, 215, 0, 0) 70%)',
+          mixBlendMode: 'screen',
+          duration: 0.4,
+          ease: 'power2.out',
+        });
+      });
+      el.addEventListener('mouseleave', () => {
+        gsap.to(cursor, {
+          scale: 1,
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%)',
+          mixBlendMode: 'normal',
+          duration: 0.4,
+          ease: 'power2.out',
+        });
+      });
+    });
+
+    // GSAP animations with context
+    let ctx = gsap.context(() => {
+      // Hero title animation with 3D letter effect
+      const title = document.querySelector('.hero-title');
+      if (title) {
+        const chars = title.textContent!.split('');
+        title.innerHTML = chars.map(char => `<span class="char inline-block transform-style-3d">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+
+        gsap.from('.char', {
+          yPercent: 150,
+          opacity: 0,
+          rotateX: 90,
+          stagger: 0.08,
+          duration: 2,
+          ease: 'expo.out',
+          scrollTrigger: {
+            trigger: title,
+            start: 'top 90%',
+          },
+        });
+      }
+
+      // Asymmetrical image reveal with 3D rotation and layered parallax
+      gsap.utils.toArray<HTMLElement>('.gallery-item').forEach((item, index) => {
+        const image = item.querySelector('img');
+        const speed = parseFloat(item.dataset.speed || '1');
+        const rotation = parseFloat(item.dataset.rotation || '0');
+
+        // Image reveal with 3D effect
+        gsap.fromTo(
+          item,
+          { clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)', y: 200, rotate: rotation * 1.8, rotateY: 30 },
+          {
+            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+            y: 0,
+            rotate: rotation,
+            rotateY: 0,
+            duration: 2.2,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: item,
+              start: 'top 95%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+
+        // Parallax effect with depth
+        gsap.to(image, {
+          yPercent: -15 * speed,
+          scale: 1.1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: item,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.3,
+          },
+        });
+
+        // Micro-interaction on hover with 3D tilt
+        item.addEventListener('mouseenter', () => {
+          setHoveredImage(index + 1);
+          gsap.to(item, {
+            scale: 1.08,
+            zIndex: 200,
+            rotate: rotation + 3,
+            rotateY: 10,
+            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.5)',
+            duration: 0.5,
+            ease: 'power3.out',
+          });
+        });
+        item.addEventListener('mouseleave', () => {
+          setHoveredImage(null);
+          gsap.to(item, {
+            scale: 1,
+            rotate: rotation,
+            rotateY: 0,
+            boxShadow: '0 15px 30px rgba(0, 0, 0, 0.3)',
+            duration: 0.5,
+            ease: 'power3.out',
+          });
+        });
+      });
+
+
+      // Background gradient animation
+      gsap.to('.bg-gradient', {
+        backgroundPosition: '200% center',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: component.current,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      });
+    }, component);
+
+    // Cleanup
+    return () => {
+      ctx.revert();
+      window.removeEventListener('mousemove', mouseMove);
+      lenis.destroy();
+    };
+  }, []);
+
+  return (
+    <div ref={component} className="bg-gradient min-h-screen font-sans relative overflow-hidden">
+      <BackgroundElements />
+
+      {/* Custom Cursor */}
+      <div
+        ref={cursorRef}
+        className="fixed top-0 left-0 w-6 h-6 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
+        style={{
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%)',
+        }}
+      ></div>
+
+      <main className="relative z-10">
+        <div className="container mx-auto px-8">
+          {/* Hero Section */}
+          <header className="min-h-screen flex items-center justify-center text-center relative">
+            <h1 className="hero-title text-7xl sm:text-7xl md:text-9xl lg:text-[11rem] font-extrabold uppercase tracking-tighter font-serif perspective-1000 leading-none">
+              Beyond
+              <br className="lg:hidden" /> the
+              <br />
+              Frame
+            </h1>
+            <div className="absolute bottom-10 text-base sm:text-lg font-mono opacity-70 animate-bounce">Scroll to Unravel</div>
+          </header>
+
+          {/* Gallery Section */}
+          <section className="gallery-container relative min-h-[575vh] lg:min-h-[275vh] py-24">
+            {images.map((img, index) => (
+              <div
+                key={img.id}
+                className={`gallery-item absolute overflow-hidden rounded-xl shadow-2xl transition-all interactive ${img.className}`}
+                data-speed={img.dataSpeed}
+                data-rotation={img.rotation}
+                style={{ zIndex: img.zIndex }}
+              >
+                <img
+                  src={img.url}
+                  alt={`Gallery image ${img.id}`}
+                  className="w-full h-full object-cover transform transition-transform duration-500"
+                />
+                {hoveredImage === img.id && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center opacity-0 hover:opacity-100 transition-opacity duration-500">
+                    <span className="text-white text-lg font-mono mb-6 tracking-wide">Frame #{img.id}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
+
+          {/* Parallax Text Section */}
+          <section className="min-h-screen flex items-center justify-center py-32">
+            <h2
+              className="parallax-text text-4xl sm:text-5xl md:text-6xl text-center w-11/12 md:w-4/5 font-light leading-snug md:leading-tight"
+            >
+              Each image is a portal to a fleeting moment, captured in a symphony of light and chaos.
+            </h2>
+          </section>
+        </div>
+      </main>
+
+      {/* Background Overlay for Depth */}
+      <div className="absolute inset-0 z-5 pointer-events-none opacity-20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.2)_0%,transparent_70%)]"></div>
+      </div>
+    </div>
+  );
+}
