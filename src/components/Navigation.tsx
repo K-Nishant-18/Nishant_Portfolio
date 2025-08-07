@@ -58,14 +58,14 @@ const Navigation: React.FC = () => {
     { name: 'Projects', path: '/projects' },
     { name: 'GuestBook', path: '/guestbook' },
     { name: 'Collaborate', path: '/collaborate' },
-    // { name: 'Gallery', path: '/gallery' },
+    { name: 'Gallery', path: '/gallery' },
   ];
 
   return (
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-gray-50/90 dark:bg-gray-950/90 backdrop-blur-sm border-b border-gray-200/10 dark:border-gray-800/20 "
+        className="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-gray-50/90 dark:bg-gray-950/90 backdrop-blur-sm border-b border-gray-200/10 dark:border-gray-800/20 z-500 "
         style={{ cursor: 'none' }} // Added cursor none to nav
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
