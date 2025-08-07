@@ -43,6 +43,9 @@ const Hero: React.FC = () => {
         '-=0.2'
       );
 
+
+
+
     // Scroll indicator animation
     gsap.to(scrollIndicatorRef.current, {
       y: 50,
