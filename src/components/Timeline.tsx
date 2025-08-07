@@ -51,11 +51,11 @@ const Timeline: React.FC = () => {
                         gsap.from(item, {
                             opacity: 0,
                             x: isLeft ? -50 : 50, // Horizontal animation is active
-                            duration: 1,
+                            duration: 2,
                             ease: 'power3.out',
                             scrollTrigger: {
                                 trigger: item,
-                                start: 'top 85%',
+                                start: 'top 35%',
                                 toggleActions: 'play none none reverse',
                             }
                         });
