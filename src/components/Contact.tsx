@@ -53,7 +53,7 @@ const Contact: React.FC = () => {
     gsap.fromTo(
       headingRef.current?.querySelectorAll('span'),
       { 
-        y: 20, 
+        y: 40, 
         opacity: 0, 
         scale: 0.8, 
         rotationX: 30 
@@ -63,12 +63,12 @@ const Contact: React.FC = () => {
         opacity: 1,
         scale: 1,
         rotationX: 0,
-        duration: 1.2,
+        duration: 2.2,
         stagger: 0.3,
         ease: 'elastic.out(1, 0.5)',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 80%',
+          start: 'top 60%',
           toggleActions: 'play none none none',
         },
       }
