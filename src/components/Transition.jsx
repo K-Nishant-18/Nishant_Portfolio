@@ -57,7 +57,7 @@ const Transition = () => {
       {Array.from({ length: panelCount }).map((_, index) => (
         <div
           key={index}
-          className="flex-1 h-full bg-[#faf9f7] scale-y-0"
+          className="flex-1 h-full dark:bg-[#faf9f7] bg-gray-950 scale-y-0"
           // CHANGE: Set the origin to 'left top' to make panels appear from that corner.
           style={{ transformOrigin: 'left top' }}
         />
