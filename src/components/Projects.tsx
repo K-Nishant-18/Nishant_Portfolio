@@ -220,10 +220,10 @@ const AwardWinningProjects: React.FC = () => {
                 onClick={(e) => handleMobileProjectClick(e, project.number)}
               >
                 <div className="relative py-6 md:py-8 transition-colors duration-300">
-                  <h3 className="text-4xl md:text-8xl font-bold tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px black' }}>
+                  <h3 className="text-4xl md:text-8xl font-bold tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px white' }}>
                     {project.title}
                   </h3>
-                  <h3 className="text-mask absolute inset-0 py-6 md:py-8 text-4xl md:text-8xl font-bold tracking-tighter text-[white]">
+                  <h3 className="text-mask absolute inset-0 py-6 md:py-8 text-4xl md:text-8xl font-bold tracking-tighter text-[black] dark:text-white">
                     {project.title}
                   </h3>
                 </div>

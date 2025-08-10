@@ -28,7 +28,7 @@ function App() {
 
   // This effect manages the loader's visibility duration
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2500); // Loader is visible for 2.5 seconds
+    const timer = setTimeout(() => setLoading(false), 3000); // Loader is visible for 2.5 seconds
     return () => clearTimeout(timer);
   }, []);
 
