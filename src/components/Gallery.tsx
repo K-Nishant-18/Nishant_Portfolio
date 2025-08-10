@@ -130,17 +130,24 @@ export default function Gallery() {
 
     // GSAP animations with context
     let ctx = gsap.context(() => {
-      // Hero title animation with 3D letter effect
+      // Hero title animation with 3D letter effect - SAME AS HERO COMPONENT
       const title = document.querySelector('.hero-title');
       if (title) {
-        const chars = title.textContent!.split('');
-        title.innerHTML = chars.map(char => `<span class="char inline-block transform-style-3d">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+        const spans = title.querySelectorAll('span');
+        spans.forEach(span => {
+          if (span.textContent) {
+            const chars = span.textContent.split('');
+            span.innerHTML = chars.map(char => 
+              `<span class="char inline-block" style="transform-style: preserve-3d;">${char === ' ' ? '&nbsp;' : char}</span>`
+            ).join('');
+          }
+        });
 
         gsap.from('.char', {
           yPercent: 150,
           opacity: 0,
-          rotateX: 90,
-          stagger: 0.08,
+          rotateX: 360,
+          stagger: 0.1,
           duration: 2,
           ease: 'expo.out',
           scrollTrigger: {
@@ -151,10 +158,11 @@ export default function Gallery() {
       }
 
       // Asymmetrical image reveal with 3D rotation and layered parallax
-      gsap.utils.toArray<HTMLElement>('.gallery-item').forEach((item, index) => {
+      gsap.utils.toArray<HTMLElement>('.gallery-item').forEach((item) => {
         const image = item.querySelector('img');
         const speed = parseFloat(item.dataset.speed || '1');
         const rotation = parseFloat(item.dataset.rotation || '0');
+        const itemId = parseInt(item.dataset.id || '0');
 
         // Image reveal with 3D effect
         gsap.fromTo(
@@ -190,7 +198,7 @@ export default function Gallery() {
 
         // Micro-interaction on hover with 3D tilt
         item.addEventListener('mouseenter', () => {
-          setHoveredImage(index + 1);
+          setHoveredImage(itemId);
           gsap.to(item, {
             scale: 1.08,
             zIndex: 200,
@@ -253,23 +261,25 @@ export default function Gallery() {
         <div className="container mx-auto px-8">
           {/* Hero Section */}
           <header className="min-h-screen flex items-center justify-center text-center relative">
-            <h1 className="hero-title text-7xl sm:text-7xl md:text-9xl lg:text-[11rem] font-extrabold uppercase tracking-tighter font-serif perspective-1000 leading-none">
-              Beyond
-              <br className="lg:hidden" /> the
+            <h1 className="hero-title text-6xl sm:text-7xl md:text-9xl lg:text-[11rem] font-extrabold uppercase tracking-tighter font-serif perspective-1000 leading-none">
+              <span>Beyond </span>
+              <br className="lg:hidden" /> 
+              <span>the</span>
               <br />
-              Frame
+              <span>Frame</span>
             </h1>
             <div className="absolute bottom-10 text-base sm:text-lg font-mono opacity-70 animate-bounce">Scroll to Unravel</div>
           </header>
 
           {/* Gallery Section */}
           <section className="gallery-container relative min-h-[575vh] lg:min-h-[275vh] py-24">
-            {images.map((img, index) => (
+            {images.map((img) => (
               <div
                 key={img.id}
                 className={`gallery-item absolute overflow-hidden rounded-xl shadow-2xl transition-all interactive ${img.className}`}
                 data-speed={img.dataSpeed}
                 data-rotation={img.rotation}
+                data-id={img.id}
                 style={{ zIndex: img.zIndex }}
               >
                 <img

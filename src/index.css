@@ -2,7 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-body, html {
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
   cursor: none;
+  overflow-x: hidden;
+  width: 100%;
 }
 

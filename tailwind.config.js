@@ -3,7 +3,11 @@ export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        'xs': '375px', // Extra small screens
+      },
+    },
   },
   plugins: [],
 };

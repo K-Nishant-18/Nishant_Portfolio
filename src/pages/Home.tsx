@@ -14,7 +14,7 @@ import DevActivity from '../components/DevActivity';
 
 const Home: React.FC = () => {
   return (
-    <div className="relative">
+    <div className="relative overflow-x-hidden">
       <Hero />
       <About />
       <Skills />

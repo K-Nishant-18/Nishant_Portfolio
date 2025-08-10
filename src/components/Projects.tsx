@@ -17,45 +17,57 @@ const projectsData = [
     number: '01',
     title: 'Collegia',
     description: 'Collegia is an all-in-one platform designed to enhance the overall student experience in colleges by integrating several essential features.',
+    longDescription: 'Collegia is a full-featured student management platform that streamlines academic processes. Built with Java Spring MVC and React.js, it features user authentication, course management, assignment tracking, and real-time notifications.',
     tech: ['Java', 'Spring MVC', 'React.js', 'MySQL'],
+    category: 'Full-Stack',
     year: '2024',
     status: 'Live',
     liveLink: '#', // Replace with your live project URL
     githubLink: '#', // Replace with your GitHub repo URL
-    preview: '/collegiaMockup.png'
+    preview: '/collegiaMockup.png',
+    impact: ['500+ Students', '15+ Institutions', '99.9% Uptime']
   },
   {
     number: '02',
     title: '0xKid',
     description: '0xKid is a futuristic edtech platform that merges interactive gameplay, real coding challenges, and AI guidance to help children learn programming in a fun, visual, and structured way.',
+    longDescription: '0xKid is a next-generation educational platform designed to make learning programming exciting for children. It combines gamified challenges, AI-powered mentorship, and a visual learning environment to teach coding concepts effectively.',
     tech: ['Spring Boot', 'React.js', 'JWT', 'MongoDB'],
+    category: 'EdTech',
     year: '2024',
     status: 'Development',
     liveLink: '#', // Replace with your live project URL
     githubLink: '#', // Replace with your GitHub repo URL
-    preview: '/0xkidMockup.png'
+    preview: '/0xkidMockup.png',
+    impact: ['Gamified Learning', 'AI Mentorship', 'Child-Friendly UI']
   },
   {
     number: '03',
     title: 'SkillBloom+',
     description: 'SkillBloom+ is a gamified platform that rewards learning with points, badges, and career perks—helping users Learn → Earn → Grow through challenges, mentoring, and collaboration.',
+    longDescription: 'SkillBloom+ is a comprehensive learning management system that tracks student progress through GitHub integration. Features include course management, skill assessments, progress tracking, and automated certificate generation.',
     tech: ['Spring Boot', 'React.js', 'Docker', 'GitHub API'],
+    category: 'EdTech',
     year: '2023',
     status: 'Live',
     liveLink: '#', // Replace with your live project URL
     githubLink: '#', // Replace with your GitHub repo URL
-    preview: '/skillbloom.png'
+    preview: '/skillbloom.png',
+    impact: ['1000+ Learners', 'GitHub Integration', 'Automated Assessments']
   },
   {
     number: '04',
     title: 'Portfolio v3',
     description: 'My personal craftboard—a portfolio built to be a product in itself, reflecting my passion for clean code, user experience, and modern web technologies.',
+    longDescription: 'A fully responsive and interactive personal portfolio website designed to highlight professional skills, projects, certifications, and contact information. Built with a focus on clean design, smooth animations, and user-friendly navigation.',
     tech: ['TypeScript', 'Next.js', 'Tailwind CSS'],
+    category: 'Front-End',
     year: '2025',
     status: 'Live',
     liveLink: 'https://your-portfolio-url.com', // Your main portfolio URL
     githubLink: '#', // Replace with the GitHub repo URL for your portfolio
-    preview: '/portfolio.png'
+    preview: '/portfolio.png',
+    impact: ['Showcased Skills & Projects', 'Professional Branding', 'Interactive UI/UX']
   },
 ];
 
@@ -63,7 +75,7 @@ const projectsData = [
 const simpleSplitText = (element: HTMLElement) => {
   const text = element.textContent || "";
   element.innerHTML = "";
-  for (let char of text) {
+  for (const char of text) {
     const span = document.createElement('span');
     span.className = 'char inline-block';
     span.textContent = char === ' ' ? '\u00A0' : char;
@@ -131,11 +143,11 @@ const AwardWinningProjects: React.FC = () => {
       const handleMouseMove = (e: MouseEvent) => {
         xTo(e.clientX);
         yTo(e.clientY);
-        const rect = sectionRef.current!.getBoundingClientRect();
-        const relX = e.clientX - rect.left;
-        const relY = e.clientY - rect.top;
-        xImgTo(gsap.utils.mapRange(0, rect.width, -100, 100, relX));
-        yImgTo(gsap.utils.mapRange(0, rect.height, -75, 75, relY));
+        // const rect = sectionRef.current!.getBoundingClientRect();
+        // const relX = e.clientX - rect.left;
+        // const relY = e.clientY - rect.top;
+        // xImgTo(gsap.utils.mapRange(0, rect.width, -100, 100, relX));
+        // yImgTo(gsap.utils.mapRange(0, rect.height, -75, 75, relY));
       };
 
       const headerChars = simpleSplitText(sectionRef.current!.querySelector('h2')!);
@@ -212,7 +224,7 @@ const AwardWinningProjects: React.FC = () => {
             return (
               <a
                 key={project.number}
-                href={project.link}
+                href={project.liveLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="project-item group block border-b border-neutral-600"
@@ -278,14 +290,46 @@ const AwardWinningProjects: React.FC = () => {
 
       {/* --- Fixed Project Details Panel (Desktop Only) --- */}
       {isDesktop && activeProject && (
-        <div ref={detailsRef} className="fixed bottom-8 right-8 z-30 pointer-events-none">
-          <div className="text-white p-4 rounded-lg backdrop-blur-sm bg-gradient-to-br from-transparent via-black/10 to-black/10">
-            <p className="text-lg font-bold text-white-800">Nº - {activeProject.number}</p>
-            <p className="max-w-sm mt-2">{activeProject.description}</p>
-            <div className="flex flex-wrap gap-2 mt-4">
-              {activeProject.tech.map(t => (
-                <span key={t} className="px-2 py-1 text-sm border border-red-500 rounded-full">{t}</span>
-              ))}
+        <div ref={detailsRef} className="fixed bottom-8 right-8 z-30 pointer-events-none max-w-sm">
+          <div className="lg:col-span-4 space-y-6 relative backdrop-blur-md bg-white/5 dark:bg-white/3 border border-white/10 dark:border-white/5 rounded-2xl p-6 shadow-xl shadow-black/10 before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/10 before:via-white/3 before:to-transparent before:pointer-events-none">
+            <div className="relative z-10">
+              <div className="flex items-center space-x-4 mb-2">
+                <h3 className="text-2xl font-light tracking-tight text-white">
+                  {activeProject.title}
+                </h3>
+                <span className="text-xs font-light tracking-widest text-gray-400 uppercase">
+                  {activeProject.category}
+                </span>
+              </div>
+              <div className="project-description">
+                <p className="text-lg font-light leading-relaxed text-gray-200 mb-4">
+                  {activeProject.description}
+                </p>
+                <p className="text-sm font-light leading-relaxed text-gray-300">
+                  {activeProject.longDescription}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 relative z-10">
+              <div>
+                <p className="text-xs font-light tracking-widest text-gray-400 uppercase mb-2">
+                  Technologies
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {activeProject.tech.map((tech, techIndex) => (
+                    <span
+                      key={techIndex}
+                      className="tech-tag text-sm font-light tracking-wide text-gray-300 backdrop-blur-sm bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 px-3 py-1 rounded-full hover:bg-white/20 dark:hover:bg-white/10 transition-all duration-300"
+                      data-cursor="-opaque"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              
             </div>
           </div>
         </div>
