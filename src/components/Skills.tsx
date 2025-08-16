@@ -294,7 +294,7 @@ const Skills: React.FC = () => {
     <section
       ref={sectionRef}
       id="skills"
-      className="relative min-h-screen flex items-center px-2 sm:px-8 py-20 sm:py-32 pb-16 sm:pb-24 max-w-full sm:max-w-7xl mx-auto text-center overflow-hidden"
+      className="relative min-h-screen flex items-center px-2 sm:px-8 py-20 sm:py-32 pb-16 sm:pb-24 max-w-full sm:max-w-full mx-auto text-center overflow-hidden"
     >
       {/* Swiss Grid Background - Fixed for large screens, square for mobile */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -358,15 +358,15 @@ const Skills: React.FC = () => {
         </div>
 
         {/* Responsive grid: stack on mobile, grid on sm+ */}
-        <div className="flex flex-col gap-6 xs:gap-8 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-8">
+        <div className="flex flex-col md:px-20 gap-6 xs:gap-8 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-8">
           {skillCategories.map((category, catIndex) => (
             <div
               key={catIndex}
               ref={(el) => (categoryRefs.current[catIndex] = el)}
-              className="relative bg-white dark:bg-gray-900 p-4 xs:p-6 sm:p-8 border border-gray-100 dark:border-gray-800 rounded-lg hover:shadow-lg transition-all duration-500 group mx-6 sm:mx-0"
+              className="relative backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-2xl shadow-lg p-4 xs:p-6 sm:p-8 border border-gray-100 dark:border-gray-800 rounded-lg hover:shadow-lg transition-all duration-500 group mx-6 sm:mx-0"
             >
               <div className="flex items-center mb-4 xs:mb-6">
-                <div className="p-2 xs:p-3 rounded-full bg-gray-50 dark:bg-gray-800 mr-3 xs:mr-4 group-hover:bg-black dark:group-hover:bg-white transition-colors duration-300">
+                <div className="p-2 xs:p-3 rounded-full bg-gray-50 dark:bg-red-700 mr-3 xs:mr-4 group-hover:bg-black dark:group-hover:bg-white transition-colors duration-300">
                   {React.cloneElement(category.icon, {
                     className:
                       'text-gray-600 dark:text-gray-300 group-hover:text-white dark:group-hover:text-black transition-colors duration-300',

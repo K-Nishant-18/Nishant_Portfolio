@@ -197,7 +197,7 @@ const AwardWinningProjects: React.FC = () => {
   };
 
   return (
-    <section ref={sectionRef} className={`relative md:min-h-screen  px-4 sm:px-8 py-20 md:py-32 ${isDesktop ? 'cursor-none' : ''}`}>
+    <section ref={sectionRef} className={`relative md:min-h-screen  px-4 sm:px-8 py-20 md:py-32 ${isDesktop ? 'cursor-none' : ''} `}>
       {/* These elements are only used by the desktop animations */}
       {isDesktop && (
         <>
@@ -335,7 +335,7 @@ const AwardWinningProjects: React.FC = () => {
         </div>
       )}
 
-      <div className="text-center sm:text-right mt-8 sm:mt-16 sm:pr-8">
+      <div className="text-center sm:text-right mt-8 sm:mt-16 sm:pr-8 ">
         <Link
           to="/projects"
           className="inline-flex items-center text-base sm:text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
