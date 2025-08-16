@@ -105,7 +105,7 @@ const Timeline: React.FC = () => {
                     {/* The central timeline spine */}
                     <div
                         ref={timelineLineRef}
-                        className="absolute left-4 lg:left-1/2 w-0.5 h-full bg-gray-200 dark:bg-gray-800 origin-top"
+                        className="absolute left-4 lg:left-1/2 w-0.5 h-full bg-gray-700 dark:bg-gray-500 origin-top"
                     ></div>
 
                     <div className="space-y-12 lg:space-y-0">
@@ -145,7 +145,7 @@ const Timeline: React.FC = () => {
                                         ${isLeft ? 'lg:col-start-6' : 'lg:col-start-7'}
                                         flex justify-start lg:justify-center items-center h-full
                                     `}>
-                                        <div className="absolute left-4 lg:left-1/2 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-white dark:bg-black border-2 border-gray-200 dark:border-gray-800"></div>
+                                        <div className="absolute left-4 lg:left-1/2 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-white dark:bg-black border-2 border-gray-800 dark:border-gray-500"></div>
                                     </div>
                                 </div>
                             );

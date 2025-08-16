@@ -30,7 +30,7 @@ interface MusicProviderProps {
 export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0.3); // Default volume at 30%
+  const [volume, setVolume] = useState(0.7); // Default volume at 30%
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Effect to initialize the audio element
