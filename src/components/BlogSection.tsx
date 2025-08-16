@@ -204,7 +204,7 @@ const BlogSection = () => {
           {blogs.map((blog, index) => (
             <article
               key={index}
-              className="group border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-300 relative overflow-hidden bg-white dark:bg-gray-900 rounded-lg"
+              className="group backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-lg shadow-lg hover:shadow-sm transition-all duration-300 relative overflow-hidden"
               style={{ boxShadow: '0 5px 15px rgba(0, 0, 0, 0.05)' }}
               data-cursor="pointer"
             >
