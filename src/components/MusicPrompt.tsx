@@ -42,7 +42,7 @@ const MusicPrompt: React.FC = () => {
 
   // Render the prompt UI
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 max-w-sm mx-auto sm:mx-0">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-lg shadow-lg hover:shadow-sm transition-all duration-300 overflow-hidden p-4 max-w-sm mx-auto sm:mx-0">
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-3">
           <FiVolume2 className="text-gray-600 dark:text-gray-400" size={20} />
