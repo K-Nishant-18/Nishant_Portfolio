@@ -2,9 +2,14 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
+import SplitText from './SplitText/SplitText';
 
 // Register GSAP plugin
 gsap.registerPlugin(ScrollTrigger);
+
+const handleAnimationComplete = () => {
+  console.log('All letters have animated!');
+};
 
 // Image data
 const images = [
@@ -22,17 +27,17 @@ const images = [
 
 // ✅ UPDATED: Added more shapes for a denser background effect
 const backgroundShapes = [
-    { id: 1, className: 'top-[5vh] left-[5vw] w-[22rem] h-[22rem] bg-cyan-400/10 rounded-full', dataSpeed: 0.2 },
-    { id: 2, className: 'top-[40vh] right-[10vw] w-[32rem] h-[32rem] bg-purple-400/10 rounded-full', dataSpeed: 0.35 },
-    { id: 3, className: 'top-[90vh] left-[15vw] w-[28rem] h-[28rem] bg-yellow-400/10 rounded-full', dataSpeed: 0.25 },
-    { id: 4, className: 'top-[130vh] right-[20vw] w-[18rem] h-[18rem] bg-teal-400/10 rounded-full', dataSpeed: 0.45 },
-    { id: 5, className: 'top-[180vh] left-[10vw] w-[35rem] h-[35rem] bg-pink-400/10 rounded-full', dataSpeed: 0.4 },
-    { id: 6, className: 'top-[240vh] right-[5vw] w-[26rem] h-[26rem] bg-indigo-400/10 rounded-full', dataSpeed: 0.3 },
-    { id: 7, className: 'top-[280vh] left-[25vw] w-[20rem] h-[20rem] bg-green-400/10 rounded-full', dataSpeed: 0.22 },
-    { id: 8, className: 'top-[350vh] right-[15vw] w-[30rem] h-[30rem] bg-orange-400/10 rounded-full', dataSpeed: 0.38 },
-    { id: 9, className: 'top-[420vh] left-[5vw] w-[24rem] h-[24rem] bg-sky-400/10 rounded-full', dataSpeed: 0.33 },
-    { id: 10, className: 'top-[490vh] right-[10vw] w-[28rem] h-[28rem] bg-rose-400/10 rounded-full', dataSpeed: 0.28 },
-    { id: 11, className: 'top-[540vh] left-[20vw] w-[22rem] h-[22rem] bg-lime-400/10 rounded-full', dataSpeed: 0.42 },
+  { id: 1, className: 'top-[5vh] left-[5vw] w-[22rem] h-[22rem] bg-cyan-400/10 rounded-full', dataSpeed: 0.2 },
+  { id: 2, className: 'top-[40vh] right-[10vw] w-[32rem] h-[32rem] bg-purple-400/10 rounded-full', dataSpeed: 0.35 },
+  { id: 3, className: 'top-[90vh] left-[15vw] w-[28rem] h-[28rem] bg-yellow-400/10 rounded-full', dataSpeed: 0.25 },
+  { id: 4, className: 'top-[130vh] right-[20vw] w-[18rem] h-[18rem] bg-teal-400/10 rounded-full', dataSpeed: 0.45 },
+  { id: 5, className: 'top-[180vh] left-[10vw] w-[35rem] h-[35rem] bg-pink-400/10 rounded-full', dataSpeed: 0.4 },
+  { id: 6, className: 'top-[240vh] right-[5vw] w-[26rem] h-[26rem] bg-indigo-400/10 rounded-full', dataSpeed: 0.3 },
+  { id: 7, className: 'top-[280vh] left-[25vw] w-[20rem] h-[20rem] bg-green-400/10 rounded-full', dataSpeed: 0.22 },
+  { id: 8, className: 'top-[350vh] right-[15vw] w-[30rem] h-[30rem] bg-orange-400/10 rounded-full', dataSpeed: 0.38 },
+  { id: 9, className: 'top-[420vh] left-[5vw] w-[24rem] h-[24rem] bg-sky-400/10 rounded-full', dataSpeed: 0.33 },
+  { id: 10, className: 'top-[490vh] right-[10vw] w-[28rem] h-[28rem] bg-rose-400/10 rounded-full', dataSpeed: 0.28 },
+  { id: 11, className: 'top-[540vh] left-[20vw] w-[22rem] h-[22rem] bg-lime-400/10 rounded-full', dataSpeed: 0.42 },
 ];
 
 // Component for rendering and animating background elements
@@ -137,7 +142,7 @@ export default function Gallery() {
         spans.forEach(span => {
           if (span.textContent) {
             const chars = span.textContent.split('');
-            span.innerHTML = chars.map(char => 
+            span.innerHTML = chars.map(char =>
               `<span class="char inline-block" style="transform-style: preserve-3d;">${char === ' ' ? '&nbsp;' : char}</span>`
             ).join('');
           }
@@ -261,13 +266,27 @@ export default function Gallery() {
         <div className="container mx-auto px-8">
           {/* Hero Section */}
           <header className="min-h-screen flex items-center justify-center text-center relative">
-            <h1 className="hero-title text-6xl sm:text-7xl md:text-9xl lg:text-[11rem] font-extrabold uppercase tracking-tighter font-serif perspective-1000 leading-none">
+            <SplitText
+              text="Gallery"
+              className=" text-6xl sm:text-7xl md:text-9xl lg:text-[11rem] font-semibold text-center font-extrabold uppercase tracking-tighter perspective-1000 leading-none"
+              delay={150}
+              duration={1.6}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 60 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              rootMargin="-100px"
+              textAlign="center"
+              onLetterAnimationComplete={handleAnimationComplete}
+            />
+            {/* <h1 className="hero-title text-6xl sm:text-7xl md:text-9xl lg:text-[11rem] font-extrabold uppercase tracking-tighter font-serif perspective-1000 leading-none">
               <span>Beyond </span>
-              <br className="lg:hidden" /> 
+              <br className="lg:hidden" />
               <span>the</span>
               <br />
               <span>Frame</span>
-            </h1>
+            </h1> */}
             <div className="absolute bottom-10 text-base sm:text-lg font-mono opacity-70 animate-bounce">Scroll to Unravel</div>
           </header>
 
