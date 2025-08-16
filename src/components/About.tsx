@@ -133,7 +133,7 @@ const AwardWinningAbout: React.FC = () => {
             id="about"
             onMouseMove={!isTouch ? handleMouseMove : undefined}
             onMouseLeave={!isTouch ? handleMouseLeave : undefined}
-            className="relative   font-sans py-20 px-4 md:py-40 overflow-hidden cursor-none"
+            className="relative font-sans py-20 px-4 md:py-40 overflow-hidden cursor-none "
         >
             {/* --- Animated Grid Background (from new layout) --- */}
             <div className="absolute inset-0 z-0 pointer-events-none hidden md:block">
@@ -171,7 +171,7 @@ const AwardWinningAbout: React.FC = () => {
                 <h2 className="text-sm font-bold tracking-widest uppercase text-red-500 mb-8">About Me</h2>
                 <div className="space-y-6 text-2xl md:text-5xl font-light leading-snug md:leading-tight">
                     <p>I'm a passionate Full-Stack Developer who thrives on building seamless digital experiences with elegance and functionality.</p>
-                    <p>From Spring Boot APIs to React front-ends, I craft performant and intuitive web applications that solve real-world problems.</p>
+                    <p>From <span className="text-red-500">Spring Boot APIs</span> to <span className="text-red-500">React front-ends</span>, I craft performant and intuitive web applications that solve real-world problems.</p>
                     {/* <p>My work philosophy is inspired by Swiss design — clean, purposeful, and minimal. Every pixel and line of code has intention.</p> */}
                 </div>
 
