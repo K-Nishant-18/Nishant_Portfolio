@@ -63,8 +63,34 @@ const GitHubActivity: React.FC = () => {
   const languageBarsRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<GitHubData | null>(null);
   const [loading, setLoading] = useState(true);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
+    //Animation to GitHub Contributions
+    gsap.fromTo(
+      headingRef.current?.querySelectorAll('span'),
+      {
+        y: 40,
+        opacity: 0,
+        scale: 0.8,
+        rotationX: 30
+      },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        rotationX: 0,
+        duration: 2.2,
+        stagger: 0.3,
+        ease: 'elastic.out(1, 0.5)',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 30%',
+          toggleActions: 'play none none none',
+        },
+      }
+    );
+
     const fetchGitHubData = async () => {
       try {
         const userRes = await fetch('https://api.github.com/users/K-Nishant-18');
@@ -213,45 +239,56 @@ const GitHubActivity: React.FC = () => {
   }));
 
   return (
-    <section ref={sectionRef} className="min-h-screen flex items-center px-4 sm:px-6 py-20 sm:py-24 max-w-7xl mx-auto">
-      <div className="w-full">
+    <section ref={sectionRef} className="min-h-screen lg:flex lg:items-center px-4 sm:px-6 py-20 sm:py-24 max-w-full mx-auto md:px-32 lg:relative">
+
+      {/* 1. This is the rotated side-title. It's now absolutely positioned. */}
+      <div ref={headingRef} className="hidden lg:block lg:absolute lg:left-0 lg:top-1/2 lg:mt-[-60px]  text-gray-600 dark:text-gray-400 ">
+        <h1 className="font-bold pt-0 pb-0 whitespace-nowrap transform lg:-translate-y-1/2 -rotate-90">
+          <span className="block lg:text-[5rem] leading-[1] tracking-[-0.04em] sm:tracking-[-0.08em]">GitHub</span>
+          <span className="block lg:text-[5rem] leading-[0.95] sm:leading-[1.4] -mt-3 sm:-mt-8  sm:tracking-[-0.08em]">Contributions</span>
+        </h1>
+      </div>
+
+      {/* 2. This is the main content block. It will now take up more space. */}
+      <div className="w-full lg:flex-1 lg:pl-[20rem] lg:mt-[-100px]">
         <div className="mb-10 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tight mb-4 sm:mb-8">
+          {/* This title is hidden on large screens, where the side-title is visible */}
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tight mb-4 sm:mb-8 lg:hidden">
             GitHub Activity
           </h2>
-          <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
+          <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl lg:hidden">
             Development metrics and open source contributions
           </p>
         </div>
 
-        <div ref={cardsRef} className="flex flex-col gap-4 sm:gap-5 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-10 sm:mb-20">
-          <MetricCard 
-            icon={<FiStar className="text-yellow-400" />} 
-            title="Total Stars" 
-            value={data.stats.totalStars} 
-            description="Across repositories" 
+        <div ref={cardsRef} className="flex flex-col gap-4 sm:gap-5 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-10 sm:mb-10 md:max-w-4xl">
+          <MetricCard
+            icon={<FiStar className="text-red-600" />}
+            title="Total Stars"
+            value={data.stats.totalStars}
+            description="Across repositories"
           />
-          <MetricCard 
-            icon={<FiCode className="text-blue-400" />} 
-            title="Public Repos" 
-            value={data.user.public_repos} 
-            description="Projects shared" 
+          <MetricCard
+            icon={<FiCode className="text-red-600" />}
+            title="Public Repos"
+            value={data.user.public_repos}
+            description="Projects shared"
           />
-          <MetricCard 
-            icon={<FiGitCommit className="text-green-400" />} 
-            title="Total Commits" 
-            value={data.stats.totalCommits} 
-            description="Code contributions" 
+          <MetricCard
+            icon={<FiGitCommit className="text-red-600" />}
+            title="Total Commits"
+            value={data.stats.totalCommits}
+            description="Code contributions"
           />
-          <MetricCard 
-            icon={<FiGitPullRequest className="text-purple-400" />} 
-            title="Contributions" 
-            value={data.stats.totalContributions} 
-            description="Open source impact" 
+          <MetricCard
+            icon={<FiGitPullRequest className="text-red-600" />}
+            title="Contributions"
+            value={data.stats.totalContributions}
+            description="Open source impact"
           />
         </div>
 
-        <div className="flex flex-col gap-8 mb-12 sm:mb-16 lg:grid lg:grid-cols-3 lg:gap-8">
+        <div className="flex flex-col gap-8 mb-12 sm:mb-16 lg:grid lg:grid-cols-3 lg:gap-8 md:max-w-4xl ">
           <div className="lg:col-span-2 space-y-8">
             <div>
               <h3 className="text-xs sm:text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-2 sm:mb-4">
@@ -267,11 +304,11 @@ const GitHubActivity: React.FC = () => {
                       </span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div 
-                        className="language-bar h-full rounded-full" 
-                        style={{ 
+                      <div
+                        className="language-bar h-full rounded-full"
+                        style={{
                           width: `${percentage}%`,
-                          backgroundColor: color 
+                          backgroundColor: color
                         }}
                       />
                     </div>
@@ -287,7 +324,7 @@ const GitHubActivity: React.FC = () => {
             </h3>
             <div className="space-y-3 sm:space-y-4">
               {data.repos.slice(0, 2).map((repo) => (
-                <RepoCard 
+                <RepoCard
                   key={repo.name}
                   name={repo.name}
                   stars={repo.stargazers_count}
@@ -301,7 +338,7 @@ const GitHubActivity: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-center mt-8 sm:mt-12">
+        <div className="text-right mt-8 sm:mt-12">
           <a
             href="https://github.com/K-Nishant-18"
             target="_blank"
@@ -309,7 +346,7 @@ const GitHubActivity: React.FC = () => {
             className="inline-flex items-center text-base sm:text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
           >
             View Full GitHub Profile
-            <FiArrowUpRight className="ml-2" size={20} />
+            <FiArrowUpRight className="ml-2" size={50} />
           </a>
         </div>
       </div>
@@ -350,7 +387,7 @@ const MetricCard: React.FC<{
     }
   }, [value]);
   return (
-    <div className="bg-white dark:bg-gray-900 p-6 rounded-lg border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow">
+    <div className="backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-lg shadow-lg hover:shadow-sm transition-shadow p-4">
       <div className="flex items-center mb-4">
         <div className="p-2 rounded-full bg-gray-50 dark:bg-gray-800 mr-4">
           {icon}
@@ -377,19 +414,19 @@ const RepoCard: React.FC<{
     href={url}
     target="_blank"
     rel="noopener noreferrer"
-    className="block bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow group"
+    className="block backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-lg shadow-lg hover:shadow-sm transition-shadow group p-3"
   >
     <div className="flex justify-between items-start mb-3">
       <h3 className="text-lg font-light truncate">{name}</h3>
       <FiArrowUpRight className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400" />
     </div>
-    
+
     {language && (
       <span className="inline-block px-2 py-1 text-xs font-light rounded-full bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 mb-3">
         {language}
       </span>
     )}
-    
+
     <div className="flex justify-between items-center text-sm font-light text-gray-500 dark:text-gray-500">
       <div className="flex space-x-4">
         <div className="flex items-center space-x-1">
