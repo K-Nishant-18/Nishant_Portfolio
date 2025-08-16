@@ -92,7 +92,7 @@ function App() {
       <MusicProvider>
         <Router>
           <TransitionProvider>
-            <div className="relative bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
+            <div className="relative bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
               {/* This is the "curtain" element that will animate away */}
               <div
                 ref={revealRef}
