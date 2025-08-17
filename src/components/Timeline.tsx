@@ -10,12 +10,43 @@ gsap.registerPlugin(ScrollTrigger);
 
 // --- Milestone Data ---
 const milestones = [
-    { year: '2018', title: 'First Lines of Code', description: 'Discovered programming through Java fundamentals.', tags: ['Java', 'OOP'] },
-    { year: '2020', title: 'Web Development Beginnings', description: 'Built first full-stack project with Spring MVC.', tags: ['Spring', 'MySQL', 'Thymeleaf'] },
-    { year: '2021', title: 'Freelance Journey', description: 'Started taking client projects on Upwork.', tags: ['Freelancing', 'Client Work'] },
-    { year: '2022', title: 'React Specialization', description: 'Focused on modern frontend development.', tags: ['React.js', 'TypeScript'] },
-    { year: '2023', title: 'Full-Stack Mastery', description: 'Developed complex applications with Spring Boot + React.', tags: ['Spring Boot', 'JWT', 'Docker'] },
-    { year: '2024', title: 'Open Source Contributions', description: 'Started contributing to OSS and publishing packages.', tags: ['GitHub', 'NPM'] },
+    {
+        year: '2022',
+        title: 'First Lines of Code',
+        description: 'Discovered programming through Java fundamentals and explored web development basics with HTML & CSS.',
+        tags: ['Java', 'OOP', 'HTML', 'CSS']
+    },
+
+    {
+        year: '2023',
+        title: 'Web Development Beginnings',
+        description: 'Built and deployed end-to-end applications using Java Spring Boot and React.js.',
+        tags: ['Spring Boot', 'MySQL', 'React']
+    },
+    {
+        year: '2023',
+        title: 'Starting DSA',
+        description: 'Began my journey into Data Structures and Algorithms to strengthen problem-solving skills.',
+        tags: ['DSA', 'Problem Solving']
+    },
+    {
+        year: '2024',
+        title: 'Started Hackathon Journey',
+        description: 'Participated in my first hackathons, exploring innovation, teamwork, and rapid problem-solving.',
+        tags: ['Hackathons', 'Innovation', 'Teamwork']
+    },
+    {
+        year: '2024',
+        title: 'Open Source Contributions',
+        description: 'Started contributing to open-source projects on GitHub, collaborating with global developers.',
+        tags: ['Open Source', 'GitHub', 'Collaboration']
+    },
+    {
+        year: '2025',
+        title: 'Exploring Cloud & DevOps',
+        description: 'Experimented with Docker, Kubernetes, and cloud platforms to learn modern deployment practices.',
+        tags: ['Docker', 'Kubernetes', 'Cloud']
+    },
 ];
 
 const Timeline: React.FC = () => {
@@ -43,9 +74,9 @@ const Timeline: React.FC = () => {
 
             // CORRECTED: Use matchMedia for responsive animations
             ScrollTrigger.matchMedia({
-                
+
                 // --- DESKTOP ANIMATION ---
-                "(min-width: 1024px)": function() {
+                "(min-width: 1024px)": function () {
                     timelineItems.forEach((item) => {
                         const isLeft = item.classList.contains('timeline-item-left');
                         gsap.from(item, {
@@ -55,7 +86,7 @@ const Timeline: React.FC = () => {
                             ease: 'power3.out',
                             scrollTrigger: {
                                 trigger: item,
-                                start: 'top 35%',
+                                start: 'top 55%',
                                 toggleActions: 'play none none reverse',
                             }
                         });
@@ -63,7 +94,7 @@ const Timeline: React.FC = () => {
                 },
 
                 // --- MOBILE ANIMATION ---
-                "(max-width: 1023px)": function() {
+                "(max-width: 1023px)": function () {
                     timelineItems.forEach((item) => {
                         gsap.from(item, {
                             opacity: 0,
