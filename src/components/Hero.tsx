@@ -9,7 +9,7 @@ const Hero: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLDivElement>(null);
-  const descriptionRef = useRef<HTMLDivElement>(null);
+
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const rolesRef = useRef<HTMLUListElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -25,8 +25,7 @@ const Hero: React.FC = () => {
           span.innerHTML = chars
             .map(
               (char) =>
-                `<span class="char inline-block" style="transform-style: preserve-3d;">${
-                  char === ' ' ? '&nbsp;' : char
+                `<span class="char inline-block" style="transform-style: preserve-3d;">${char === ' ' ? '&nbsp;' : char
                 }</span>`
             )
             .join('');
@@ -34,7 +33,7 @@ const Hero: React.FC = () => {
       });
     }
 
-  
+
 
     // Smooth split text animation for heading
     const headingChars = headingRef.current?.querySelectorAll('.char');
@@ -127,14 +126,14 @@ const Hero: React.FC = () => {
 
             <div ref={subtitleRef} className="mb-6 sm:mb-10 ml-0 sm:ml-5 w-full overflow-hidden max-w-full">
               <p className="text-sm xs:text-base sm:text-xl md:text-2xl uppercase tracking-wider text-gray-600 dark:text-gray-400 text-center md:text-left w-full max-w-full">
-                Full-Stack Developer
+                Backend & DevOps Engineer
               </p>
             </div>
 
             <div className="ml-0 sm:ml-5 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 text-xs sm:text-sm font-light tracking-wide w-full text-center md:text-left overflow-hidden max-w-full">
               <div>
                 <p className="text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">CURRENTLY</p>
-                <p>Freelancer at Upwork</p>
+                <p>Open for Opportunities</p>
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">LOCATION</p>
@@ -142,7 +141,7 @@ const Hero: React.FC = () => {
               </div>
               <div>
                 <p className="text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">AVAILABILITY</p>
-                <p className="text-green-700 dark:text-green-600">Open for projects</p>
+                <p className="text-green-700 dark:text-green-600">Immediate Joiner</p>
               </div>
             </div>
           </div>
@@ -154,9 +153,9 @@ const Hero: React.FC = () => {
                 ref={rolesRef}
                 className="text-sm xs:text-base sm:text-xl md:text-2xl uppercase tracking-wider text-gray-950 dark:text-gray-400 space-y-1 sm:space-y-2 text-center md:text-left"
               >
-                <li>Web Designer</li>
-                <li>Web Developer</li>
-                <li>Freelancer</li>
+                <li>Java Developer</li>
+                <li>DevOps Engineer</li>
+                <li>System Architect</li>
               </ul>
             </div>
           </div>

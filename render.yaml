@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: nishant-portfolio-api
+    env: node
+    plan: free
+    buildCommand: cd api && npm install && npm run build
+    startCommand: cd api && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: PORT
+        value: 10000
+    autoDeploy: true

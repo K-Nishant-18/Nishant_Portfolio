@@ -23,36 +23,39 @@ const useMediaQuery = (query) => {
 const Transition = () => {
   const { setTimeline } = useTransition();
   const transitionRef = useRef(null);
-  
+
   // Check if the screen is "small" (768px or less). You can change this value.
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
-  
+
   // Set the number of panels based on screen size.
   const panelCount = isSmallScreen ? 4 : 8;
 
   useLayoutEffect(() => {
     const tl = gsap.timeline({ paused: true });
     const panels = transitionRef.current.children;
-    
-    tl.to(panels, {
-      scaleY: 1,
-      duration: 0.4,
-      ease: 'power3.inOut',
-      stagger: 0.1,
-    })
-    .set(panels, { transformOrigin: 'top left' }, '+=0.1')
-    .to(panels, {
-      scaleY: 0,
-      duration: 0.4,
-      ease: 'power3.inOut',
-      stagger: 0.1,
-    });
+    const container = transitionRef.current;
+
+    tl.set(container, { opacity: 1 })
+      .to(panels, {
+        scaleY: 1,
+        duration: 0.4,
+        ease: 'power3.inOut',
+        stagger: 0.1,
+      })
+      .set(panels, { transformOrigin: 'top left' }, '+=0.1')
+      .to(panels, {
+        scaleY: 0,
+        duration: 0.4,
+        ease: 'power3.inOut',
+        stagger: 0.1,
+      })
+      .set(container, { opacity: 0 });
 
     setTimeline(tl);
   }, [panelCount, setTimeline]);
 
   return (
-    <div ref={transitionRef} className="fixed top-0 left-0 w-full h-screen z-[9998] pointer-events-none flex">
+    <div ref={transitionRef} className="fixed top-0 left-0 w-full h-screen z-[9998] pointer-events-none flex opacity-0">
       {/* Dynamically create the correct number of panels */}
       {Array.from({ length: panelCount }).map((_, index) => (
         <div

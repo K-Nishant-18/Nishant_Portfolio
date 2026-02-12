@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  title: Portfolio API
+  description: Backend API for Kumar Nishant's Portfolio
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local Development Server
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Returns the status of the API server.
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /guestbook:
+    get:
+      summary: Get Guestbook Entries
+      description: Retrieve all approved guestbook entries.
+      responses:
+        '200':
+          description: List of entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    name:
+                      type: string
+                    message:
+                      type: string
+                    createdAt:
+                      type: string
+    post:
+      summary: Sign Guestbook
+      description: Submit a new entry to the guestbook.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - message
+              properties:
+                name:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Entry created successfully

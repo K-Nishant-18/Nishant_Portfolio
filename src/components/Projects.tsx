@@ -12,62 +12,63 @@ import { Link } from 'react-router-dom';
 gsap.registerPlugin(ScrollTrigger);
 
 // --- Project Data (No Changes) ---
+// --- Project Data (Backend & DevOps Focused) ---
 const projectsData = [
   {
     number: '01',
     title: 'Collegia',
-    description: 'Collegia is an all-in-one platform designed to enhance the overall student experience in colleges by integrating several essential features.',
-    longDescription: 'Collegia is a full-featured student management platform that streamlines academic processes. Built with Java Spring MVC and React.js, it features user authentication, course management, assignment tracking, and real-time notifications.',
-    tech: ['Java', 'Spring MVC', 'React.js', 'MySQL'],
-    category: 'Full-Stack',
+    description: 'A scalable campus management ERP system built with Microservices architecture, handling distinct academic modules independently.',
+    longDescription: 'Designed a distributed system for campus management using Java and Spring Boot. Decomposed monolithic logic into loose couplings (User Auth, Course Service, Assignment Service). Implemented centralized logging and monitoring for effective debugging.',
+    tech: ['Java', 'Spring Boot', 'Microservices', 'MySQL', 'REST API'],
+    category: 'System Design',
     year: '2024',
     status: 'Live',
-    liveLink: '#', // Replace with your live project URL
-    githubLink: '#', // Replace with your GitHub repo URL
+    liveLink: '#',
+    githubLink: '#',
     preview: '/collegiaMockup.png',
-    impact: ['500+ Students', '15+ Institutions', '99.9% Uptime']
+    impact: ['Decoupled Services', 'Optimized DB Queries', 'Role-Based Access Control']
   },
   {
     number: '02',
     title: '0xKid',
-    description: '0xKid is a futuristic edtech platform that merges interactive gameplay, real coding challenges, and AI guidance to help children learn programming in a fun, visual, and structured way.',
-    longDescription: '0xKid is a next-generation educational platform designed to make learning programming exciting for children. It combines gamified challenges, AI-powered mentorship, and a visual learning environment to teach coding concepts effectively.',
-    tech: ['Spring Boot', 'React.js', 'JWT', 'MongoDB'],
-    category: 'EdTech',
+    description: 'Interactive edtech platform featuring AI-driven code analysis and real-time execution environments for young learners.',
+    longDescription: 'Engineered the backend execution engine to safely run user-submitted code in isolated environments (Sandboxing). Integrated OpenAI API for intelligent code feedback. utilized MongoDB for flexible content schema storage involved in gamified learning paths.',
+    tech: ['Spring Boot', 'MongoDB', 'Docker', 'OpenAI API', 'WebSocket'],
+    category: 'Backend Engineering',
     year: '2024',
     status: 'Development',
-    liveLink: '#', // Replace with your live project URL
-    githubLink: '#', // Replace with your GitHub repo URL
+    liveLink: '#',
+    githubLink: '#',
     preview: '/0xkidMockup.png',
-    impact: ['Gamified Learning', 'AI Mentorship', 'Child-Friendly UI']
+    impact: ['Code Sandboxing', 'Real-time Socket.io', 'Scalable NoSQL Schema']
   },
   {
     number: '03',
     title: 'SkillBloom+',
-    description: 'SkillBloom+ is a gamified platform that rewards learning with points, badges, and career perks—helping users Learn → Earn → Grow through challenges, mentoring, and collaboration.',
-    longDescription: 'SkillBloom+ is a comprehensive learning management system that tracks student progress through GitHub integration. Features include course management, skill assessments, progress tracking, and automated certificate generation.',
-    tech: ['Spring Boot', 'React.js', 'Docker', 'GitHub API'],
-    category: 'EdTech',
+    description: 'Gamified LMS with automated GitHub verification and real-time progress tracking via webhooks.',
+    longDescription: 'Built a robust integration with GitHub API to verify coding challenges aimatedly. Implemented heavy background job processing for calculating user scores and leaderboard rankings without blocking the main thread. Secured endpoints using JWT and OAuth2.',
+    tech: ['Spring Boot', 'PostgreSQL', 'GitHub API', 'Docker', 'Redis'],
+    category: 'API Integration',
     year: '2023',
     status: 'Live',
-    liveLink: '#', // Replace with your live project URL
-    githubLink: '#', // Replace with your GitHub repo URL
+    liveLink: '#',
+    githubLink: '#',
     preview: '/skillbloom.png',
-    impact: ['1000+ Learners', 'GitHub Integration', 'Automated Assessments']
+    impact: ['Webhook Handling', 'Redis Caching', 'Oauth2 Security']
   },
   {
     number: '04',
-    title: 'Portfolio v3',
-    description: 'My personal craftboard—a portfolio built to be a product in itself, reflecting my passion for clean code, user experience, and modern web technologies.',
-    longDescription: 'A fully responsive and interactive personal portfolio website designed to highlight professional skills, projects, certifications, and contact information. Built with a focus on clean design, smooth animations, and user-friendly navigation.',
-    tech: ['TypeScript', 'Next.js', 'Tailwind CSS'],
-    category: 'Front-End',
+    title: 'Cloud Portfolio',
+    description: 'This portfolio itself—deployed via CI/CD pipelines, containerized with Docker, and optimized for performance.',
+    longDescription: 'While visually frontend-heavy, the infrastructure is managed as code. Configured automated build and deploy pipelines using GitHub Actions. Implemented strict CSP headers and optimized asset delivery via CDN strategies.',
+    tech: ['CI/CD', 'Docker', 'Nginx', 'Linux', 'React'],
+    category: 'DevOps',
     year: '2025',
     status: 'Live',
-    liveLink: 'https://your-portfolio-url.com', // Your main portfolio URL
-    githubLink: '#', // Replace with the GitHub repo URL for your portfolio
+    liveLink: 'https://your-portfolio-url.com',
+    githubLink: '#',
     preview: '/portfolio.png',
-    impact: ['Showcased Skills & Projects', 'Professional Branding', 'Interactive UI/UX']
+    impact: ['Automated Deployment', 'Containerization', 'Infrastructure as Code']
   },
 ];
 
@@ -329,7 +330,7 @@ const AwardWinningProjects: React.FC = () => {
                 </div>
               </div>
 
-              
+
             </div>
           </div>
         </div>

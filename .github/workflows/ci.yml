@@ -1,0 +1,47 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # Frontend CI
+    - name: Use Node.js ${{ matrix.node-version }} for Frontend
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install Frontend Dependencies
+      run: npm ci
+    
+    - name: Build Frontend
+      run: npm run build
+      
+    # Backend CI
+    - name: Use Node.js ${{ matrix.node-version }} for Backend
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: api/package-lock.json
+
+    - name: Install Backend Dependencies
+      working-directory: ./api
+      run: npm ci
+
+    - name: Build Backend
+      working-directory: ./api
+      run: npm run build

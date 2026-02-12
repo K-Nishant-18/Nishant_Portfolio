@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiCode, FiServer, FiDatabase, FiLayers } from 'react-icons/fi';
+import { FiCode, FiServer, FiDatabase, FiTerminal } from 'react-icons/fi';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,43 +20,43 @@ const Skills: React.FC = () => {
 
   const skillCategories = [
     {
-      title: 'Frontend',
-      icon: <FiLayers size={28} />,
-      skills: [
-        { name: 'React.js', level: 90 },
-        { name: 'JavaScript', level: 85 },
-        { name: 'Tailwind CSS', level: 80 },
-        { name: 'GSAP / Lenis', level: 70 },
-      ],
-    },
-    {
-      title: 'Backend & DevOps',
-      icon: <FiServer size={28} />,
-      skills: [
-        { name: 'Spring Boot / MVC', level: 90 },
-        { name: 'Docker', level: 75 },
-        { name: 'JWT / Spring Security', level: 85 },
-        { name: 'Git & GitHub', level: 90 },
-      ],
-    },
-    {
-      title: 'Databases & Cloud',
-      icon: <FiDatabase size={28} />,
-      skills: [
-        { name: 'MySQL', level: 85 },
-        { name: 'MongoDB', level: 75 },
-        { name: 'Vercel', level: 80 },
-        { name: 'Heroku', level: 70 },
-      ],
-    },
-    {
-      title: 'Tools & Productivity',
+      title: 'Core Engineering',
       icon: <FiCode size={28} />,
       skills: [
-        { name: 'Postman / API Testing', level: 85 },
-        { name: 'Figma / Canva / Spline', level: 80 },
-        { name: 'Notion / VS Code/ Intellij', level: 90 },
-        { name: 'AI Tools (Perplexity, Claude, etc.)', level: 85 },
+        { name: 'Java (DSA & OOPs)', level: 90 },
+        { name: 'Data Structures', level: 85 },
+        { name: 'System Design (LLD)', level: 75 },
+        { name: 'Multithreading', level: 80 },
+      ],
+    },
+    {
+      title: 'Backend Development',
+      icon: <FiServer size={28} />,
+      skills: [
+        { name: 'Spring Boot', level: 90 },
+        { name: 'Microservices', level: 80 },
+        { name: 'Spring Security / JWT', level: 85 },
+        { name: 'Hibernate / JPA', level: 85 },
+      ],
+    },
+    {
+      title: 'DevOps & Cloud',
+      icon: <FiTerminal size={28} />,
+      skills: [
+        { name: 'Docker / Kubernetes', level: 75 },
+        { name: 'AWS (EC2, S3, RDS)', level: 70 },
+        { name: 'CI/CD (Jenkins, Git)', level: 80 },
+        { name: 'Linux Administration', level: 75 },
+      ],
+    },
+    {
+      title: 'Database & Tools',
+      icon: <FiDatabase size={28} />,
+      skills: [
+        { name: 'MySQL / PostgreSQL', level: 85 },
+        { name: 'MongoDB / NoSQL', level: 80 },
+        { name: 'Redis / Caching', level: 70 },
+        { name: 'Postman / Swagger', level: 90 },
       ],
     },
   ];
@@ -64,56 +64,25 @@ const Skills: React.FC = () => {
 
   const logos = [
     { name: 'Java', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
-    { name: 'JavaScript', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-    { name: 'TypeScript', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
-    { name: 'C', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg' },
-    { name: 'React', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
-    { name: 'Vite', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vite/vite-original.svg' },
-    { name: 'HTML5', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
-    { name: 'CSS3', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
-    { name: 'Tailwind CSS', src: 'https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg' },
     { name: 'Spring', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg' },
     { name: 'Docker', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
     { name: 'Kubernetes', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg' },
     { name: 'MySQL', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
     { name: 'MongoDB', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
+    { name: 'PostgreSQL', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
+    { name: 'Redis', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg' },
+    { name: 'AWS', src: 'https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg' },
+    { name: 'Jenkins', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' },
     { name: 'Git', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
     { name: 'GitHub', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
+    { name: 'Linux', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg' },
     { name: 'Maven', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg' },
     { name: 'Postman', src: 'https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg' },
     { name: 'IntelliJ', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/intellij/intellij-original.svg' },
-    { name: 'VS Code', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg' },
-    { name: 'Vercel', src: 'https://www.vectorlogo.zone/logos/vercel/vercel-icon.svg' },
-    { name: 'Heroku', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/heroku/heroku-original.svg' },
-    { name: 'Figma', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg' },
   ];
 
   // Duplicate for second carousel
-  const logos2 = [
-    { name: 'Java', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
-    { name: 'JavaScript', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-    { name: 'TypeScript', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
-    { name: 'C', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg' },
-    { name: 'React', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
-    { name: 'Vite', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vite/vite-original.svg' },
-    { name: 'HTML5', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
-    { name: 'CSS3', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
-    { name: 'Tailwind CSS', src: 'https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg' },
-    { name: 'Spring', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg' },
-    { name: 'Docker', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
-    { name: 'Kubernetes', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg' },
-    { name: 'MySQL', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
-    { name: 'MongoDB', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
-    { name: 'Git', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-    { name: 'GitHub', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
-    { name: 'Maven', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg' },
-    { name: 'Postman', src: 'https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg' },
-    { name: 'IntelliJ', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/intellij/intellij-original.svg' },
-    { name: 'VS Code', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg' },
-    { name: 'Vercel', src: 'https://www.vectorlogo.zone/logos/vercel/vercel-icon.svg' },
-    { name: 'Heroku', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/heroku/heroku-original.svg' },
-    { name: 'Figma', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg' },
-  ];
+  const logos2 = [...logos].reverse();
 
   // Responsive grid: fixed for large screens, square for mobile
   const [gridConfig, setGridConfig] = useState({ vLines: 13, hLines: 9, dotCols: 13, dotRows: 9, totalDots: 117 });
@@ -347,13 +316,13 @@ const Skills: React.FC = () => {
             ref={titleRef}
             className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl font-light tracking-tight mb-4 sm:mb-6 leading-tight text-gray-900 dark:text-white"
           >
-            Weapon of Choice
+            Engineering Stack
           </h2>
           <p
             ref={subtitleRef}
             className="text-base xs:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xs xs:max-w-2xl mx-auto"
           >
-            Not just tools — these are the weapons I use to build, break, and create.
+            Specialized in scalable backend systems, cloud infrastructure, and distributed architectures.
           </p>
         </div>
 

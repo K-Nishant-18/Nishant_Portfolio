@@ -1,93 +1,89 @@
-<h1 align="center">✨ Nishant's Portfolio ✨</h1>
+# 🚀 Kumar Nishant | Backend & DevOps Portfolio
 
-<p align="center">
-  <b>Modern. Minimal. Memorable.</b><br/>
-  <i>Showcasing creativity, code, and career in one place.</i>
-</p>
+![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.1-green?logo=springboot)
+![AWS](https://img.shields.io/badge/AWS-Cloud-232F3E?logo=amazon-aws)
+![Docker](https://img.shields.io/badge/Docker-Container-blue?logo=docker)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/React-18-blue?logo=react" />
-  <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3-38bdf8?logo=tailwindcss" />
-  <img src="https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel" />
-</p>
+> **"Robust systems, scalable architecture, and automated deployments."**
 
----
+## 👨‍💻 Overview
+This portfolio is engineered to showcase my expertise in **Backend Development** and **DevOps**. While the frontend is modern and interactive (featuring ambient music and a custom cursor), the core value lies in the **distributed systems** and **cloud infrastructure** projects I build.
 
-<p align="center">
-  <img src="public/previews/LightTheme.png" alt="Portfolio Preview" width="700" />
-   <img src="public/previews/DarkTheme.png" alt="Portfolio Preview" width="700" />
-  
-</p>
+## 🏗️ System Architecture (Featured Project)
+Below is the high-level architecture for my **Campus Management ERP** project, demonstrating microservices communication and deployment strategy.
 
----
-
-## ✨ Overview
-
-A modern, minimalist portfolio website built with <b>React</b>, <b>TypeScript</b>, and <b>Tailwind CSS</b>. Inspired by Swiss design, it features clean typography, generous whitespace, and purposeful interactions. Perfect for developers, designers, and creatives who want to stand out.
-
----
-
-## 🎯 Features
-
-- 🌗 <b>Dark/Light Theme</b> — Persistent, smooth transitions
-- 🖱️ <b>Custom Cursor</b> — Interactive, animated cursor
-- 🎬 <b>GSAP Animations</b> — Smooth, performant transitions
-- 🧭 <b>Multi-page App</b> — React Router navigation
-- 🖼️ <b>Project Gallery</b> — Showcase your best work
-- 💬 <b>GuestBook</b> — Collect testimonials
-- 🤝 <b>Collaboration Form</b> — Easy project inquiries
-- 🎵 <b>Background Music</b> — Ambient music with mute toggle
-- 📱 <b>Fully Responsive</b> — Looks great on any device
-
----
+```mermaid
+graph TD
+    User[Client (Web/Mobile)] -->|HTTPS| CDN[CloudFront CDN]
+    CDN -->|Static Assets| S3[AWS S3 Bucket]
+    User -->|API Requests| LB[Application Load Balancer]
+    
+    subgraph "VPC (Private Cloud)"
+        LB -->|Route Traffic| API[API Gateway]
+        
+        subgraph "ECS Cluster (Fargate)"
+            API --> Auth[Auth Service (Spring Security)]
+            API --> Core[Core Service (Spring Boot)]
+            API --> Pay[Payment Service (Node.js)]
+        end
+        
+        Auth -->|Read/Write| DB1[(PostgreSQL - Users)]
+        Core -->|Read/Write| DB2[(MongoDB - Logs)]
+        Core -->|Cache| Redis[(Redis - Session)]
+        
+        Core -->|Async Events| Kafka[Apache Kafka]
+        Kafka -->|Consume| Notif[Notification Service]
+    end
+    
+    Notif -->|Send| SES[AWS SES (Email)]
+```
 
 ## 🛠️ Tech Stack
+### Backend Core
+*   **Languages**: Java 17, Python, TypeScript
+*   **Frameworks**: Spring Boot, Express.js, Django
+*   **Database**: PostgreSQL, MongoDB, Redis
 
-- <b>React 18</b> + <b>TypeScript</b>
-- <b>Tailwind CSS</b>
-- <b>React Router DOM</b>
-- <b>GSAP</b> & <b>ScrollTrigger</b>
-- <b>Lenis</b> (smooth scrolling)
-- <b>Lucide React</b>, <b>React Icons</b>
+### DevOps & Cloud
+*   **Containerization**: Docker, Kubernetes
+*   **Cloud Provider**: AWS (EC2, S3, RDS, ECS, Lambda)
+*   **CI/CD**: GitHub Actions, Jenkins
 
----
+### Frontend (Experience)
+*   React 18 + TypeScript
+*   **Ambience**: Integrated Background Music (Hans Zimmer) & Custom Interactive Cursor
+*   GSAP Animations
 
-## 🗂️ Project Structure
+## 🚀 Quick Start (Local DevOps)
 
-```text
-src/
-├── components/    # Reusable UI components
-├── pages/         # Page components
-├── context/       # React context providers
-├── App.tsx        # Main app
-├── main.tsx       # Entry point
-└── index.css      # Global styles
-```
-
----
-
-## ⚡ Quick Start
+Run both the **Frontend** (Vite) and **Backend** (Express/Node) concurrently with a single command:
 
 ```bash
-# 1. Install dependencies
+# 1. Install dependencies (Root & API)
 npm install
+cd api && npm install && cd ..
 
-# 2. Start the development server
-npm run dev
-
-# 3. Build for production
-npm run build
-
-# 4. Lint your code
-npm run lint
+# 2. Start the Full Stack Environment
+npm run dev:all
+# Frontend: http://localhost:5173
+# Backend:  http://localhost:5000
 ```
 
+## 📂 Project Structure
+```text
+/
+├── .github/           # CI/CD Workflows
+├── api/               # Express Backend (Microservice Demo)
+├── public/            # Static Assets
+├── src/               # React Frontend
+│   ├── components/    # Reusable UI (MusicPrompt, CustomCursor)
+│   ├── pages/         # Route Views (Projects, GuestBook)
+│   └── context/       # Global State (Theme, Music)
+├── Dockerfile         # Container Config
+└── compose.yaml       # Local orchestration
+```
 
 ---
-
-
-
-<p align="center">
-  <b>Made with ❤️ by <a href="https://github.com/K-Nishant-18">Kumar Nishant</a></b>
-</p> 
+**[Download Resume](/public/previews/resume.pdf)** | **[View Engineering Projects](/projects)**

@@ -170,9 +170,9 @@ const AwardWinningAbout: React.FC = () => {
             <div ref={contentRef} className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
                 <h2 className="text-sm font-bold tracking-widest uppercase text-red-500 mb-8">About Me</h2>
                 <div className="space-y-6 text-2xl md:text-5xl font-light leading-snug md:leading-tight">
-                    <p>I'm a passionate Full-Stack Developer who thrives on building seamless digital experiences with elegance and functionality.</p>
-                    <p>From <span className="text-red-500">Spring Boot APIs</span> to <span className="text-red-500">React front-ends</span>, I craft performant and intuitive web applications that solve real-world problems.</p>
-                    {/* <p>My work philosophy is inspired by Swiss design — clean, purposeful, and minimal. Every pixel and line of code has intention.</p> */}
+                    <p>I'm a <span className="text-red-500">Backend & DevOps Engineer</span> who loves building robust, scalable systems that power the web.
+                    From designing <span className="text-red-500">distributed microservices</span> to orchestrating <span className="text-red-500">cloud infrastructure</span>, I focus on performance, security, and reliability under the hood.</p>
+                    {/* <p>My philosophy: Simple architecture, clean code, and automated deployments.</p> */}
                 </div>
 
                 {/* --- Stats Section (from new layout) --- */}

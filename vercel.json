@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "https://nishant-portfolio-api.onrender.com/api/$1"
+        }
+    ]
+}

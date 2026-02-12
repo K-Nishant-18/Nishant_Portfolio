@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+// @ts-ignore
 import TransitionLink from './TransitionLink';
 import { FiSun, FiMoon, FiMenu, FiX, FiDownload, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { gsap } from 'gsap';
@@ -11,7 +12,7 @@ const Navigation: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const { isMuted, toggleMute } = useMusic();
   const location = useLocation();
-  const navRef = useRef<HTMLNavElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,11 +31,15 @@ const Navigation: React.FC = () => {
         duration: 0.3,
         ease: 'power2.out',
       });
-      gsap.fromTo(
-        mobileMenuRef.current?.querySelectorAll('.menu-item'),
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.3, stagger: 0.1, delay: 0.1 }
-      );
+
+      const menuItems = mobileMenuRef.current?.querySelectorAll('.menu-item');
+      if (menuItems && menuItems.length > 0) {
+        gsap.fromTo(
+          menuItems,
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.3, stagger: 0.1, delay: 0.1 }
+        );
+      }
     } else {
       gsap.to(mobileMenuRef.current, {
         opacity: 0,
@@ -56,10 +61,8 @@ const Navigation: React.FC = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Projects', path: '/projects' },
+    { name: 'Engineering', path: '/projects' },
     { name: 'GuestBook', path: '/guestbook' },
-    { name: 'Collaborate', path: '/collaborate' },
-    { name: 'Gallery', path: '/gallery' },
   ];
 
   return (
@@ -70,12 +73,12 @@ const Navigation: React.FC = () => {
         style={{ cursor: 'none' }}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <TransitionLink 
-            to="/" 
+          <TransitionLink
+            to="/"
             className="text-xl font-light tracking-wider"
             style={{ cursor: 'none' }}
           >
-           <span className='text-red-600 font-bold'>KUMAR </span>NISHANT
+            <span className='text-red-600 font-bold'>KUMAR </span>NISHANT
           </TransitionLink>
 
           {/* Desktop Navigation */}
@@ -84,19 +87,17 @@ const Navigation: React.FC = () => {
               <TransitionLink
                 key={item.name}
                 to={item.path}
-                className={`text-sm font-light tracking-wide transition-colors duration-300 relative group ${
-                  location.pathname === item.path
-                    ? 'text-gray-900 dark:text-gray-100'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
+                className={`text-sm font-light tracking-wide transition-colors duration-300 relative group ${location.pathname === item.path
+                  ? 'text-gray-900 dark:text-gray-100'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                  }`}
                 style={{ cursor: 'none' }}
               >
                 {item.name}
-                <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
-                  location.pathname === item.path 
-                    ? 'w-full bg-gray-900 dark:bg-gray-100'
-                    : 'w-0 bg-red-500 dark:bg-red-900 group-hover:w-full'
-                }`}></span>
+                <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${location.pathname === item.path
+                  ? 'w-full bg-gray-900 dark:bg-gray-100'
+                  : 'w-0 bg-red-500 dark:bg-red-900 group-hover:w-full'
+                  }`}></span>
               </TransitionLink>
             ))}
           </div>
@@ -171,7 +172,7 @@ const Navigation: React.FC = () => {
             <FiDownload size={24} />
             <span>Resume</span>
           </button>
-          
+
           <button
             onClick={() => {
               toggleMute();
