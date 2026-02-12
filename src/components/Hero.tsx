@@ -1,190 +1,226 @@
 // src/components/Hero.tsx
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { FiDownload } from 'react-icons/fi';
-import DarkVeil from './DarkVeil/DarkVeil';
+import { FiArrowDown, FiGlobe, FiDatabase, FiServer, FiCpu } from 'react-icons/fi';
 
 const Hero: React.FC = () => {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
-
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
-  const rolesRef = useRef<HTMLUListElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const [time, setTime] = useState<string>("");
 
   useEffect(() => {
-    // Manual SplitText implementation
-    const titleElement = titleRef.current;
-    if (titleElement) {
-      const spans = titleElement.querySelectorAll('span');
-      spans.forEach((span) => {
-        if (span.textContent) {
-          const chars = span.textContent.split('');
-          span.innerHTML = chars
-            .map(
-              (char) =>
-                `<span class="char inline-block" style="transform-style: preserve-3d;">${char === ' ' ? '&nbsp;' : char
-                }</span>`
-            )
-            .join('');
-        }
-      });
-    }
+    // Clock
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata' }));
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
 
+    // Initial Animation
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline();
 
-
-    // Smooth split text animation for heading
-    const headingChars = headingRef.current?.querySelectorAll('.char');
-    if (headingChars && headingChars.length > 0) {
-      gsap.fromTo(
-        headingChars,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 2.7,
+      // 1. Grid Reveal (Draw lines)
+      tl.from('.grid-line-y', {
+        scaleY: 0,
+        duration: 1.5,
+        stagger: 0.1,
+        ease: 'power3.inOut',
+        transformOrigin: 'top'
+      })
+        .from('.grid-line-x', {
+          scaleX: 0,
+          duration: 1.5,
           stagger: 0.1,
-          ease: 'elastic.out(1, 0.5)',
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: 'top 60%',
-            toggleActions: 'play none none none',
-          },
-        }
-      );
-    }
+          ease: 'power3.inOut',
+          transformOrigin: 'left'
+        }, "<");
 
-    // Hover effects for characters
-    const characters = document.querySelectorAll('.char');
-    characters.forEach((char, index) => {
-      char.addEventListener('mouseenter', () => {
-        gsap.to(char, {
-          y: -15,
-          scale: 1.2,
-          rotationZ: index % 2 === 0 ? 5 : -5,
-          duration: 0.4,
-          ease: 'back.out(1.2)',
-        });
+      // 2. Name Reveal (Staggered Up)
+      tl.fromTo('.hero-char', {
+        y: 200,
+        opacity: 0
+      }, {
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        stagger: 0.05,
+        ease: 'power4.out'
+      }, "-=1");
+
+      // 3. Metadata Reveal
+      tl.from('.meta-item', {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power2.out'
+      }, "-=0.5");
+
+    }, containerRef);
+
+    // Parallax Effect
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+
+      const x = (clientX - innerWidth / 2) / innerWidth;
+      const y = (clientY - innerHeight / 2) / innerHeight;
+
+      gsap.to(nameRef.current, {
+        x: x * 30,
+        y: y * 30,
+        duration: 1,
+        ease: 'power2.out'
       });
 
-      char.addEventListener('mouseleave', () => {
-        gsap.to(char, {
-          y: 0,
-          scale: 1,
-          rotationZ: 0,
-          color: 'inherit',
-          textShadow: 'none',
-          duration: 0.6,
-          ease: 'power2.out',
-        });
+      gsap.to('.grid-layer', {
+        x: x * 10,
+        y: y * 10,
+        duration: 1,
+        ease: 'power2.out'
       });
-    });
+    };
 
-    // Scroll indicator animation
-    gsap.to(scrollIndicatorRef.current, {
-      y: 15,
-      duration: 2.5,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-    });
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      clearInterval(timer);
+      ctx.revert();
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   return (
-    <>
-      {/* --- DarkVeil Fullscreen Background (dark mode only) --- */}
-      <div className="absolute inset-0 z-[0] w-screen h-screen m-0 p-0 hidden dark:block">
-        <DarkVeil />
-      </div>
-      <section
-        id="home"
-        ref={heroRef}
-        className="relative min-h-screen flex flex-col justify-center items-center md:items-start px-3 xs:px-4 sm:px-6 py-20 sm:py-8 md:py-24 max-w-7xl mx-auto pb-0 overflow-hidden w-full"
-      >
-        {/* ...existing code... */}
-        <div className="w-full flex flex-col md:flex-row justify-between items-center md:items-start md:relative overflow-hidden">
-          {/* Left side - Name */}
-          <div className="w-full md:w-2/3 flex flex-col items-center md:items-start overflow-hidden">
-            <div ref={titleRef} className="mb-2 sm:mb-4 w-full overflow-hidden max-w-full">
-              <h1 ref={headingRef} className="font-bold text-center md:text-left w-full overflow-hidden max-w-full">
-                <span className="block text-7xl xs:text-7xl sm:text-6xl md:text-8xl lg:text-[15rem] leading-[1] tracking-[-0.02em] xs:tracking-[-0.04em] sm:tracking-[-0.08em] overflow-hidden max-w-full">
-                  Kumar
-                </span>
-                <span className="block text-7xl xs:text-7xl sm:text-6xl md:text-8xl lg:text-[15rem] leading-[0.95] sm:leading-[0.85] -mt-1 xs:-mt-1 sm:-mt-3 md:-mt-12 tracking-[-0.02em] xs:tracking-[-0.04em] sm:tracking-[-0.08em] lg:hidden overflow-hidden max-w-full">
-                  Nishant`
-                </span>
-                <span className="hidden lg:block text-7xl xs:text-5xl sm:text-6xl md:text-8xl lg:text-[15rem] leading-[0.95] sm:leading-[0.85] -mt-1 xs:-mt-1 sm:-mt-3 md:-mt-12 tracking-[-0.02em] xs:tracking-[-0.04em] sm:tracking-[-0.08em] overflow-hidden max-w-full">
-                  Nishant`
-                </span>
-              </h1>
-            </div>
+    <div ref={containerRef} className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden font-sans selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
 
-            <div ref={subtitleRef} className="mb-6 sm:mb-10 ml-0 sm:ml-5 w-full overflow-hidden max-w-full">
-              <p className="text-sm xs:text-base sm:text-xl md:text-2xl uppercase tracking-wider text-gray-600 dark:text-gray-400 text-center md:text-left w-full max-w-full">
-                Backend & DevOps Engineer
+      {/* --- Swiss Grid Background --- */}
+      <div className="absolute inset-0 z-0 grid-layer pointer-events-none">
+        {/* Vertical Lines */}
+        <div className="absolute inset-0 flex justify-between px-6 md:px-12 max-w-[1800px] mx-auto w-full h-full">
+          {[...Array(6)].map((_, i) => (
+            <div key={`v-${i}`} className="grid-line-y w-px h-full bg-black/5 dark:bg-white/5 opacity-50"></div>
+          ))}
+        </div>
+        {/* Horizontal Lines */}
+        <div className="absolute inset-0 flex flex-col justify-between py-24 h-full">
+          {[...Array(5)].map((_, i) => (
+            <div key={`h-${i}`} className="grid-line-x h-px w-full bg-black/5 dark:bg-white/5 opacity-50"></div>
+          ))}
+        </div>
+      </div>
+
+      {/* --- Content Layer --- */}
+      <div className="relative z-10 flex flex-col justify-between min-h-screen px-6 md:px-12 py-8 max-w-[1800px] mx-auto">
+
+        {/* Top Bar: Technical Metadata */}
+        <div className="flex justify-between items-start pt-24 border-b border-black/10 dark:border-white/10 pb-6">
+          <div className="meta-item text-left">
+            <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-1">System Status</p>
+            <p className="font-mono text-xs uppercase flex items-center gap-2 text-black dark:text-white">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              OPERATIONAL
+            </p>
+          </div>
+
+          <div className="hidden md:flex gap-12">
+            <div className="meta-item text-right">
+              <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-1">Location</p>
+              <p className="font-mono text-xs uppercase flex items-center gap-2">
+                <FiGlobe className="w-3 h-3" /> IN, Bhagalpur
               </p>
             </div>
-
-            <div className="ml-0 sm:ml-5 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 text-xs sm:text-sm font-light tracking-wide w-full text-center md:text-left overflow-hidden max-w-full">
-              <div>
-                <p className="text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">CURRENTLY</p>
-                <p>Open for Opportunities</p>
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">LOCATION</p>
-                <p>Bhagalpur, India</p>
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">AVAILABILITY</p>
-                <p className="text-green-700 dark:text-green-600">Immediate Joiner</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right side - Roles */}
-          <div className="w-full md:w-1/3 flex justify-center md:justify-end mt-8 md:mt-0 md:absolute md:bottom-[25%] md:right-0 overflow-hidden">
-            <div className="text-center md:text-left w-full md:w-auto overflow-hidden">
-              <ul
-                ref={rolesRef}
-                className="text-sm xs:text-base sm:text-xl md:text-2xl uppercase tracking-wider text-gray-950 dark:text-gray-400 space-y-1 sm:space-y-2 text-center md:text-left"
-              >
-                <li>Java Developer</li>
-                <li>DevOps Engineer</li>
-                <li>System Architect</li>
-              </ul>
+            <div className="meta-item text-right">
+              <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-1">Local Time (IST)</p>
+              <p className="font-mono text-xs uppercase tabular-nums">
+                {time}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div
-          ref={scrollIndicatorRef}
-          className="relative flex-col items-center mt-12 sm:mt-0 bottom-0 sm:bottom-[130px] left-0 sm:left-[-70px] w-full sm:w-auto hidden sm:flex"
-        >
-          <div className="w-px h-10 sm:h-16 bg-gray-400 dark:bg-gray-600 mb-2 sm:mb-4"></div>
-          <p className="text-[10px] sm:text-xs font-light tracking-widest transform -rotate-90 sm:origin-center origin-top-left">
-            SCROLL
-          </p>
+        {/* Center: Monumental Typography */}
+        <div className="flex-1 flex flex-col justify-center items-center w-full relative">
+          <h1 ref={nameRef} className="font-bold tracking-[-0.1em] uppercase text-center z-20 whitespace-nowrap text-black dark:text-white flex flex-col items-start leading-[0.85]">
+            <span className="text-[4vw] block -mb-2 md:-mb-2 ml-16 md:ml-4">
+              {"KUMAR".split('').map((char, i) => (
+                <span key={`k-${i}`} className="hero-char inline-block text-transparent text-stroke-responsive transition-all duration-300 cursor-default hover:text-black dark:hover:text-white">
+                  {char}
+                </span>
+              ))}
+            </span>
+            <span className="text-[17vw] block -mt-4">
+              {"NISHANT_".split('').map((char, i) => (
+                <span key={`n-${i}`} className="hero-char inline-block tracking-[-0.08em] hover:text-transparent hover:text-stroke-black dark:hover:text-stroke-white transition-all duration-300 cursor-default">
+                  {char}
+                </span>
+              ))}
+            </span>
+          </h1>
+
+          {/* Role Badge - Floating */}
+          <div className="hidden md:flex absolute -bottom-10 left-1/2 -translate-x-1/2 meta-item flex-col items-center z-10">
+            <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-xs font-mono uppercase tracking-widest mb-2">
+              Backend & DevOps Engineer
+            </div>
+            <div className="flex gap-4 text-xs font-mono text-gray-500">
+              <span className="flex items-center gap-1"><FiServer /> Backend</span>
+              <span className="flex items-center gap-1"><FiDatabase /> Database</span>
+              <span className="flex items-center gap-1"><FiCpu /> DevOps</span>
+            </div>
+          </div>
         </div>
 
-        {/* Download Resume Button for small screens only */}
-        <div className="w-full flex justify-center mt-6 pt-10 lg:hidden">
-          <a
-            href="/previews/resume.pdf"
-            download
-            className="inline-flex items-center space-x-2 px-6 py-2 border border-gray-300 dark:border-gray-700 bg-transparent text-gray-900 dark:text-gray-100 font-light tracking-wide rounded-lg hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900 transition-all duration-300 shadow-sm"
-          >
-            <FiDownload size={18} />
-            <span>Download Resume</span>
-          </a>
+        {/* Bottom Bar: Navigation & Specs */}
+        <div className="flex justify-between items-end pb-8 border-t border-black/10 dark:border-white/10 pt-6">
+          <div className="meta-item w-1/3">
+            <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-2">Available for</p>
+            <ul className="text-xs font-mono space-y-1">
+              <li>Freelance Projects</li>
+              <li>Full-time Roles</li>
+            </ul>
+          </div>
+
+          <div className="meta-item w-1/3 flex justify-center">
+            <div className="animate-bounce p-3 rounded-full border border-black/10 dark:border-white/10">
+              <FiArrowDown className="w-5 h-5 opacity-50" />
+            </div>
+          </div>
+
+          <div className="meta-item w-1/3 text-right">
+            <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-2">Scroll to explore</p>
+            <p className="text-xs font-mono">
+              Portfolio v2.0 <br />
+              Developed by Kumar Nishant
+            </p>
+          </div>
         </div>
-      </section>
-    </>
+      </div>
+
+      <style>{`
+          .text-stroke-black {
+              -webkit-text-stroke: 1px black;
+          }
+           .text-stroke-white {
+              -webkit-text-stroke: 1px white;
+          }
+           .text-stroke-black-strong {
+              -webkit-text-stroke: 2px black;
+          }
+           .text-stroke-white-strong {
+              -webkit-text-stroke: 2px white;
+          }
+           .text-stroke-responsive {
+              -webkit-text-stroke: 2px black;
+           }
+           .dark .text-stroke-responsive {
+              -webkit-text-stroke: 2px white;
+           }
+      `}</style>
+    </div>
   );
 };
 

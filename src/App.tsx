@@ -8,9 +8,10 @@ import Lenis from 'lenis';
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
 import GuestBook from './pages/GuestBook';
 import Loader from './components/Loader';
-import MusicPrompt from './components/MusicPrompt';
+
 import CustomCursor from './components/CustomCursor';
 import ThemeProvider from './context/ThemeContext';
 import { MusicProvider } from './context/MusicContext';
@@ -82,10 +83,11 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/:id" element={<ProjectDetail />} />
                 <Route path="/guestbook" element={<GuestBook />} />
               </Routes>
 
-              <MusicPrompt />
+
             </div>
           </TransitionProvider>
         </Router>

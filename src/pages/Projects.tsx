@@ -1,455 +1,144 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiArrowUpRight, FiGithub, FiExternalLink } from 'react-icons/fi';
+import { FiGithub, FiExternalLink, FiArrowUpRight } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { projects } from '../data/projects';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const Projects: React.FC = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
-  const titleRefs = useRef<(HTMLHeadingElement | null)[]>([]);
-  const techRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const impactRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const metaRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const buttonRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-
-  const projects = [
-    {
-      number: '01',
-      title: 'Collegia',
-      description: 'A comprehensive student platform for academic management and collaboration with real-time features.',
-      longDescription: 'Collegia is a full-featured student management platform that streamlines academic processes. Built with Java Spring MVC and React.js, it features user authentication, course management, assignment tracking, and real-time notifications.',
-      tech: ['Java', 'Spring MVC', 'React.js', 'MySQL', 'Spring Security'],
-      year: '2024',
-      status: 'Live',
-      category: 'Full-Stack',
-      image: '/collegiaMockup.png',
-      github: 'https://github.com/K-Nishant-18',
-      live: 'https://github.com/K-Nishant-18',
-      impact: ['500+ Students', '15+ Institutions', '99.9% Uptime'],
-    },
-    {
-      number: '02',
-      title: 'The Cultural Circuit',
-      description: 'A platform dedicated to preserving and sharing cultural heritage with interactive features.',
-      longDescription: 'The Cultural Circuit connects communities through cultural preservation and sharing. Features include cultural event management, heritage documentation, community forums, and multimedia galleries.',
-      tech: ['Spring Boot', 'React.js', 'JWT', 'MongoDB', 'AWS S3'],
-      year: '2024',
-      status: 'Development',
-      category: 'Full-Stack',
-      image: '/cultural.png',
-      github: 'https://github.com/K-Nishant-18',
-      live: null,
-      impact: ['Cultural Preservation', 'Community Building', 'Heritage Documentation'],
-    },
-    {
-      number: '03',
-      title: 'SkillBloom+',
-      description: 'An advanced learning platform with integrated GitHub tracking and skill assessment.',
-      longDescription: 'SkillBloom+ is a comprehensive learning management system that tracks student progress through GitHub integration. Features include course management, skill assessments, progress tracking, and automated certificate generation.',
-      tech: ['Spring Boot', 'React.js', 'Docker', 'GitHub API', 'PostgreSQL'],
-      year: '2023',
-      status: 'Live',
-      category: 'EdTech',
-      image: '/skillbloom.png',
-      github: 'https://github.com/K-Nishant-18',
-      live: 'https://github.com/K-Nishant-18',
-      impact: ['1000+ Learners', 'GitHub Integration', 'Automated Assessments'],
-    },
-    {
-      number: '04',
-      title: 'E-Commerce API',
-      description: 'RESTful API for e-commerce platform with advanced security and payment integration.',
-      longDescription: 'A robust e-commerce API built with Spring Boot, featuring user management, product catalog, order processing, payment integration, and comprehensive security measures.',
-      tech: ['Spring Boot', 'Spring Security', 'JWT', 'MySQL', 'Stripe API'],
-      year: '2023',
-      status: 'Live',
-      category: 'Backend',
-      image: 'https://images.pexels.com/photos/5650040/pexels-photo-5650040.jpeg',
-      github: 'https://github.com/K-Nishant-18',
-      live: null,
-      impact: ['Secure Payments', 'RESTful Design', 'Scalable Architecture'],
-    },
-    {
-  number: '05',
-  title: 'Personal Portfolio',
-  description: 'A visually stunning and responsive personal portfolio to showcase skills, projects, and achievements.',
-  longDescription: 'A fully responsive and interactive personal portfolio website designed to highlight professional skills, projects, certifications, and contact information. Built with a focus on clean design, smooth animations, and user-friendly navigation.',
-  tech: ['React.js', 'Tailwind CSS', 'Framer Motion', 'Vite', 'EmailJS'],
-  year: '2023',
-  status: 'Live',
-  category: 'Front-End',
-  image: '/portfolio.png',
-  github: 'https://github.com/K-Nishant-18',
-  live: 'https://github.com/K-Nishant-18',
-  impact: ['Showcased Skills & Projects', 'Professional Branding', 'Interactive UI/UX'],
-},
-   {
-  number: '06',
-  title: '0xKid',
-  description: '0xKid is a futuristic edtech platform that merges interactive gameplay, real coding challenges, and AI guidance to help children learn programming in a fun, visual, and structured way.',
-  longDescription: '0xKid is a next-generation educational platform designed to make learning programming exciting for children. It combines gamified challenges, AI-powered mentorship, and a visual learning environment to teach coding concepts effectively. The platform offers structured lessons, real-time feedback, and collaborative features to inspire young coders.',
-  tech: ['Spring Boot', 'React.js', 'JWT', 'MongoDB'],
-  year: '2024',
-  status: 'Development',
-  category: 'Full-Stack',
-  image: '/0xkidMockup.png',
-  github: '#', // Replace with actual GitHub repo link
-  live: '#', // Replace with actual live project link
-  impact: ['Gamified Learning', 'AI Mentorship', 'Child-Friendly UI'],
-},
-
-  ];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Initial animations
-    gsap.from(headingRef.current, {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      ease: 'power3.out',
-    });
-
-    // Project item animations
-    const projectItems = projectsRef.current?.children;
-    
-    if (projectItems) {
-      gsap.utils.toArray(projectItems).forEach((item: any, i) => {
-        // Create a timeline for each project
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none none',
-          }
-        });
-
-        // Number animation
-        tl.fromTo(
-          item.querySelector('.project-number'),
-          { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.2)' },
-          0
-        );
-
-        // Image animation (parallax + scale)
-        tl.fromTo(
-          imageRefs.current[i],
-          { y: 80, opacity: 0, scale: 0.9 },
-          { 
-            y: 0, 
-            opacity: 1, 
-            scale: 1, 
-            duration: 0.8, 
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: imageRefs.current[i],
-              start: 'top 75%',
-              scrub: 1
-            }
-          },
-          0.1
-        );
-
-        // Title animation
-        tl.fromTo(
-          titleRefs.current[i],
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' },
-          0.2
-        );
-
-        // Description animation
-        tl.fromTo(
-          item.querySelectorAll('.project-description p'),
-          { y: 20, opacity: 0 },
-          { 
-            y: 0, 
-            opacity: 1, 
-            duration: 0.6, 
-            stagger: 0.1,
-            ease: 'power2.out' 
-          },
-          0.3
-        );
-
-        // Tech tags animation
-        tl.fromTo(
-          techRefs.current[i]?.children,
-          { y: 20, opacity: 0 },
-          { 
-            y: 0, 
-            opacity: 1, 
-            duration: 0.4, 
-            stagger: 0.05,
-            ease: 'power2.out' 
-          },
-          0.4
-        );
-
-        // Impact animation
-        tl.fromTo(
-          impactRefs.current[i]?.children,
-          { y: 20, opacity: 0 },
-          { 
-            y: 0, 
-            opacity: 1, 
-            duration: 0.4, 
-            stagger: 0.05,
-            ease: 'power2.out' 
-          },
-          0.5
-        );
-
-        // Meta info animation
-        tl.fromTo(
-          metaRefs.current[i]?.children,
-          { y: 20, opacity: 0 },
-          { 
-            y: 0, 
-            opacity: 1, 
-            duration: 0.4, 
-            stagger: 0.1,
-            ease: 'power2.out' 
-          },
-          0.6
-        );
-
-        // Button animations
-        tl.fromTo(
-          buttonRefs.current[i * 2],
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-          0.7
-        );
-
-        if (projects[i].live) {
-          tl.fromTo(
-            buttonRefs.current[i * 2 + 1],
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-            0.8
-          );
-        }
-
-        // Hover effects for the entire project item
-        gsap.to(item, {
-          borderTopColor: '#d1d5db',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 70%',
-            end: 'top 30%',
-            scrub: true
-          }
-        });
-
-        // Image hover effect
-        if (imageRefs.current[i]) {
-          imageRefs.current[i]?.addEventListener('mouseenter', () => {
-            gsap.to(imageRefs.current[i], {
-              scale: 1.03,
-              duration: 0.5,
-              ease: 'power2.out'
-            });
-          });
-          
-          imageRefs.current[i]?.addEventListener('mouseleave', () => {
-            gsap.to(imageRefs.current[i], {
-              scale: 1,
-              duration: 0.5,
-              ease: 'power2.out'
-            });
-          });
-        }
-      });
-    }
-
-    // GitHub link animation
-    const githubLink = document.querySelector('.github-link');
-    if (githubLink) {
-      gsap.from(githubLink, {
+    const ctx = gsap.context(() => {
+      // Hero Animation
+      gsap.from('.hero-word', {
+        y: 100,
         opacity: 0,
-        y: 20,
+        duration: 1.5,
+        ease: 'power4.out',
+        stagger: 0.1
+      });
+
+      // Grid Lines & content stagger
+      gsap.from('.grid-cell', {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.05,
+        ease: 'power3.out',
         scrollTrigger: {
-          trigger: githubLink,
-          start: 'top 80%',
-          toggleActions: 'play none none none'
+          trigger: '.projects-grid',
+          start: 'top 85%'
         }
       });
-    }
 
-    // Clean up
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
+    }, containerRef);
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="min-h-screen pt-32 pb-16 overflow-hidden">
-      <section
-        ref={sectionRef}
-        className="px-8 max-w-7xl mx-auto"
-      >
-        <div className="mb-16">
-          <h1 className="text-4xl md:text-6xl font-light tracking-tight mb-8">
-            All Projects
+    <div ref={containerRef} className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+
+      {/* Swiss Grid Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="w-full h-full grid grid-cols-6 lg:grid-cols-12 gap-0">
+          {[...Array(13)].map((_, i) => (
+            <div key={i} className="h-full w-px bg-black/5 dark:bg-white/5 mx-auto" />
+          ))}
+        </div>
+      </div>
+
+      {/* Hero Section: Monumental Typography */}
+      <section className="relative z-10 pt-32 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto">
+        <div className="border-b border-black dark:border-white pb-6 mb-12">
+          <h1 className="text-[14vw] leading-[0.8] font-bold tracking-tighter uppercase mix-blend-difference text-black dark:text-white">
+            <span className="hero-word block">Engineer</span>
+            <span className="hero-word block pl-[10vw]">ing_</span>
           </h1>
-          <p className="text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl">
-            A comprehensive collection of my work, showcasing various technologies and problem-solving approaches
-          </p>
         </div>
 
-        <div ref={projectsRef} className="space-y-24">
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-12 md:col-span-6 lg:col-span-4">
+            <p className="font-mono text-sm leading-relaxed uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              Directory of Technical Solutions<br />
+              System Architectures &<br />
+              Full-Stack Implementations
+            </p>
+          </div>
+          <div className="col-span-12 md:col-span-6 lg:col-span-4 lg:col-start-9 text-right">
+            <p className="font-mono text-xs uppercase tracking-widest text-gray-400 dark:text-gray-600">
+              Index v2.4 — {new Date().getFullYear()}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Datasheet Grid */}
+      <section className="relative z-10 px-6 md:px-12 pb-32 max-w-[1800px] mx-auto">
+
+        {/* Table Header */}
+        <div className="grid grid-cols-12 gap-0 border-b border-black dark:border-white py-2 font-mono text-xs uppercase tracking-widest text-gray-400 dark:text-gray-600 mb-0">
+          <div className="col-span-1 md:col-span-1 text-center">ID</div>
+          <div className="col-span-8 md:col-span-5">Project Name</div>
+          <div className="hidden md:block col-span-4">Tech Stack</div>
+          <div className="hidden md:block col-span-2 text-right">Year</div>
+        </div>
+
+        <div className="projects-grid">
           {projects.map((project, index) => (
             <div
               key={index}
-              className="group border-t border-gray-200 dark:border-gray-800 pt-12 hover:border-gray-400 dark:hover:border-gray-600 transition-colors duration-500"
-              data-cursor="-opaque"
+              onClick={() => navigate(`/projects/${project.id}`)}
+              className="grid-cell group grid grid-cols-1 md:grid-cols-12 gap-0 border-b border-gray-200 dark:border-gray-800 hover:border-black dark:hover:border-white transition-colors duration-300 cursor-pointer overflow-hidden relative"
             >
-              <div className="grid lg:grid-cols-12 gap-8 items-start">
-                <div className="lg:col-span-2">
-                  <span 
-                    className="project-number text-6xl font-light text-gray-300 dark:text-gray-700 group-hover:text-gray-500 dark:group-hover:text-gray-500 transition-colors duration-500"
-                  >
-                    {project.number}
-                  </span>
+
+              {/* Background Hover Effect */}
+              <div className="absolute inset-0 bg-gray-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+              {/* ID */}
+              <div className="col-span-12 md:col-span-1 py-6 md:py-8 flex items-center justify-center font-mono text-xs text-gray-400 group-hover:text-black dark:group-hover:text-white relative z-10">
+                {`0${index + 1}`}
+              </div>
+
+              {/* Main Content (Image + Title) */}
+              <div className="col-span-12 md:col-span-5 py-6 md:py-8 px-4 flex items-center gap-6 relative z-10">
+                <div className="w-16 h-16 md:w-24 md:h-16 bg-gray-200 dark:bg-gray-800 overflow-hidden shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500">
+                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                 </div>
-
-                <div className="lg:col-span-4">
-                  <img
-                    ref={el => imageRefs.current[index] = el}
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full aspect-[4/3] object-cover border border-gray-200 dark:border-gray-800 group-hover:border-gray-400 dark:group-hover:border-gray-600 transition-all duration-300"
-                    data-cursor="-opaque"
-                  />
-                </div>
-
-                <div className="lg:col-span-4 space-y-6">
-                  <div>
-                    <div className="flex items-center space-x-4 mb-2">
-                      <h3 
-                        ref={el => titleRefs.current[index] = el}
-                        className="text-2xl font-light tracking-tight"
-                      >
-                        {project.title}
-                      </h3>
-                      <span className="text-xs font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase">
-                        {project.category}
-                      </span>
-                    </div>
-                    <div className="project-description">
-                      <p className="text-lg font-light leading-relaxed text-gray-700 dark:text-gray-300 mb-4">
-                        {project.description}
-                      </p>
-                      <p className="text-sm font-light leading-relaxed text-gray-600 dark:text-gray-400">
-                        {project.longDescription}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div ref={el => techRefs.current[index] = el}>
-                      <p className="text-xs font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-2">
-                        Technologies
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.tech.map((tech, techIndex) => (
-                          <span
-                            key={techIndex}
-                            className="tech-tag text-sm font-light tracking-wide text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
-                            data-cursor="-opaque"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div ref={el => impactRefs.current[index] = el}>
-                      <p className="text-xs font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-2">
-                        Impact
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.impact.map((item, impactIndex) => (
-                          <span
-                            key={impactIndex}
-                            className="impact-item text-sm font-light tracking-wide text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-300"
-                            data-cursor="-opaque"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-2 space-y-6">
-                  <div ref={el => metaRefs.current[index] = el} className="space-y-4">
-                    <div>
-                      <p className="text-xs font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-1">
-                        Year
-                      </p>
-                      <p className="font-light">{project.year}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-1">
-                        Status
-                      </p>
-                      <p className="font-light">{project.status}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col space-y-3">
-                    <a
-                      ref={el => buttonRefs.current[index * 2] = el}
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="github-button inline-flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-700 hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900 transition-all duration-300"
-                      data-cursor="-opaque"
-                    >
-                      <FiGithub size={16} />
-                      <span className="text-sm font-light">Code</span>
-                    </a>
-                    {project.live && (
-                      <a
-                        ref={el => buttonRefs.current[index * 2 + 1] = el}
-                        href={project.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="live-button inline-flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-700 hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900 transition-all duration-300"
-                        data-cursor="-opaque"
-                      >
-                        <FiExternalLink size={16} />
-                        <span className="text-sm font-light">Live</span>
-                      </a>
-                    )}
-                  </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-light tracking-tight group-hover:translate-x-2 transition-transform duration-300">{project.title}</h2>
+                  <span className="md:hidden font-mono text-xs text-gray-400 uppercase tracking-widest mt-1 block">{project.category}</span>
                 </div>
               </div>
+
+              {/* Tech Stack */}
+              <div className="hidden md:flex col-span-4 py-8 items-center relative z-10">
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  {project.tech.slice(0, 3).map((t, i) => (
+                    <span key={i} className="font-mono text-xs text-gray-500 dark:text-gray-400 uppercase">
+                      {t}
+                    </span>
+                  ))}
+                  {project.tech.length > 3 && (
+                    <span className="font-mono text-xs text-gray-400 uppercase">+ {project.tech.length - 3}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Year & Arrow */}
+              <div className="hidden md:flex col-span-2 py-8 px-4 items-center justify-end font-mono text-sm relative z-10">
+                <span className="mr-4 text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">{project.year}</span>
+                <FiArrowUpRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+              </div>
+
             </div>
           ))}
         </div>
 
-        <div className="mt-24 text-center">
-          <a
-            href="https://github.com/K-Nishant-18"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="github-link inline-flex items-center text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-            data-cursor="-opaque"
-          >
-            View GitHub profile
-            <FiArrowUpRight className="ml-2" size={20} />
-          </a>
-        </div>
       </section>
     </div>
   );

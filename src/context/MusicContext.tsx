@@ -34,14 +34,51 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Effect to initialize the audio element
+  // Effect to initialize the audio element
   useEffect(() => {
     // Create the audio object and store it in the ref
     const audio = new Audio('/music/background-music.mp3');
     audio.loop = true;
     audioRef.current = audio;
 
+    const playAudio = () => {
+      if (!audioRef.current) return;
+
+      const playPromise = audio.play();
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setIsPlaying(true);
+          console.log('Music started playing');
+          // Remove listeners if they were added
+          document.removeEventListener('click', handleInteraction);
+          document.removeEventListener('keydown', handleInteraction);
+          document.removeEventListener('scroll', handleInteraction);
+        }).catch(error => {
+          console.warn('Autoplay prevented by browser:', error);
+          setIsPlaying(false);
+          // Listeners are already added below if this fails
+        });
+      }
+    };
+
+    const handleInteraction = () => {
+      playAudio();
+    };
+
+    // Attempt to play immediately
+    playAudio();
+
+    // Add global listeners for first interaction to trigger music
+    document.addEventListener('click', handleInteraction, { once: true });
+    document.addEventListener('keydown', handleInteraction, { once: true });
+    document.addEventListener('scroll', handleInteraction, { once: true });
+
     // Cleanup function to run when the component unmounts
     return () => {
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+      document.removeEventListener('scroll', handleInteraction);
       audio.pause();
       audioRef.current = null;
     };
