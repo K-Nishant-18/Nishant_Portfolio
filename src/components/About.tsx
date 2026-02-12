@@ -1,14 +1,14 @@
-// src/components/AwardWinningAbout.tsx
-
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FiCornerDownRight } from 'react-icons/fi';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const AwardWinningAbout: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
 
     // --- Refs and State from Original for Cursor Trail ---
     const stackContainerRef = useRef<HTMLDivElement>(null);
@@ -29,32 +29,49 @@ const AwardWinningAbout: React.FC = () => {
 
         // --- GSAP Context for proper setup and cleanup ---
         const ctx = gsap.context(() => {
-            // --- Animate Grid Lines on Scroll (from new layout) ---
-            gsap.from(".grid-line", {
-                scale: 0,
-                stagger: { from: "center", amount: 0.5 },
-                duration: 1.5,
-                ease: "expo.out",
+            const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: "top 70%",
+                    start: "top 60%",
                 }
             });
 
-            // --- Animate Content on Scroll (inspired by original) ---
-            if (contentRef.current) {
-                gsap.from(contentRef.current.children, {
-                    yPercent: 50,
+            // 1. Grid Lines Reveal
+            tl.from(".grid-line", {
+                scaleY: 0,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: "power3.inOut",
+                transformOrigin: "top"
+            })
+                // 2. Crosshairs Reveal
+                .from(".grid-crosshair", {
+                    scale: 0,
                     opacity: 0,
+                    duration: 0.5,
+                    stagger: 0.05,
+                    ease: "back.out(1.7)"
+                }, "-=0.8")
+                // 3. Title Reveal
+                .fromTo(".about-title-char", {
+                    y: 100,
+                    opacity: 0
+                }, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    stagger: 0.03,
+                    ease: "power4.out"
+                }, "-=0.5")
+                // 4. Content Reveal
+                .from(".about-content-item", {
+                    y: 30,
+                    opacity: 0,
+                    duration: 0.8,
                     stagger: 0.1,
-                    duration: 1.2,
-                    ease: "expo.out",
-                    scrollTrigger: {
-                        trigger: contentRef.current,
-                        start: "top 80%",
-                    }
-                });
-            }
+                    ease: "power2.out"
+                }, "-=0.8");
+
         }, sectionRef);
 
         // --- Cleanup function ---
@@ -84,7 +101,7 @@ const AwardWinningAbout: React.FC = () => {
         img.src = images[index];
         img.alt = `Trail image ${index}`;
         // Styling for the trailing image (from original)
-        img.className = 'absolute w-24 h-40 object-cover rounded-lg shadow-xl border border-neutral-300 pointer-events-none';
+        img.className = 'absolute w-24 h-40 object-cover grayscale brightness-125 contrast-125 border border-black dark:border-white pointer-events-none z-[60]';
         img.style.left = `${x}px`;
         img.style.top = `${y}px`;
         img.style.transform = `translate(-50%, -50%) scale(0.8)`; // Center on cursor and start smaller
@@ -95,18 +112,18 @@ const AwardWinningAbout: React.FC = () => {
         // Animate the image in and out
         gsap.timeline({ onComplete: () => img.remove() })
             .to(img, {
-                opacity: 1,
+                opacity: 0.8,
                 scale: 1,
-                rotation: gsap.utils.random(-10, 10),
-                duration: 0.3,
+                rotation: gsap.utils.random(-5, 5),
+                duration: 0.2,
                 ease: 'power2.out',
             })
             .to(img, {
                 opacity: 0,
                 scale: 0.5,
-                duration: 0.5,
+                duration: 0.3,
                 ease: 'power2.in',
-            }, ">0.4"); // Start fading out after 0.4s
+            }, ">0.2"); // Start fading out after 0.2s
     };
 
     // --- Mouse Leave Handler to clean up images (from original) ---
@@ -127,81 +144,93 @@ const AwardWinningAbout: React.FC = () => {
         });
     };
 
+    const stats = [
+        { label: "EXP_YRS", value: "02+", desc: "Years Experience" },
+        { label: "PRJ_CMP", value: "05+", desc: "Projects Completed" },
+        { label: "AI_RDY", value: "YES", desc: "Future Ready" },
+        { label: "STATUS", value: "ACT", desc: "Always Learning", active: true },
+    ];
+
     return (
         <section
             ref={sectionRef}
             id="about"
             onMouseMove={!isTouch ? handleMouseMove : undefined}
             onMouseLeave={!isTouch ? handleMouseLeave : undefined}
-            className="relative font-sans py-20 px-4 md:py-40 overflow-hidden cursor-none "
+            className="relative font-sans py-24 md:py-32 px-6 md:px-12 overflow-hidden cursor-crosshair min-h-screen flex flex-col justify-center"
         >
-            {/* --- Animated Grid Background (from new layout) --- */}
-            <div className="absolute inset-0 z-0 pointer-events-none hidden md:block">
-                {[...Array(10)].map((_, i) => (
-                    <div
-                        key={`v-${i}`}
-                        className="grid-line absolute top-0 bottom-0 w-px"
-                        style={{
-                            left: `${(i + 1) * 9}%`,
-                            background: 'linear-gradient(to bottom, rgba(217, 217, 217,0.3) 0%, rgba(217, 217, 217,0) 100%)'
-                        }}
-                    />
-                ))}
-                {[...Array(5)].map((_, i) => {
-                    const opacity = 0.8 - (i * 0.20); // Decreasing opacity for each line
-                    return (
-                        <div
-                            key={`h-${i}`}
-                            className="grid-line absolute left-0 right-0 h-px"
-                            style={{
-                                top: `${(i + 1) * 15}%`,
-                                background: `linear-gradient(to bottom, rgba(217, 217, 217,${opacity}) 0%, rgba(217, 217, 217,0) 100%)`
-                            }}
-                        />
-                    );
-                })}
+            {/* --- Swiss Grid Background --- */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                {/* Vertical Lines */}
+                <div className="absolute inset-0 flex justify-between px-6 md:px-12 max-w-[1800px] mx-auto w-full h-full">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={`v-${i}`} className="relative h-full">
+                            <div className="grid-line w-px h-full bg-black/5 dark:bg-white/5"></div>
+                            {/* Crosshairs at intersections */}
+                            {[...Array(5)].map((_, j) => (
+                                <div key={`ch-${i}-${j}`} className="grid-crosshair absolute -left-[3px] w-[7px] h-[7px] border-l border-t border-black/20 dark:border-white/20" style={{ top: `${(j + 1) * 20}%` }}></div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+                {/* Horizontal Lines */}
+                <div className="absolute inset-0 flex flex-col justify-between py-24 h-full">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={`h-${i}`} className="grid-line h-px w-full bg-black/5 dark:bg-white/5"></div>
+                    ))}
+                </div>
             </div>
 
-            {/* --- Image Trail Container (from original) --- */}
-            {/* Placed with a z-index between grid and content. pointer-events-none is crucial. */}
+            {/* --- Image Trail Container --- */}
             {!isTouch && <div ref={stackContainerRef} className="absolute inset-0 z-[50] pointer-events-none" />}
 
-            {/* --- Main Content (styled like new layout) --- */}
-            <div ref={contentRef} className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-                <h2 className="text-sm font-bold tracking-widest uppercase text-red-500 mb-8">About Me</h2>
-                <div className="space-y-6 text-2xl md:text-5xl font-light leading-snug md:leading-tight">
-                    <p>I'm a <span className="text-red-500">Backend & DevOps Engineer</span> who loves building robust, scalable systems that power the web.
-                    From designing <span className="text-red-500">distributed microservices</span> to orchestrating <span className="text-red-500">cloud infrastructure</span>, I focus on performance, security, and reliability under the hood.</p>
-                    {/* <p>My philosophy: Simple architecture, clean code, and automated deployments.</p> */}
+            {/* --- Main Content --- */}
+            <div ref={contentRef} className="relative z-10 max-w-[1800px] mx-auto w-full">
+
+                {/* Header: Monumental Outline Text */}
+                <div className="mb-16 md:mb-24 relative">
+                    <div className="flex items-center gap-4 mb-4">
+                        <FiCornerDownRight className="text-red-500 w-6 h-6" />
+                        <span className="font-mono text-xs uppercase tracking-widest text-red-500">Identity // Bio</span>
+                    </div>
+                    <h2 ref={titleRef} className="text-[10vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-20 select-none pointer-events-none">
+                        {"WHO_I_AM".split('').map((char, i) => (
+                            <span key={i} className="about-title-char inline-block">{char}</span>
+                        ))}
+                    </h2>
+                    <div className="absolute top-1/2 left-0 md:left-1/4 transform -translate-y-1/2 w-full md:w-2/3 pl-6 border-l-2 border-red-500">
+                        <p className="about-content-item text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference">
+                            I architect <span className="font-bold">high-performance backend ecosystems</span> using <span className="font-bold text-red-500">Java</span> and <span className="font-bold text-red-500">Spring Boot</span>. My expertise lies in leveraging <span className="font-bold">Spring MVC</span>, <span className="font-bold">Spring Security</span>, and <span className="font-bold">JPA</span> to engineer robust APIs and optimize complex data layers.
+                        </p>
+                        <p className="about-content-item text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference mt-6">
+                            Beyond key-strokes, I leverage <span className="font-bold">DevOps</span> principles to bridge development and operations. I utilize <span className="font-bold">CI/CD</span>, <span className="font-bold">Linux</span>, and <span className="font-bold">AWS</span> alongside <span className="font-bold">Docker</span> to orchestrate resilient infrastructure, ensuring seamless, automated delivery.
+                        </p>
+                    </div>
                 </div>
 
-                {/* --- Stats Section (from new layout) --- */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-12 sm:mt-16 md:mt-20 pt-6 sm:pt-8 border-t-2 border-neutral-300">
-                    <div className="flex flex-col items-center sm:items-start justify-center">
-                        <p className="text-2xl sm:text-3xl md:text-4xl font-light">2+</p>
-                        <p className="text-xs sm:text-sm text-neutral-600 mt-1">Years Experience</p>
-                    </div>
-                    <div className="flex flex-col items-center sm:items-start justify-center">
-                        <p className="text-2xl sm:text-3xl md:text-4xl font-light">5+</p>
-                        <p className="text-xs sm:text-sm text-neutral-600 mt-1">Projects Completed</p>
-                    </div>
-                    <div className="flex flex-col items-center sm:items-start justify-center">
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center sm:justify-start">
-                            <p className="text-2xl sm:text-3xl md:text-4xl font-light">AI Literate</p>
+                {/* --- Stats Section: Datasheet Grid --- */}
+                <div className="grid grid-cols-2 md:grid-cols-4 border-t border-l border-black/10 dark:border-white/10">
+                    {stats.map((stat, index) => (
+                        <div key={index} className="about-content-item border-r border-b border-black/10 dark:border-white/10 p-6 md:p-8 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group">
+                            <div className="flex justify-between items-start mb-4">
+                                <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500 group-hover:text-red-500 transition-colors">{stat.label}</span>
+                                {stat.active && <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>}
+                            </div>
+                            <div className="text-4xl md:text-5xl font-mono font-light mb-2">{stat.value}</div>
+                            <div className="text-xs font-mono uppercase text-gray-400">{stat.desc}</div>
                         </div>
-                        <p className="text-xs sm:text-sm text-neutral-600 mt-1">Future Ready</p>
-                    </div>
-                    <div className="flex flex-col items-center sm:items-start justify-center">
-                        <div className="flex items-center gap-1 sm:gap-2 justify-center sm:justify-start">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                            <p className="text-2xl sm:text-3xl md:text-4xl font-light">Learning</p>
-                        </div>
-                        <p className="text-xs sm:text-sm text-neutral-600 mt-1">Always</p>
-                    </div>
-
-
+                    ))}
                 </div>
             </div>
+
+            <style>{`
+                 .text-stroke-responsive {
+                    -webkit-text-stroke: 1px black;
+                 }
+                 .dark .text-stroke-responsive {
+                    -webkit-text-stroke: 1px white;
+                 }
+            `}</style>
         </section>
     );
 };

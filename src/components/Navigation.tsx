@@ -69,10 +69,10 @@ const Navigation: React.FC = () => {
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-gray-50/90 dark:bg-black/30 backdrop-blur-sm border-b border-gray-200/10 dark:border-gray-800/20"
+        className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-black/10 dark:border-white/10"
         style={{ cursor: 'none' }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto flex items-center justify-between">
           <TransitionLink
             to="/"
             className="text-xl font-light tracking-wider"
@@ -82,62 +82,69 @@ const Navigation: React.FC = () => {
           </TransitionLink>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-12">
+          <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <TransitionLink
                 key={item.name}
                 to={item.path}
-                className={`text-sm font-light tracking-wide transition-colors duration-300 relative group ${location.pathname === item.path
-                  ? 'text-gray-900 dark:text-gray-100'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                className={`relative px-4 py-2 text-xs font-mono uppercase tracking-widest transition-all duration-300 group overflow-hidden ${location.pathname === item.path
+                  ? 'text-black dark:text-white font-bold'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
                   }`}
                 style={{ cursor: 'none' }}
               >
-                {item.name}
-                <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${location.pathname === item.path
-                  ? 'w-full bg-gray-900 dark:bg-gray-100'
-                  : 'w-0 bg-red-500 dark:bg-red-900 group-hover:w-full'
-                  }`}></span>
+                <div className={`absolute inset-0 bg-black/5 dark:bg-white/5 transform origin-left transition-transform duration-300 ${location.pathname === item.path ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  {location.pathname === item.path && <span className="w-1 h-1 bg-red-500 rounded-full"></span>}
+                  {item.name}
+                </span>
               </TransitionLink>
             ))}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-4">
+            {/* Resume Button */}
             <button
               onClick={downloadResume}
-              className="hidden md:flex items-center space-x-2 px-4 py-2 text-sm font-light tracking-wide border border-gray-300 dark:border-gray-700 hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900 transition-all duration-300"
+              className="hidden md:flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest border border-black/10 dark:border-white/10 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300 group"
               style={{ cursor: 'none' }}
             >
-              <FiDownload size={16} />
+              <FiDownload size={12} className="group-hover:-translate-y-0.5 transition-transform duration-300" />
               <span>Resume</span>
             </button>
 
-            <button
-              onClick={toggleMute}
-              className="hidden md:flex p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors duration-300"
-              aria-label="Toggle music"
-              style={{ cursor: 'none' }}
-            >
-              {isMuted ? <FiVolumeX size={18} /> : <FiVolume2 size={18} />}
-            </button>
+            {/* Divider */}
+            <div className="hidden md:block w-px h-6 bg-black/10 dark:bg-white/10"></div>
 
-            <button
-              onClick={toggleTheme}
-              className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors duration-300"
-              aria-label="Toggle theme"
-              style={{ cursor: 'none' }}
-            >
-              {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
-            </button>
+            {/* Utility Toggles */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleMute}
+                className="hidden md:flex w-8 h-8 items-center justify-center border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300"
+                aria-label="Toggle music"
+                style={{ cursor: 'none' }}
+              >
+                {isMuted ? <FiVolumeX size={14} className="opacity-50" /> : <FiVolume2 size={14} />}
+              </button>
+
+              <button
+                onClick={toggleTheme}
+                className="w-8 h-8 flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300"
+                aria-label="Toggle theme"
+                style={{ cursor: 'none' }}
+              >
+                {isDark ? <FiSun size={14} /> : <FiMoon size={14} />}
+              </button>
+            </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors duration-300"
+              className="md:hidden w-8 h-8 flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300"
               aria-label="Toggle menu"
               style={{ cursor: 'none' }}
             >
-              {isMenuOpen ? <FiX size={18} /> : <FiMenu size={18} />}
+              {isMenuOpen ? <FiX size={14} /> : <FiMenu size={14} />}
             </button>
           </div>
         </div>
@@ -146,43 +153,40 @@ const Navigation: React.FC = () => {
       {/* Mobile Menu */}
       <div
         ref={mobileMenuRef}
-        className="fixed inset-0 z-40 bg-gray-50 dark:bg-gray-950 opacity-0 invisible md:hidden"
+        className="fixed inset-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-xl opacity-0 invisible md:hidden"
         style={{ cursor: 'none' }}
       >
-        <div className="flex flex-col items-center justify-center h-full space-y-8">
-          {navItems.map((item) => (
+        <div className="flex flex-col items-center justify-center h-full space-y-8 relative">
+          {/* Grid Background */}
+          <div className="absolute inset-0 pointer-events-none opacity-5">
+            <div className="w-full h-full" style={{ backgroundImage: 'linear-gradient(to right, #808080 1px, transparent 1px), linear-gradient(to bottom, #808080 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+          </div>
+
+          {navItems.map((item, index) => (
             <TransitionLink
               key={item.name}
               to={item.path}
               onClick={() => setIsMenuOpen(false)}
-              className="menu-item text-2xl font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
+              className="menu-item text-4xl font-mono uppercase font-light tracking-tighter hover:text-red-500 transition-colors duration-300 flex items-center gap-4 group"
               style={{ cursor: 'none' }}
             >
+              <span className="text-xs text-gray-400 font-mono tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">0{index + 1}</span>
               {item.name}
             </TransitionLink>
           ))}
+
+          <div className="w-12 h-px bg-black/10 dark:bg-white/10 my-8"></div>
+
           <button
             onClick={() => {
               downloadResume();
               setIsMenuOpen(false);
             }}
-            className="menu-item flex items-center space-x-2 text-2xl font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
+            className="menu-item flex items-center gap-2 text-sm font-mono uppercase tracking-widest border border-black/10 dark:border-white/10 px-6 py-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300"
             style={{ cursor: 'none' }}
           >
-            <FiDownload size={24} />
-            <span>Resume</span>
-          </button>
-
-          <button
-            onClick={() => {
-              toggleMute();
-              setIsMenuOpen(false);
-            }}
-            className="menu-item flex items-center space-x-2 text-2xl font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-            style={{ cursor: 'none' }}
-          >
-            {isMuted ? <FiVolumeX size={24} /> : <FiVolume2 size={24} />}
-            <span>{isMuted ? 'Unmute' : 'Mute'}</span>
+            <FiDownload size={14} />
+            <span>Download Resume</span>
           </button>
         </div>
       </div>
