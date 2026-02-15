@@ -428,7 +428,6 @@ const DevActivity: React.FC = () => {
           </div>
           <div className="md:col-span-4 flex flex-col justify-end">
             <p className="text-sm md:text-base font-light text-zinc-600 dark:text-zinc-400 text-justify max-w-xs ml-auto">
-              Tracking code contributions, library maintenance, and open-source experiments.
               Real-time data from the GitHub ecosystem.
             </p>
           </div>
