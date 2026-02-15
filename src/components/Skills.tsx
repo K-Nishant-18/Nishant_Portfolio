@@ -1,161 +1,110 @@
-import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiCode, FiServer, FiDatabase, FiTerminal } from 'react-icons/fi';
+import { FiServer, FiDatabase, FiTerminal, FiLayers } from 'react-icons/fi';
+import ScrollRevealText from './ScrollRevealText';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Skills: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
   const categoryRefs = useRef<(HTMLDivElement | null)[]>([]);
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const gridLineRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const gridDotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const logoCarouselRef = useRef<HTMLDivElement>(null);
   const logoContainerRef = useRef<HTMLDivElement>(null);
   const logoCarouselRef2 = useRef<HTMLDivElement>(null);
   const logoContainerRef2 = useRef<HTMLDivElement>(null);
 
+  // New Data Structure (Backend/DevOps Focused) - 4 Categories
   const skillCategories = [
     {
-      title: 'Core Engineering',
-      icon: <FiCode size={28} />,
+      id: '01',
+      title: 'Backend Engineering',
+      icon: <FiServer size={24} />,
       skills: [
-        { name: 'Java (DSA & OOPs)', level: 90 },
-        { name: 'Data Structures', level: 85 },
-        { name: 'System Design (LLD)', level: 75 },
-        { name: 'Multithreading', level: 80 },
-      ],
-    },
-    {
-      title: 'Backend Development',
-      icon: <FiServer size={28} />,
-      skills: [
-        { name: 'Spring Boot', level: 90 },
-        { name: 'Microservices', level: 80 },
+        { name: 'Java (Core & Advanced)', level: 95 },
+        { name: 'Spring Boot / MVC', level: 90 },
         { name: 'Spring Security / JWT', level: 85 },
-        { name: 'Hibernate / JPA', level: 85 },
+        { name: 'Microservices Arch.', level: 85 },
+        { name: 'RESTful API Design', level: 90 },
       ],
     },
     {
-      title: 'DevOps & Cloud',
-      icon: <FiTerminal size={28} />,
-      skills: [
-        { name: 'Docker / Kubernetes', level: 75 },
-        { name: 'AWS (EC2, S3, RDS)', level: 70 },
-        { name: 'CI/CD (Jenkins, Git)', level: 80 },
-        { name: 'Linux Administration', level: 75 },
-      ],
-    },
-    {
-      title: 'Database & Tools',
-      icon: <FiDatabase size={28} />,
+      id: '02',
+      title: 'Database & Storage',
+      icon: <FiDatabase size={24} />,
       skills: [
         { name: 'MySQL / PostgreSQL', level: 85 },
-        { name: 'MongoDB / NoSQL', level: 80 },
-        { name: 'Redis / Caching', level: 70 },
-        { name: 'Postman / Swagger', level: 90 },
+        { name: 'Hibernate / JPA', level: 85 },
+        { name: 'Redis / Caching', level: 80 },
+        { name: 'Database Design', level: 85 },
+        { name: 'Query Optimization', level: 75 },
+      ],
+    },
+    {
+      id: '03',
+      title: 'DevOps & Cloud',
+      icon: <FiTerminal size={24} />,
+      skills: [
+        { name: 'Docker / Kubernetes', level: 80 },
+        { name: 'AWS (EC2, S3, RDS)', level: 75 },
+        { name: 'CI/CD (Jenkins)', level: 75 },
+        { name: 'Nginx / Reverse Proxy', level: 70 },
+        { name: 'Linux Administration', level: 80 },
+      ],
+    },
+    {
+      id: '04',
+      title: 'Architecture & Core',
+      icon: <FiLayers size={24} />,
+      skills: [
+        { name: 'System Design', level: 80 },
+        { name: 'Data Structures & Algo', level: 85 },
+        { name: 'Message Queues (Kafka)', level: 75 },
+        { name: 'Shell Scripting', level: 75 },
+        { name: 'Git / Version Control', level: 90 },
       ],
     },
   ];
-  
 
   const logos = [
     { name: 'Java', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
     { name: 'Spring', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg' },
     { name: 'Docker', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
     { name: 'Kubernetes', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg' },
+    { name: 'AWS', src: 'https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg' },
+    { name: 'Linux', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg' },
+    { name: 'Jenkins', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' },
     { name: 'MySQL', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
-    { name: 'MongoDB', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
     { name: 'PostgreSQL', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
     { name: 'Redis', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg' },
-    { name: 'AWS', src: 'https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg' },
-    { name: 'Jenkins', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' },
     { name: 'Git', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-    { name: 'GitHub', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
-    { name: 'Linux', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg' },
-    { name: 'Maven', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg' },
-    { name: 'Postman', src: 'https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg' },
-    { name: 'IntelliJ', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/intellij/intellij-original.svg' },
+    { name: 'Nginx', src: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg' },
   ];
 
-  // Duplicate for second carousel
   const logos2 = [...logos].reverse();
-
-  // Responsive grid: fixed for large screens, square for mobile
-  const [gridConfig, setGridConfig] = useState({ vLines: 13, hLines: 9, dotCols: 13, dotRows: 9, totalDots: 117 });
-  const [isMobile, setIsMobile] = useState(false);
-
-  useLayoutEffect(() => {
-    const updateGrid = () => {
-      const mobile = window.innerWidth < 640; // sm breakpoint
-      setIsMobile(mobile);
-      if (!sectionRef.current) return;
-      if (mobile) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const minSpacing = 48;
-        const vLines = Math.max(3, Math.round(width / minSpacing));
-        const hLines = Math.max(2, Math.round(height / minSpacing));
-        const dotCols = vLines;
-        const dotRows = hLines;
-        const totalDots = dotCols * dotRows;
-        setGridConfig({ vLines, hLines, dotCols, dotRows, totalDots });
-      } else {
-        setGridConfig({ vLines: 13, hLines: 9, dotCols: 13, dotRows: 9, totalDots: 117 });
-      }
-    };
-    updateGrid();
-    window.addEventListener('resize', updateGrid);
-    return () => window.removeEventListener('resize', updateGrid);
-  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Header animation
+
+      // 1. Initial Reveal (Header)
+      gsap.from(titleRef.current, {
+        scrollTrigger: { trigger: sectionRef.current, start: "top 80%" },
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out"
+      });
+
+      // 2. Category Cards Reveal (From Original)
       gsap.fromTo(
-        titleRef.current,
+        categoryRefs.current,
         { y: 50, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 1,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 80%',
-          },
-        }
-      );
-  
-      gsap.fromTo(
-        subtitleRef.current,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          delay: 0.3,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 80%',
-          },
-        }
-      );
-  
-      // Category cards animation
-      gsap.fromTo(
-        categoryRefs.current,
-        { y: 100, opacity: 0, scale: 0.95 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1.2,
           stagger: 0.2,
           ease: 'power3.out',
           scrollTrigger: {
@@ -164,208 +113,153 @@ const Skills: React.FC = () => {
           },
         }
       );
-  
-      // Skill bars animation
+
+      // 3. Skill Bars Animation (From Original)
       gsap.fromTo(
         barRefs.current,
-        { scaleX: 0, opacity: 0 },
+        { scaleX: 0 },
         {
           scaleX: 1,
-          opacity: 1,
-          duration: 1.8,
-          stagger: 0.15,
-          ease: 'elastic.out(1, 0.5)',
+          duration: 1.5,
+          stagger: 0.05,
+          ease: 'power4.out',
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top 60%',
           },
         }
       );
-  
-      // Grid lines animation
-      gsap.fromTo(
-        gridLineRefs.current,
-        { scaleX: 0, opacity: 0 },
-        {
-          scaleX: 1,
-          opacity: 0.1,
-          duration: 2,
-          stagger: 0.1,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1,
-          },
-        }
-      );
-  
-      // Grid dots animation
-      gsap.fromTo(
-        gridDotRefs.current,
-        { scale: 0, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 0.15,
-          duration: 1.5,
-          stagger: 0.05,
-          ease: 'back.out(1.7)',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1,
-          },
-        }
-      );
-  
-      // Logo carousel animation (first - right to left)
-      if (logoCarouselRef.current && logoContainerRef.current) {
-        const logoWidth = 100;
-        const totalWidth = logoWidth * logos.length;
-        logoCarouselRef.current.style.width = `${totalWidth * 2}px`;
-  
-        gsap.to(logoCarouselRef.current, {
-          x: `-=${totalWidth}`,
-          duration: 60,
-          ease: 'none',
+
+      // 4. Kinetic Ticker Animation
+      // Use function to handle dynamic width calculation
+      const animateTicker = (ref: React.RefObject<HTMLDivElement>, reverse: boolean = false) => {
+        if (!ref.current) return;
+        const el = ref.current;
+        // Clone children to ensure seamless loop if not already enough
+        // (Assuming we rendered 2 sets in JSX, but GSAP needs to know total scrolling width)
+        const totalWidth = el.scrollWidth / 2; // Since we doubled it in JSX
+
+        gsap.set(el, { x: reverse ? -totalWidth : 0 }); // Start position
+
+        gsap.to(el, {
+          x: reverse ? 0 : -totalWidth,
+          duration: 80, // Slower for smoother infinite loop effect
+          ease: "none",
           repeat: -1,
           modifiers: {
-            x: gsap.utils.unitize(x => parseFloat(x) % totalWidth),
-          },
+            x: gsap.utils.unitize(x => {
+              const val = parseFloat(x);
+              return reverse
+                ? (val % totalWidth) - totalWidth
+                : val % totalWidth;
+            })
+          }
         });
-      }
-  
-      // Logo carousel animation (second - left to right)
-      if (logoCarouselRef2.current && logoContainerRef2.current) {
-        const logoWidth = 100;
-        const totalWidth = logoWidth * logos2.length;
-        logoCarouselRef2.current.style.width = `${totalWidth * 2}px`;
-  
-        gsap.to(logoCarouselRef2.current, {
-          x: `+=${totalWidth}`,
-          duration: 60,
-          ease: 'none',
-          repeat: -1,
-          modifiers: {
-            x: gsap.utils.unitize(x => (parseFloat(x) % totalWidth) - totalWidth),
-          },
-        });
-      }
+      };
+
+      animateTicker(logoCarouselRef, false);
+      animateTicker(logoCarouselRef2, true);
+
+      // Scroll Velocity Skew Effect
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate: (self) => {
+          const skew = self.getVelocity() / 300;
+          gsap.to([logoCarouselRef.current, logoCarouselRef2.current], {
+            skewX: skew,
+            overwrite: 'auto',
+            duration: 0.1
+          });
+        }
+      });
+
     }, sectionRef);
-  
+
     return () => ctx.revert();
   }, []);
-  
 
   return (
     <section
       ref={sectionRef}
       id="skills"
-      className="relative min-h-screen flex items-center px-2 sm:px-8 py-20 sm:py-32 pb-16 sm:pb-24 max-w-full sm:max-w-full mx-auto text-center overflow-hidden"
+      className="relative min-h-screen py-24 md:py-32 md:pt-16 px-4 md:px-0 bg-gray-50 dark:bg-black overflow-hidden"
     >
-      {/* Swiss Grid Background - Fixed for large screens, square for mobile */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Vertical Lines */}
-        {[...Array(gridConfig.vLines)].map((_, i) => (
-          <div
-            key={`vline-${i}`}
-            ref={el => (gridLineRefs.current[i] = el)}
-            className={`absolute top-0 bottom-0 w-px bg-gray-400 dark:bg-gray-600 opacity-10`}
-            style={{
-              left: `${(i + 1) * (100 / (gridConfig.vLines + 1))}%`,
-              transformOrigin: 'top center',
-            }}
-          />
-        ))}
-        {/* Horizontal Lines */}
-        {[...Array(gridConfig.hLines)].map((_, i) => (
-          <div
-            key={`hline-${i}`}
-            ref={el => (gridLineRefs.current[i + gridConfig.vLines] = el)}
-            className={`absolute left-0 right-0 h-px bg-gray-600 dark:bg-gray-500 opacity-10`}
-            style={{
-              top: `${(i + 1) * (100 / (gridConfig.hLines + 1))}%`,
-              transformOrigin: 'left center',
-            }}
-          />
-        ))}
-        {/* Grid Dots at Intersections */}
-        {[...Array(gridConfig.totalDots)].map((_, i) => {
-          const col = i % gridConfig.dotCols;
-          const row = Math.floor(i / gridConfig.dotCols);
-          return (
-            <div
-              key={`dot-${i}`}
-              ref={el => (gridDotRefs.current[i] = el)}
-              className={`absolute rounded-full bg-gray-800 dark:bg-gray-400 ${isMobile ? 'w-0.5 h-0.5' : 'w-1 h-1'}`} 
-              style={{
-                left: `${(col + 1) * (100 / (gridConfig.dotCols + 1))}%`,
-                top: `${(row + 1) * (100 / (gridConfig.dotRows + 1))}%`,
-                transform: 'translate(-50%, -50%)',
-              }}
-            />
-          );
-        })}
-      </div>
+      <div className="max-w-[1400px] mx-auto relative z-10">
 
-      <div className="w-full relative z-10">
-        <div className="mb-10 sm:mb-20">
-          <h2
-            ref={titleRef}
-            className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl font-light tracking-tight mb-4 sm:mb-6 leading-tight text-gray-900 dark:text-white"
-          >
-            Engineering Stack
+        {/* --- Header (Preserved) --- */}
+        <div className="mb-20 px-6 md:px-12 border-b border-black/10 dark:border-white/10 pb-12">
+          <h2 ref={titleRef} className="text-[12vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-40 select-none pointer-events-none mb-4">
+            <ScrollRevealText text="TECHNICAL" />
           </h2>
-          <p
-            ref={subtitleRef}
-            className="text-base xs:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xs xs:max-w-2xl mx-auto"
-          >
-            Specialized in scalable backend systems, cloud infrastructure, and distributed architectures.
-          </p>
+          <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+            <span className="text-[12vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-black dark:text-white">
+              <ScrollRevealText text="STACK_" />
+            </span>
+            <p className="font-mono text-sm max-w-md text-gray-500 text-right pb-2">
+                            // SYSTEM_INVENTORY_V2.2<br />
+              OPTIMIZED FOR SCALABILITY & PERFORMANCE
+            </p>
+          </div>
         </div>
 
-        {/* Responsive grid: stack on mobile, grid on sm+ */}
+        {/* --- Swiss Design Card Layout --- */}
         <div className="flex flex-col md:px-20 gap-6 xs:gap-8 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-8">
           {skillCategories.map((category, catIndex) => (
             <div
               key={catIndex}
               ref={(el) => (categoryRefs.current[catIndex] = el)}
-              className="relative backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-2xl shadow-lg p-4 xs:p-6 sm:p-8 border border-gray-100 dark:border-gray-800 rounded-lg hover:shadow-lg transition-all duration-500 group mx-6 sm:mx-0"
+              className="relative bg-white dark:bg-black border border-black dark:border-white p-6 md:p-8 group hover:-translate-y-2 transition-transform duration-500"
             >
-              <div className="flex items-center mb-4 xs:mb-6">
-                <div className="p-2 xs:p-3 rounded-full bg-gray-50 dark:bg-red-700 mr-3 xs:mr-4 group-hover:bg-black dark:group-hover:bg-white transition-colors duration-300">
-                  {React.cloneElement(category.icon, {
-                    className:
-                      'text-gray-600 dark:text-gray-300 group-hover:text-white dark:group-hover:text-black transition-colors duration-300',
-                  })}
+              {/* Corner Markers */}
+              <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-black dark:border-white -translate-x-px -translate-y-px"></span>
+              <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-black dark:border-white translate-x-px -translate-y-px"></span>
+              <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-black dark:border-white -translate-x-px translate-y-px"></span>
+              <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-black dark:border-white translate-x-px translate-y-px"></span>
+
+              <div className="flex flex-col mb-8">
+                <span className="font-mono text-xs text-gray-400 mb-2">
+                  [{category.id}] DEVICE_NODE
+                </span>
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-black text-white dark:bg-white dark:text-black">
+                    {category.icon}
+                  </div>
+                  <h3 className="text-xl font-bold uppercase tracking-tight text-black dark:text-white">
+                    {category.title}
+                  </h3>
                 </div>
-                <h3 className="text-lg xs:text-xl font-light tracking-tight text-gray-900 dark:text-white">
-                  {category.title}
-                </h3>
               </div>
 
-              <div className="space-y-4 xs:space-y-5">
+              <div className="space-y-6">
                 {category.skills.map((skill, skillIndex) => (
                   <div key={skillIndex}>
-                    <div className="flex justify-between mb-1 xs:mb-2">
-                      <span className="text-xs xs:text-sm font-light text-gray-700 dark:text-gray-300">
+                    <div className="flex justify-between mb-2 items-baseline">
+                      <span className="font-mono text-xs uppercase tracking-wider text-black dark:text-white">
                         {skill.name}
                       </span>
-                      <span className="text-xs font-light text-gray-500 dark:text-gray-400">
+                      <span className="font-mono text-xs text-gray-500">
                         {skill.level}%
                       </span>
                     </div>
-                    <div className="w-full h-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                    <div className="w-full h-[2px] bg-black/10 dark:bg-white/10 overflow-hidden relative">
+                      {/* Measuring Ticks */}
+                      <div className="absolute top-0 left-0 w-full h-full flex justify-between px-[1px]">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="w-[1px] h-full bg-black/5 dark:bg-white/5"></div>
+                        ))}
+                      </div>
                       <div
                         ref={(el) => {
-                          const index = catIndex * category.skills.length + skillIndex;
+                          const index = catIndex * 10 + skillIndex;
                           barRefs.current[index] = el;
                         }}
-                        className="h-full rounded-full bg-gray-900 dark:bg-gray-100 origin-left group-hover:bg-red-600 dark:group-hover:bg-red-600 transition-colors duration-500"
+                        className="h-full bg-black dark:bg-white origin-left relative"
                         style={{ width: `${skill.level}%` }}
-                      />
+                      >
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-black dark:bg-white"></div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -374,77 +268,90 @@ const Skills: React.FC = () => {
           ))}
         </div>
 
-        {/* Logo Carousel - responsive size */}
-        <div 
-          ref={logoContainerRef}
-          className="mt-12 xs:mt-10 sm:pt-2 md:pt-6 mb-0 pb-0 overflow-hidden relative"
+        {/* --- Creative Kinetic Ticker --- */}
+        <div
+          className="mt-24 pt-4 pb-12 overflow-hidden relative cursor-crosshair"
+          onMouseEnter={() => {
+            gsap.to([logoCarouselRef.current, logoCarouselRef2.current], { timeScale: 0, duration: 0.5, overwrite: true });
+          }}
+          onMouseLeave={() => {
+            gsap.to([logoCarouselRef.current, logoCarouselRef2.current], { timeScale: 1, duration: 0.5, overwrite: true });
+          }}
         >
-          <div 
-            ref={logoCarouselRef}
-            className="flex items-center py-2 xs:py-0"
-          >
-            {/* Duplicate logos for seamless looping */}
-            {[...Array(2)].map((_, i) => (
-              <React.Fragment key={`loop-${i}`}>
-                {logos.map((logo, index) => (
-                  <div 
-                    key={`${i}-${index}`}
-                    className="flex flex-col items-center justify-center mx-3 xs:mx-6 sm:mx-6"
-                    style={{ minWidth: '64px', maxWidth: '100px' }}
-                  >
-                    <div className="h-8 w-8 xs:h-12 xs:w-12 sm:h-12 sm:w-12 flex items-center justify-center">
-                      <img 
-                        src={logo.src} 
+          {/* Gradient Masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-gray-50 dark:from-black to-transparent z-20 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-50 dark:from-black to-transparent z-20 pointer-events-none"></div>
+
+          {/* Row 1: Left - Enhanced Glow & Infinite Loop */}
+          <div className="ticker-wrapper mb-8">
+            <div
+              ref={logoCarouselRef}
+              className="flex gap-8 w-max"
+            >
+              {[...Array(4)].map((_, i) => ( // Increased to 4 sets for seamless infinite loop on large screens
+                <React.Fragment key={`loop-${i}`}>
+                  {logos.map((logo, index) => (
+                    <div
+                      key={`${i}-${index}`}
+                      className="group/chip flex items-center gap-3 px-6 py-3 
+                               bg-white/50 dark:bg-black/50 backdrop-blur-sm
+                               border border-black/10 dark:border-white/10 
+                               rounded-full transition-all duration-300
+                               shadow-[0_0_10px_rgba(0,0,0,0.1)] dark:shadow-[0_0_10px_rgba(255,255,255,0.1)]
+                               hover:shadow-[0_0_20px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]
+                               hover:border-black/30 dark:hover:border-white/30
+                               hover:scale-105"
+                    >
+                      <img
+                        src={logo.src}
                         alt={logo.name}
-                        className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                        loading="lazy"
+                        className="h-6 w-6 grayscale group-hover/chip:grayscale-0 transition-all duration-300"
                       />
+                      <span className="font-mono text-sm uppercase tracking-wider text-gray-700 dark:text-gray-300 group-hover/chip:text-black dark:group-hover/chip:text-white transition-colors">{logo.name}</span>
                     </div>
-                    <span className="mt-1 xs:mt-2 text-[10px] xs:text-xs sm:text-xs font-light text-gray-500 dark:text-gray-400">
-                      {logo.name}
-                    </span>
-                  </div>
-                ))}
-              </React.Fragment>
-            ))}
+                  ))}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Right - Enhanced Glow & Infinite Loop */}
+          <div className="ticker-wrapper">
+            <div
+              ref={logoCarouselRef2}
+              className="flex gap-8 w-max"
+            >
+              {[...Array(4)].map((_, i) => ( // Increased to 4 sets
+                <React.Fragment key={`loop2-${i}`}>
+                  {logos2.map((logo, index) => (
+                    <div
+                      key={`2-${i}-${index}`}
+                      className="group/chip flex items-center gap-3 px-6 py-3 
+                               bg-white/50 dark:bg-black/50 backdrop-blur-sm
+                               border border-black/10 dark:border-white/10 
+                               rounded-full transition-all duration-300
+                               shadow-[0_0_10px_rgba(0,0,0,0.1)] dark:shadow-[0_0_10px_rgba(255,255,255,0.1)]
+                               hover:shadow-[0_0_20px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]
+                               hover:border-black/30 dark:hover:border-white/30
+                               hover:scale-105"
+                    >
+                      <img
+                        src={logo.src}
+                        alt={logo.name}
+                        className="h-6 w-6 grayscale group-hover/chip:grayscale-0 transition-all duration-300"
+                      />
+                      <span className="font-mono text-sm uppercase tracking-wider text-gray-700 dark:text-gray-300 group-hover/chip:text-black dark:group-hover/chip:text-white transition-colors">{logo.name}</span>
+                    </div>
+                  ))}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
-        {/* Logo Carousel(second) - responsive size */}
-        <div 
-          ref={logoContainerRef2}
-          className="mt-2 xs:mt-4 sm:pt-0 md:pt-0 mb-0 overflow-hidden relative"
-        >
-          <div 
-            ref={logoCarouselRef2}
-            className="flex items-center py-2 xs:py-0"
-          >
-            {/* Duplicate logos for seamless looping */}
-            {[...Array(2)].map((_, i) => (
-              <React.Fragment key={`loop2-${i}`}>
-                {logos2.map((logo, index) => (
-                  <div 
-                    key={`2-${i}-${index}`}
-                    className="flex flex-col items-center justify-center mx-3 xs:mx-6 sm:mx-6"
-                    style={{ minWidth: '64px', maxWidth: '100px' }}
-                  >
-                    <div className="h-8 w-8 xs:h-12 xs:w-12 sm:h-12 sm:w-12 flex items-center justify-center">
-                      <img 
-                        src={logo.src} 
-                        alt={logo.name}
-                        className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-                    <span className="mt-1 xs:mt-2 text-[10px] xs:text-xs sm:text-xs font-light text-gray-500 dark:text-gray-400">
-                      {logo.name}
-                    </span>
-                  </div>
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
+
       </div>
+
+
     </section>
   );
 };

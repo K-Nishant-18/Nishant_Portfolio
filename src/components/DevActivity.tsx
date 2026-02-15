@@ -1,163 +1,382 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-  FiGithub,
-  FiStar,
-  FiGitCommit,
-  FiGitPullRequest,
-  FiCode,
-  FiClock,
-  FiArrowUpRight,
-} from 'react-icons/fi';
+import { FiStar, FiCode, FiGitPullRequest, FiAlertCircle, FiArrowUpRight, FiEye } from 'react-icons/fi';
+import ScrollRevealText from './ScrollRevealText';
+import MetricCard from './MetricCard';
+import RepoCard from './RepoCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface GitHubData {
   user: {
     public_repos: number;
-    public_gists: number;
     followers: number;
-    updated_at: string;
+    login: string;
+    avatar_url: string;
+    created_at: string;
+    html_url: string;
+    following: number;
   };
   repos: Array<{
     stargazers_count: number;
     forks_count: number;
-    language: string;
     name: string;
     html_url: string;
     updated_at: string;
+    language: string;
+    size: number;
   }>;
-  languages: {
-    [key: string]: {
-      count: number;
-      color: string;
-      repos: string[];
-    };
-  };
   stats: {
     totalStars: number;
     totalCommits: number;
     totalContributions: number;
-    avgRepoSize: number;
-    mostStarredRepo: {
-      name: string;
-      stars: number;
-      url: string;
-    };
-    mostActiveRepo: {
-      name: string;
-      commits: number;
-      url: string;
-    };
-    commitActivity: {
-      lastWeek: number;
-      lastMonth: number;
-    };
+    profileViews: number; // Added for Profile Views
   };
 }
 
-const GitHubActivity: React.FC = () => {
+interface LanguageStat {
+  lang: string;
+  percentage: number;
+  color: string;
+}
+
+const LANGUAGE_COLORS: Record<string, string> = {
+  "JavaScript": "#f7df1e",
+  "TypeScript": "#3178c6",
+  "HTML": "#e34c26",
+  "CSS": "#563d7c",
+  "Python": "#3572a5",
+  "Java": "#b07219",
+  "C++": "#f34b7d",
+  "C": "#555555",
+  "Shell": "#89e051",
+  "Vue": "#41b883",
+  "React": "#61dafb",
+  "Dart": "#00B4AB",
+  "Kotlin": "#F18E33",
+};
+
+const getColor = (lang: string) => LANGUAGE_COLORS[lang] || "#888888";
+
+
+const DevActivity: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const languageBarsRef = useRef<HTMLDivElement>(null);
+
   const [data, setData] = useState<GitHubData | null>(null);
+  const [languagePercentages, setLanguagePercentages] = useState<LanguageStat[]>([]);
   const [loading, setLoading] = useState(true);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
+
+  // --- Animation Setup ---
   useEffect(() => {
-    //Animation to GitHub Contributions
-    gsap.fromTo(
-      headingRef.current?.querySelectorAll('span'),
-      {
-        y: 40,
-        opacity: 0,
-        scale: 0.8,
-        rotationX: 30
-      },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        rotationX: 0,
-        duration: 2.2,
-        stagger: 0.3,
-        ease: 'elastic.out(1, 0.5)',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 30%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+    console.log("Animation useEffect running");
+    if (!loading && data) {
+      const ctx = gsap.context(() => {
+        if (titleRef.current) {
+          gsap.from(titleRef.current, {
+            scrollTrigger: { trigger: titleRef.current, start: "top 80%" },
+            y: 30, opacity: 0, duration: 1, ease: "power3.out"
+          });
+        }
+        if (cardsRef.current) {
+          gsap.from(cardsRef.current.children, {
+            scrollTrigger: { trigger: cardsRef.current, start: "top 80%" },
+            y: 20, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out"
+          });
+        }
+        if (languageBarsRef.current) {
+          gsap.from(languageBarsRef.current.querySelectorAll('.group'), {
+            scrollTrigger: { trigger: languageBarsRef.current, start: "top 80%" },
+            x: -20, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out"
+          });
+          // Animate bar fills
+          // Animate bar fills - Use .from() to animate from 0 to the React-set width
+          gsap.from(languageBarsRef.current.querySelectorAll('.bar-fill'), {
+            scrollTrigger: { trigger: languageBarsRef.current, start: "top 80%" },
+            width: "0%",
+            duration: 1.5,
+            ease: "power2.out",
+            stagger: 0.1
+          });
+        }
 
+      }, sectionRef);
+      return () => ctx.revert();
+    }
+  }, [loading, data]);
+
+
+  // --- Data Fetching ---
+  useEffect(() => {
     const fetchGitHubData = async () => {
       try {
-        const userRes = await fetch('https://api.github.com/users/K-Nishant-18');
-        const reposRes = await fetch('https://api.github.com/users/K-Nishant-18/repos?per_page=100&sort=updated');
+        const username = 'K-Nishant-18';
+        const token = import.meta.env.VITE_GITHUB_TOKEN;
 
+        const headers: HeadersInit = token ? { Authorization: `token ${token}` } : {};
+
+        // Fetch User Data
+        const userRes = await fetch(`https://api.github.com/users/${username}`, { headers });
         const userData = await userRes.json();
+
+        // Fetch Repos (Public) - Still needed for other stats
+        const reposRes = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, { headers });
         const reposData = await reposRes.json();
 
-        const languages: GitHubData['languages'] = {};
-        let totalSize = 0;
+        // --- Fetch External "Most Commit Language" SVG to get accurate Commit Stats ---
+        // We parse the SVG directly because GitHub API doesn't provide commit counts per language efficiently.
+        let parsedLanguageStats: LanguageStat[] = [];
+        try {
+          // Add timestamp to prevent caching
+          const svgRes = await fetch(`https://corsproxy.io/?https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=${username}&t=${new Date().getTime()}`);
+          const svgText = await svgRes.text();
 
-        reposData.forEach((repo: any) => {
-          totalSize += repo.size;
-          if (repo.language) {
-            if (!languages[repo.language]) {
-              languages[repo.language] = {
-                count: 0,
-                color: '#777',
-                repos: [],
-              };
+          const parser = new DOMParser();
+
+          // Fix invalid XML characters if any (SVG usually clean but safety first)
+          const doc = parser.parseFromString(svgText, "image/svg+xml");
+
+          // 1. Extract Legend (Map Color -> Language Name)
+          // Look for <text> elements that contain the language name, and the preceding <rect> with fill color
+          const legendMap = new Map<string, string>(); // color -> name
+          const texts = Array.from(doc.querySelectorAll('text'));
+          const rects = Array.from(doc.querySelectorAll('rect'));
+
+          // The structure is specific: <g><rect><text>Language</text></g> or similar sequence
+          // In the inspecting XML:
+          // <rect ... fill="#b07219"></rect> ... <text>Java</text>
+          // They are distinct elements in order.
+          // Let's iterate and match by relative position (Y avg?) or just assume order matches.
+          // Actually, the SVG source shows they are grouped or sequential.
+          // Let's try to map by "finding the nearest rect with same Y or prev sibling"
+
+          // Robust approach: Extract all <rect> with 'width="14"' (legend boxes) and all <text> with 'font-size: 14px'
+          const legendRects = rects.filter(r => r.getAttribute('width') === '14');
+          const legendTexts = texts.filter(t => t.style.fontSize === '14px' || t.getAttribute('font-size') === '14px');
+
+          legendRects.forEach((rect, i) => {
+            const color = rect.getAttribute('fill') || "";
+            const text = legendTexts[i]?.textContent || "";
+            if (color && text) {
+              legendMap.set(color.toLowerCase(), text);
             }
-            languages[repo.language].count += 1;
-            languages[repo.language].repos.push(repo.name);
+          });
+
+          // 2. Extract Slices and Calculate Percentages
+          const arcs = Array.from(doc.querySelectorAll('path'));
+          // Filter only arcs in the pie chart (usually have a known class or parent)
+          // Structure: <g class="arc"><path ...></g>
+          const validArcs = arcs.filter(p => p.parentElement?.getAttribute('class') === 'arc');
+
+
+          const slices: { lang: string, percentage: number, color: string }[] = [];
+
+          validArcs.forEach(path => {
+            const d = path.getAttribute('d') || "";
+            let color = path.getAttribute('fill') || "";
+            if (!color && path.getAttribute('style')) {
+              const match = path.getAttribute('style')?.match(/fill:\s*(#[a-fA-F0-9]+)/);
+              if (match) color = match[1];
+            }
+            color = color.toLowerCase();
+
+            // Regex to capture M x y ... A ... x y ...
+            // Matches: M (group1) (group2) ... A ... (group3) (group4) L ...
+            // This regex is tricky. 
+            // Let's simply extract all sets of coordinates?
+            // M startX startY ... endX endY L ...
+
+            // Regex to capture numbers including scientific notation (e.g. 1.2e-5)
+            const numberPattern = /-?\d*\.?\d+(?:[eE][-+]?\d+)?/g;
+            const matches = d.match(numberPattern)?.map(Number);
+
+            if (matches && matches.length >= 2) {
+              // M x y is usually first 2
+              const startX = matches[0];
+              const startY = matches[1];
+
+              // The arc command A takes 7 arguments.
+              // The last 2 of the A command are endX, endY.
+              // Sequence: M x y ... A rx ry rot large sweep endX endY ...
+              // If matches has enough numbers, the last 2 before 'Z' or end are likely endX, endY
+              // But finding them by fixed index is risky with variable path commands.
+              // However, for this specific pie chart generator:
+              // d="M... A... L... A... L..." or "M... A... L... Z"
+              // It seems to be M len=2, A len=7. Total 9 numbers for a simple slice (+ L 0 0 if connected to center)
+
+              if (matches.length >= 9) {
+                // Index 7 and 8 are endX, endY of the Arc
+                const endX = matches[7];
+                const endY = matches[8];
+
+                const startAngle = Math.atan2(startY, startX);
+                const endAngle = Math.atan2(endY, endX);
+
+                let diff = endAngle - startAngle;
+                // Normalize to positive (0 to 2PI)
+                while (diff < 0) diff += Math.PI * 2;
+
+                const percentage = Math.round((diff / (Math.PI * 2)) * 100);
+
+                if (legendMap.has(color)) {
+                  slices.push({
+                    lang: legendMap.get(color)!,
+                    percentage: percentage,
+                    color: color
+                  });
+                }
+              }
+            }
+          });
+
+          if (slices.length > 0) {
+            // Sort by percentage desc
+            slices.sort((a, b) => b.percentage - a.percentage);
+            parsedLanguageStats = slices.map(s => ({
+              lang: s.lang,
+              percentage: s.percentage,
+              color: getColor(s.lang) // Use our vivid colors, or use s.color (muted)
+            }));
           }
-        });
 
-        const mostStarredRepo = reposData.reduce((prev: any, current: any) =>
-          prev.stargazers_count > current.stargazers_count ? prev : current
-        );
+        } catch (err) {
+          console.error("Failed to fetch SVG stats:", err);
+          // Fallback to existing logic if SVG fails?
+          // For now, let's stick with empty or partial.
+        }
 
-        const totalCommits = reposData.length * 12;
-        const totalContributions = reposData.length * 8;
+        // --- Calculate Stats (Stars/Forks/Contribs) --- 
+        // We still need this for the other cards
+        let totalStars = 0;
+        let totalForks = 0;
 
-        const mostActiveRepo = {
-          name: reposData[0]?.name || 'No repos',
-          commits: Math.floor(Math.random() * 50) + 20,
-          url: reposData[0]?.html_url || '#',
-        };
+        if (Array.isArray(reposData)) {
+          reposData.forEach((repo: any) => {
+            if (repo.fork) return;
+            totalStars += repo.stargazers_count;
+            totalForks += repo.forks_count;
+          });
+        }
 
-        const commitActivity = {
-          lastWeek: Math.floor(Math.random() * 20) + 5,
-          lastMonth: Math.floor(Math.random() * 80) + 20,
-        };
+        // Use parsed stats if available, else fallback (though user prefers the SVG one)
+        if (parsedLanguageStats.length > 0) {
+          const top3 = parsedLanguageStats.slice(0, 3);
+          const top3Percentage = top3.reduce((acc, curr) => acc + curr.percentage, 0);
+
+          if (top3Percentage < 100) {
+            top3.push({
+              lang: "Others",
+              percentage: 100 - top3Percentage,
+              color: "#888888"
+            });
+          }
+          setLanguagePercentages(top3);
+        } else {
+          // If SVG parsing failed, fall back to repo-based calculation
+          let totalStars = 0;
+          let totalForks = 0;
+          const langCounts: Record<string, number> = {};
+
+          if (Array.isArray(reposData)) {
+            reposData.forEach((repo: any) => {
+              if (repo.fork) return;
+
+              totalStars += repo.stargazers_count;
+              totalForks += repo.forks_count;
+              if (repo.language) {
+                const weight = repo.size || 1;
+                langCounts[repo.language] = (langCounts[repo.language] || 0) + weight;
+              }
+            });
+          }
+
+          const totalSize = Object.values(langCounts).reduce((a, b) => a + b, 0);
+          const sortedLangs = Object.entries(langCounts).sort(([, a], [, b]) => b - a);
+
+          const stats: LanguageStat[] = sortedLangs.slice(0, 3).map(([lang, count]) => ({
+            lang,
+            percentage: totalSize > 0 ? Math.round((count / totalSize) * 100) : 0,
+            color: getColor(lang),
+          }));
+
+          const top3Size = sortedLangs.slice(0, 3).reduce((acc, [, count]) => acc + count, 0);
+          const otherSize = totalSize - top3Size;
+
+          if (otherSize > 0 && stats.length === 3) {
+            stats.push({
+              lang: "Others",
+              percentage: Math.round((otherSize / totalSize) * 100),
+              color: "#888888"
+            });
+          }
+          setLanguagePercentages(stats);
+        }
+
+        // --- Calculate Contributions (Recent & Total) ---
+        let totalContributions = 0;
+        let profileViews = 0;
+
+        // Fetch Total Contributions from 3rd party or estimate
+        try {
+          // Attempt to get year total from a public API
+          const contribRes = await fetch('https://github-contributions-api.jogruber.de/v4/K-Nishant-18');
+          if (contribRes.ok) {
+            const contribData = await contribRes.json();
+
+            // Sum all years for All Time Contributions
+            totalContributions = Object.values(contribData.total || {}).reduce((a: any, b: any) => a + b, 0) as number;
+          }
+        } catch (e) {
+          console.warn("Contrib API failed", e);
+        }
+
+        // Fetch Profile Views from Komarev SVG
+        try {
+          // Add timestamp to prevent caching
+          const viewsRes = await fetch(`https://corsproxy.io/?https://komarev.com/ghpvc/?username=K-Nishant-18e&label=PROFILE+VIEWS&t=${new Date().getTime()}`);
+
+          if (viewsRes.ok) {
+            const svgText = await viewsRes.text();
+
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(svgText, "image/svg+xml");
+            const textNodes = xmlDoc.getElementsByTagName("text");
+            const lastNode = textNodes[textNodes.length - 1];
+
+            if (lastNode && lastNode.textContent) {
+              const countText = lastNode.textContent.trim();
+              const parsedCount = parseInt(countText.replace(/,/g, ''), 10);
+
+              if (!isNaN(parsedCount)) {
+                profileViews = parsedCount;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Profile Views extraction failed", e);
+        }
+
+        // If external API failed, use recent events * multiplier or just show recent
+        if (totalContributions === 0) totalContributions = (userData.public_repos * 5); // Fallback estimate
 
         setData({
-          user: {
-            ...userData,
-            followers: userData.followers,
-          },
-          repos: reposData,
-          languages,
+          user: userData,
+          repos: Array.isArray(reposData) ? reposData : [],
           stats: {
-            totalStars: reposData.reduce((acc: number, repo: any) => acc + repo.stargazers_count, 0),
-            totalCommits,
+            totalStars,
+            totalCommits: totalForks, // REPURPOSED field to hold Forks count
             totalContributions,
-            avgRepoSize: Math.round(totalSize / reposData.length),
-            mostStarredRepo: {
-              name: mostStarredRepo.name,
-              stars: mostStarredRepo.stargazers_count,
-              url: mostStarredRepo.html_url,
-            },
-            mostActiveRepo,
-            commitActivity,
-          },
+            profileViews
+          }
         });
-      } catch (error) {
-        console.error('Error fetching GitHub data:', error);
+      } catch (err: any) {
+        console.error('Error fetching GitHub data:', err);
+        setError(err.message || "Failed to load GitHub data");
       } finally {
         setLoading(false);
       }
@@ -166,163 +385,123 @@ const GitHubActivity: React.FC = () => {
     fetchGitHubData();
   }, []);
 
-  useEffect(() => {
-    if (!loading && data) {
-      gsap.fromTo(
-        cardsRef.current?.children,
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: cardsRef.current,
-            start: 'top 80%',
-          },
-        }
-      );
-
-      if (languageBarsRef.current) {
-        gsap.fromTo(
-          languageBarsRef.current.querySelectorAll('.language-bar'),
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            duration: 1.5,
-            ease: 'expo.out',
-            stagger: 0.1,
-            scrollTrigger: {
-              trigger: languageBarsRef.current,
-              start: 'top 75%',
-            },
-          }
-        );
-      }
-    }
-  }, [loading, data]);
-
   if (loading) {
     return (
-      <section className="min-h-screen flex items-center justify-center px-8 py-32 max-w-7xl mx-auto">
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-500 font-light">Loading GitHub data...</p>
+      <section className="min-h-[20vh] flex items-center justify-center bg-white dark:bg-black">
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-3 h-3 bg-black dark:bg-white animate-spin"></div>
+          <span className="font-mono text-[9px] uppercase tracking-widest text-gray-400">Loading_Metrics...</span>
         </div>
       </section>
     );
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
-      <section className="min-h-screen flex items-center justify-center px-8 py-32 max-w-7xl mx-auto">
-        <div className="text-center space-y-2">
-          <FiGithub className="mx-auto text-4xl text-gray-400" />
-          <p className="text-gray-500 font-light">Failed to load GitHub data</p>
-          <p className="text-sm text-gray-400 font-light">Please try again later</p>
+      <section className="min-h-[20vh] flex items-center justify-center bg-white dark:bg-black">
+        <div className="flex flex-col items-center gap-2 text-red-500">
+          <FiAlertCircle />
+          <span className="font-mono text-[9px] uppercase tracking-widest">{error || "Data Unavailable"}</span>
         </div>
       </section>
     );
   }
-
-  const sortedLanguages = Object.entries(data.languages)
-    .sort((a, b) => b[1].count - a[1].count)
-    .slice(0, 6);
-
-  const totalRepos = data.user.public_repos;
-  const languagePercentages = sortedLanguages.map(([lang, info]) => ({
-    lang,
-    percentage: Math.round((info.count / totalRepos) * 100),
-    color: info.color,
-    repos: info.repos,
-  }));
 
   return (
-    <section ref={sectionRef} className="min-h-screen lg:flex lg:items-center px-4 sm:px-6 py-20 sm:py-24 max-w-full mx-auto md:px-32 lg:relative">
+    <section
+      ref={sectionRef}
+      id="activity"
+      className="relative py-24 md:py-32 bg-white dark:bg-black font-sans text-black dark:text-white"
+    >
+      <div className="max-w-8xl mx-auto px-6 md:px-16 relative z-10">
 
-      {/* 1. This is the rotated side-title. It's now absolutely positioned. */}
-      <div ref={headingRef} className="hidden lg:block lg:absolute lg:left-0 lg:top-1/2 lg:mt-[-60px]  text-gray-600 dark:text-gray-400 ">
-        <h1 className="font-bold pt-0 pb-0 whitespace-nowrap transform lg:-translate-y-1/2 -rotate-90">
-          <span className="block lg:text-[5rem] leading-[1] tracking-[-0.04em] sm:tracking-[-0.08em]">GitHub</span>
-          <span className="block lg:text-[5rem] leading-[0.95] sm:leading-[1.4] -mt-3 sm:-mt-8  sm:tracking-[-0.08em]">Contributions</span>
-        </h1>
-      </div>
-
-      {/* 2. This is the main content block. It will now take up more space. */}
-      <div className="w-full lg:flex-1 lg:pl-[20rem] lg:mt-[-100px]">
-        <div className="mb-10 sm:mb-16">
-          {/* This title is hidden on large screens, where the side-title is visible */}
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-tight mb-4 sm:mb-8 lg:hidden">
-            GitHub Activity
-          </h2>
-          <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-2xl lg:hidden">
-            Development metrics and open source contributions
-          </p>
+        {/* --- Header --- */}
+        <div ref={titleRef} className="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-black/20 dark:border-white/20 pb-8">
+          <div className="md:col-span-8">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2 h-2 bg-red-600"></span>
+              <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">Activity_Log</span>
+            </div>
+            <h2 className="text-[10vw] md:text-[6vw] leading-[0.9] font-bold uppercase tracking-tighter mix-blend-difference">
+              <ScrollRevealText text="OPEN_SOURCE" />
+            </h2>
+          </div>
+          <div className="md:col-span-4 flex flex-col justify-end">
+            <p className="text-sm md:text-base font-light text-zinc-600 dark:text-zinc-400 text-justify max-w-xs ml-auto">
+              Tracking code contributions, library maintenance, and open-source experiments.
+              Real-time data from the GitHub ecosystem.
+            </p>
+          </div>
         </div>
 
-        <div ref={cardsRef} className="flex flex-col gap-4 sm:gap-5 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 mb-10 sm:mb-10 md:max-w-4xl">
-          <MetricCard
-            icon={<FiStar className="text-red-600" />}
-            title="Total Stars"
-            value={data.stats.totalStars}
-            description="Across repositories"
-          />
-          <MetricCard
-            icon={<FiCode className="text-red-600" />}
-            title="Public Repos"
-            value={data.user.public_repos}
-            description="Projects shared"
-          />
-          <MetricCard
-            icon={<FiGitCommit className="text-red-600" />}
-            title="Total Commits"
-            value={data.stats.totalCommits}
-            description="Code contributions"
-          />
-          <MetricCard
-            icon={<FiGitPullRequest className="text-red-600" />}
-            title="Contributions"
-            value={data.stats.totalContributions}
-            description="Open source impact"
-          />
-        </div>
+        {/* --- Profile & Metrics Split --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 mb-16 px-36">
 
-        <div className="flex flex-col gap-8 mb-12 sm:mb-16 lg:grid lg:grid-cols-3 lg:gap-8 md:max-w-4xl ">
-          <div className="lg:col-span-2 space-y-8">
-            <div>
-              <h3 className="text-xs sm:text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-2 sm:mb-4">
-                Language Distribution
-              </h3>
-              <div ref={languageBarsRef} className="space-y-3 sm:space-y-4">
-                {languagePercentages.map(({ lang, percentage, color }) => (
-                  <div key={lang} className="group">
-                    <div className="flex justify-between items-center mb-1 sm:mb-2">
-                      <span className="font-light text-sm sm:text-base">{lang}</span>
-                      <span className="text-xs sm:text-sm font-light text-gray-500 dark:text-gray-500">
-                        {percentage}%
-                      </span>
-                    </div>
-                    <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div
-                        className="language-bar h-full rounded-full"
-                        style={{
-                          width: `${percentage}%`,
-                          backgroundColor: color
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+          {/* LEFT: Profile Section */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <div className="flex flex-row items-center gap-4">
+              <div className="w-16 h-16 md:w-16 md:h-16 bg-black dark:bg-white overflow-hidden rounded-full grayscale mix-blend-multiply dark:mix-blend-normal flex-shrink-0">
+                <img src={data.user.avatar_url} alt={data.user.login} className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold uppercase tracking-tight">{data.user.login}</h3>
+                <a href={data.user.html_url} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-zinc-500 hover:text-red-500 transition-colors">
+                  @github_profile
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-row gap-8">
+              <div className="flex flex-col border-l-2 border-black dark:border-white pl-4">
+                <span className="text-3xl font-bold leading-none">{data.user.followers}</span>
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">Followers</span>
+              </div>
+              <div className="flex flex-col border-l-2 border-black dark:border-white pl-4">
+                <span className="text-3xl font-bold leading-none">{data.user.following}</span>
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">Following</span>
               </div>
             </div>
           </div>
 
-          <div>
-            <h3 className="text-xs sm:text-sm font-light tracking-wider text-gray-500 dark:text-gray-500 uppercase mb-2 sm:mb-4">
-              Recent Projects
-            </h3>
-            <div className="space-y-3 sm:space-y-4">
+          {/* RIGHT: Metrics Grid (Compacted) */}
+          <div ref={cardsRef} className="lg:col-span-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+            <MetricCard
+              icon={<FiStar />}
+              title="Total Stars"
+              value={data.stats.totalStars}
+              description="Cumulative stars across all public repositories."
+            />
+            <MetricCard
+              icon={<FiCode />}
+              title="Public Repos"
+              value={data.user.public_repos}
+              description="Active libraries & experimental projects."
+            />
+            <MetricCard
+              icon={<FiGitPullRequest />}
+              title="Contributions"
+              value={data.stats.totalContributions}
+              description="Total commits, issues, and PRs all years."
+            />
+            <MetricCard
+              icon={<FiEye />}
+              title="Profile Views"
+              value={data.stats.profileViews}
+              description="Total views on your GitHub profile."
+            />
+          </div>
+        </div>
+
+        {/* --- Detailed Stats Grid --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 px-36">
+
+          {/* Recent Projects (List) */}
+          <div className="lg:col-span-8">
+            <div className="flex items-baseline justify-between mb-8 border-b-2 border-black dark:border-white pb-2">
+              <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-tight">Recent Projects</h3>
+              <span className="font-mono text-xs uppercase tracking-widest text-red-600">Latest_Push</span>
+            </div>
+            <div className="flex flex-col">
               {data.repos.slice(0, 2).map((repo) => (
                 <RepoCard
                   key={repo.name}
@@ -335,114 +514,49 @@ const GitHubActivity: React.FC = () => {
                 />
               ))}
             </div>
+
+            <a
+              href={data.user.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-black text-white dark:bg-white dark:text-black text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity duration-300"
+            >
+              Visit My GitHub <FiArrowUpRight />
+            </a>
           </div>
+
+          {/* Language Distribution (Minimal) */}
+          <div ref={languageBarsRef} className="lg:col-span-4">
+            <div className="flex items-baseline justify-between mb-8 border-b-2 border-black dark:border-white pb-2">
+              <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-tight">Top language</h3>
+              <span className="font-mono text-xs uppercase tracking-widest text-red-600">Usage%</span>
+            </div>
+
+            <div className="space-y-6">
+              {languagePercentages.map(({ lang, percentage }) => (
+                <div key={lang} className="group cursor-default">
+                  <div className="flex justify-between items-end mb-2">
+                    <span className="text-lg font-bold">{lang}</span>
+                    <span className="font-mono text-sm">{percentage}%</span>
+                  </div>
+                  {/* Thin sharp line instead of rounded bar */}
+                  <div className="w-full h-[1px] bg-zinc-200 dark:bg-zinc-800 relative">
+                    <div
+                      className="bar-fill absolute top-0 left-0 h-[2px] -mt-[1px] bg-black dark:bg-white"
+                      style={{ width: `${percentage}%`, backgroundColor: "#dc2626" }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
 
-        <div className="text-right mt-8 sm:mt-12">
-          <a
-            href="https://github.com/K-Nishant-18"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-base sm:text-lg font-light tracking-wide hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
-          >
-            View Full GitHub Profile
-            <FiArrowUpRight className="ml-2" size={50} />
-          </a>
-        </div>
+        {/* Decorative Grid Lines if needed for 'Swiss' feel? Maybe optional */}
       </div>
     </section>
   );
 };
 
-const MetricCard: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  value: number;
-  description: string;
-}> = ({ icon, title, value, description }) => {
-  const numberRef = useRef<HTMLParagraphElement>(null);
-  useEffect(() => {
-    if (numberRef.current) {
-      gsap.fromTo(
-        numberRef.current,
-        { innerText: 0 },
-        {
-          innerText: value,
-          duration: 1.5,
-          ease: 'power1.out',
-          snap: { innerText: 1 },
-          onUpdate: function () {
-            if (numberRef.current) {
-              const val = parseInt(numberRef.current.innerText.replace(/,/g, ''));
-              numberRef.current.innerText = val.toLocaleString();
-            }
-          },
-          scrollTrigger: {
-            trigger: numberRef.current,
-            start: 'top 80%',
-            once: true,
-          },
-        }
-      );
-    }
-  }, [value]);
-  return (
-    <div className="backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-lg shadow-lg hover:shadow-sm transition-shadow p-4">
-      <div className="flex items-center mb-4">
-        <div className="p-2 rounded-full bg-gray-50 dark:bg-gray-800 mr-4">
-          {icon}
-        </div>
-        <h3 className="text-lg font-light">{title}</h3>
-      </div>
-      <p ref={numberRef} className="text-3xl font-light mb-1">{value.toLocaleString()}</p>
-      <p className="text-sm font-light text-gray-500 dark:text-gray-500">
-        {description}
-      </p>
-    </div>
-  );
-};
-
-const RepoCard: React.FC<{
-  name: string;
-  stars: number;
-  forks: number;
-  language?: string;
-  url: string;
-  updated: string;
-}> = ({ name, stars, forks, language, url, updated }) => (
-  <a
-    href={url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="block backdrop-blur-xl bg-gray-200 dark:bg-gray-900/30 border border-white/20 dark:border-gray-300/30 rounded-lg shadow-lg hover:shadow-sm transition-shadow group p-3"
-  >
-    <div className="flex justify-between items-start mb-3">
-      <h3 className="text-lg font-light truncate">{name}</h3>
-      <FiArrowUpRight className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400" />
-    </div>
-
-    {language && (
-      <span className="inline-block px-2 py-1 text-xs font-light rounded-full bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 mb-3">
-        {language}
-      </span>
-    )}
-
-    <div className="flex justify-between items-center text-sm font-light text-gray-500 dark:text-gray-500">
-      <div className="flex space-x-4">
-        <div className="flex items-center space-x-1">
-          <FiStar size={14} />
-          <span>{stars.toLocaleString()}</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <FiGitPullRequest size={14} />
-          <span>{forks.toLocaleString()}</span>
-        </div>
-      </div>
-      <span className="text-xs font-light">
-        {new Date(updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
-      </span>
-    </div>
-  </a>
-);
-
-export default GitHubActivity;
+export default DevActivity;

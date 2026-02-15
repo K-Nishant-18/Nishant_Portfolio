@@ -78,7 +78,11 @@ const Navigation: React.FC = () => {
             className="text-xl font-light tracking-wider"
             style={{ cursor: 'none' }}
           >
-            <span className='text-red-600 font-bold'>KUMAR </span>NISHANT
+            <div className="flex items-center tracking-tighter text-xl">
+              <span className="text-red-600 font-bold">KUMAR</span>
+              <span className="font-light ml-1 dark:text-white">NISHANT</span>
+              <span className="text-red-600 font-bold ml-0.5">.</span>
+            </div>
           </TransitionLink>
 
           {/* Desktop Navigation */}

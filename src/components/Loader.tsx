@@ -2,7 +2,7 @@ import React from "react";
 
 const Loader: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#faf9f7]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#000000]">
       <img
         src="/loader2.gif"
         alt="Loading..."

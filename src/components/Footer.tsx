@@ -1,28 +1,18 @@
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { Link, useLocation } from 'react-router-dom';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FiArrowUpRight, FiInstagram, FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 
 const Footer: React.FC = () => {
-  const footerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [time, setTime] = useState<string>("");
 
   useEffect(() => {
-    gsap.fromTo(
-      contentRef.current?.children,
-      { y: 30, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: footerRef.current,
-          start: 'top 90%',
-        },
-      }
-    );
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const scrollToSection = (sectionId: string) => {
@@ -32,102 +22,121 @@ const Footer: React.FC = () => {
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const socialLinks = [
+    { name: "LINKEDIN", url: "https://linkedin.com/in/k-nishant-18", icon: <FiLinkedin /> },
+    { name: "GITHUB", url: "https://github.com/K-Nishant-18", icon: <FiGithub /> },
+    { name: "EMAIL", url: "mailto:me.knishant@gmail.com", icon: <FiMail /> },
+    { name: "INSTAGRAM", url: "https://instagram.com/nishant_kumar_18", icon: <FiInstagram /> },
+  ];
+
+  const navLinks = [
+    { name: "HOME", action: () => scrollToTop() },
+    { name: "ABOUT", action: () => scrollToSection('about') },
+    { name: "WORK", action: () => scrollToSection('projects') },
+    { name: "CONTACT", action: () => scrollToSection('contact') }, // Assuming contact section exists or just footer
+  ];
+
   return (
-    <footer
-      ref={footerRef}
-      className="px-8 pb-12 pt-0"
-    >
-      <div className="max-w-full mx-auto border-t-2 border-gray-200 dark:border-gray-600 ">
-        <div ref={contentRef} className="space-y-12 max-w-7xl justify-between mx-auto">
-          {/* <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4">
-                Navigation
-              </h3>
-              <div className="space-y-2">
-                {['Home', 'About', 'Work', 'Contact'].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase() === 'work' ? 'projects' : item.toLowerCase())}
-                    className="block text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-                  >
-                    {item}
-                  </button>
-                ))}
+    <footer className="bg-white dark:bg-black text-black dark:text-white border-t border-black/10 dark:border-white/10 font-sans">
+      <div className="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-4 min-h-[400px]">
+        {/* Column 1: Brand & Context */}
+        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col justify-between">
+          <div>
+            <Link to="/" onClick={scrollToTop} className="block group">
+              <div className="flex items-center text-2xl sm:text-3xl md:text-4xl lg:text-4xl tracking-tighter">
+                <span className="text-red-600 font-bold">KUMAR</span>
+                <span className="font-light ml-2 dark:text-white">NISHANT</span>
+                <span className="text-red-600 font-bold ml-1">.</span>
               </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4">
-                Connect
-              </h3>
-              <div className="space-y-2">
-                <a
-                  href="mailto:me.knishant@gmail.com"
-                  className="block text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-                >
-                  Email
-                </a>
-                <a
-                  href="https://linkedin.com/in/k-nishant-18"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-                >
-                  LinkedIn
-                </a>
-                <a
-                  href="https://github.com/K-Nishant-18"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-                >
-                  GitHub
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4">
-                Location
-              </h3>
-              <p className="text-lg font-light">
-                Bhagalpur, India
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4">
-                Status
-              </h3>
-              <p className="text-lg font-light">
-                Available for projects
-              </p>
-            </div>
-          </div> */}
-
-          <div className="max-w-7xl pt-10  flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-xl font-light tracking-wider">
-              <Link 
-                          to="/" 
-                          className="text-xl font-light tracking-wider"
-                          style={{ cursor: 'none' }} // Added cursor none to logo link
-                        >
-                         <span className='text-red-600 font-bold'>KUMAR </span>NISHANT
-                        </Link>
-            </div>
-            <div className=" flex flex-wrap justify-center gap-6">
-                {['Home', 'About', 'Work', 'Contact'].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase() === 'work' ? 'projects' : item.toLowerCase())}
-                    className="block text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
+            </Link>
+            <p className="font-mono text-xs mt-6 text-gray-500 uppercase tracking-widest">
+              Digital Craftsman<br />
+              Backend & DevOps Engineer
+            </p>
           </div>
+          <div className="mt-12 md:mt-0 font-mono text-xs uppercase text-gray-400">
+            <div className="mb-1">Based in India</div>
+            <div className="text-black dark:text-white">{time} IST</div>
+          </div>
+        </div>
+
+        {/* Column 2: Index / Navigation */}
+        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col">
+          <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Index</div>
+          <ul className="space-y-4 flex-grow">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <button
+                  onClick={link.action}
+                  className="text-2xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
+                >
+                  {link.name}
+                  <span className="opacity-0 group-hover:opacity-100 text-sm transition-opacity duration-300">→</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 3: Socials */}
+        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col">
+          <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Connect</div>
+          <ul className="space-y-4 flex-grow">
+            {socialLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-2xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
+                >
+                  {link.name}
+                  <FiArrowUpRight className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 4: Status & CTA */}
+        <div className="p-8 md:p-12 flex flex-col justify-between">
+          <div>
+            <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Status</div>
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              <span className="font-mono text-sm font-bold animate-pulse">OPEN FOR WORK</span>
+            </div>
+          </div>
+
+          <div className="mt-12 md:mt-0">
+            <button
+              onClick={scrollToTop}
+              className="group flex flex-col items-start gap-2"
+            >
+              <span className="font-mono text-xs text-gray-500 uppercase tracking-widest group-hover:text-black dark:group-hover:text-white transition-colors">Back to Top</span>
+              <div className="w-10 h-10 border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all duration-300">
+                ↑
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-black/10 dark:border-white/10 py-6 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest">
+        <div>
+          &copy; {new Date().getFullYear()} Kumar Nishant. All Rights Reserved.
+        </div>
+        <div className="flex gap-6">
+          <span>Designed & Built by Me</span>
+          <span>System Status: Operational</span>
         </div>
       </div>
     </footer>

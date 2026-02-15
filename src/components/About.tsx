@@ -2,15 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiCornerDownRight } from 'react-icons/fi';
+import ScrollRevealText from './ScrollRevealText';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const AwardWinningAbout: React.FC = () => {
+    // --- Refs and State ---
     const sectionRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
-
-    // --- Refs and State from Original for Cursor Trail ---
     const stackContainerRef = useRef<HTMLDivElement>(null);
     const lastTimeRef = useRef<number>(0);
     const [isTouch, setIsTouch] = useState(false);
@@ -18,73 +18,19 @@ const AwardWinningAbout: React.FC = () => {
     // --- Image array for the trail effect ---
     const images = Array.from({ length: 10 }, (_, i) => `/images/${i + 1}.png`);
 
-    // --- Effect for all GSAP animations and event listeners ---
+    // --- Effect for Touch Detection only ---
     useEffect(() => {
-        // --- Check for touch device once ---
         const checkTouch = () => {
             setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
         };
         checkTouch();
         window.addEventListener('resize', checkTouch);
-
-        // --- GSAP Context for proper setup and cleanup ---
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 60%",
-                }
-            });
-
-            // 1. Grid Lines Reveal
-            tl.from(".grid-line", {
-                scaleY: 0,
-                duration: 1.2,
-                stagger: 0.1,
-                ease: "power3.inOut",
-                transformOrigin: "top"
-            })
-                // 2. Crosshairs Reveal
-                .from(".grid-crosshair", {
-                    scale: 0,
-                    opacity: 0,
-                    duration: 0.5,
-                    stagger: 0.05,
-                    ease: "back.out(1.7)"
-                }, "-=0.8")
-                // 3. Title Reveal
-                .fromTo(".about-title-char", {
-                    y: 100,
-                    opacity: 0
-                }, {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    stagger: 0.03,
-                    ease: "power4.out"
-                }, "-=0.5")
-                // 4. Content Reveal
-                .from(".about-content-item", {
-                    y: 30,
-                    opacity: 0,
-                    duration: 0.8,
-                    stagger: 0.1,
-                    ease: "power2.out"
-                }, "-=0.8");
-
-        }, sectionRef);
-
-        // --- Cleanup function ---
-        return () => {
-            ctx.revert();
-            window.removeEventListener('resize', checkTouch);
-        };
+        return () => window.removeEventListener('resize', checkTouch);
     }, []);
 
-    // --- Mouse Move Handler for Image Trail (from original) ---
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const now = Date.now();
-        if (now - lastTimeRef.current < 50) return; // Throttle: run every 50ms max
+        if (now - lastTimeRef.current < 50) return;
         lastTimeRef.current = now;
 
         if (!sectionRef.current || !stackContainerRef.current) return;
@@ -93,43 +39,40 @@ const AwardWinningAbout: React.FC = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Determine which image to show based on horizontal position
         const segment = rect.width / images.length;
         const index = Math.min(Math.floor(x / segment), images.length - 1);
 
         const img = document.createElement('img');
         img.src = images[index];
         img.alt = `Trail image ${index}`;
-        // Styling for the trailing image (from original)
         img.className = 'absolute w-24 h-40 object-cover grayscale brightness-125 contrast-125 border border-black dark:border-white pointer-events-none z-[60]';
         img.style.left = `${x}px`;
         img.style.top = `${y}px`;
-        img.style.transform = `translate(-50%, -50%) scale(0.8)`; // Center on cursor and start smaller
+        img.style.transform = `translate(-50%, -50%) scale(0.8)`;
         img.style.opacity = '0';
 
         stackContainerRef.current.appendChild(img);
 
-        // Animate the image in and out
-        gsap.timeline({ onComplete: () => img.remove() })
-            .to(img, {
-                opacity: 0.8,
-                scale: 1,
-                rotation: gsap.utils.random(-5, 5),
-                duration: 0.2,
-                ease: 'power2.out',
-            })
-            .to(img, {
-                opacity: 0,
-                scale: 0.5,
-                duration: 0.3,
-                ease: 'power2.in',
-            }, ">0.2"); // Start fading out after 0.2s
+        gsap.to(img, {
+            opacity: 0.8,
+            scale: 1,
+            rotation: gsap.utils.random(-5, 5),
+            duration: 0.2,
+            ease: 'power2.out',
+            onComplete: () => {
+                gsap.to(img, {
+                    opacity: 0,
+                    scale: 0.5,
+                    duration: 0.3,
+                    ease: 'power2.in',
+                    onComplete: () => img.remove()
+                });
+            }
+        });
     };
 
-    // --- Mouse Leave Handler to clean up images (from original) ---
     const handleMouseLeave = () => {
         if (!stackContainerRef.current) return;
-        // Fade out all currently visible images quickly
         gsap.to(stackContainerRef.current.children, {
             opacity: 0,
             scale: 0.5,
@@ -144,11 +87,65 @@ const AwardWinningAbout: React.FC = () => {
         });
     };
 
+    // --- Stats Typing/Counting Animation ---
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            gsap.utils.toArray<HTMLElement>('.stat-value').forEach((el) => {
+                const originalText = el.innerText;
+                const isNumber = /^[0-9]/.test(originalText);
+
+                ScrollTrigger.create({
+                    trigger: el,
+                    start: "top 85%",
+                    onEnter: () => {
+                        if (isNumber) {
+                            // Counting Animation for Numbers (02+, 05+)
+                            const numValue = parseInt(originalText) || 0;
+                            const suffix = originalText.replace(/[0-9]/g, '');
+                            const proxy = { val: 0 };
+
+                            gsap.to(proxy, {
+                                val: numValue,
+                                duration: 1.5,
+                                ease: "power3.out",
+                                onUpdate: () => {
+                                    el.innerText = Math.floor(proxy.val).toString().padStart(2, '0') + suffix;
+                                }
+                            });
+                        } else {
+                            // Typing/Scramble Animation for Text (YES, ACT)
+                            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                            const targetText = originalText;
+                            const proxy = { val: 0 };
+
+                            gsap.to(proxy, {
+                                val: targetText.length,
+                                duration: 1,
+                                ease: "none",
+                                onUpdate: () => {
+                                    const progress = Math.floor(proxy.val);
+                                    // Mix of real chars and random chars
+                                    const realPart = targetText.substring(0, progress);
+                                    const randomPart = targetText.substring(progress).split('').map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
+                                    el.innerText = realPart + (progress < targetText.length ? randomPart.charAt(0) : ''); // Show 1 random char ahead
+                                },
+                                onComplete: () => {
+                                    el.innerText = targetText;
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        }, sectionRef);
+        return () => ctx.revert();
+    }, []);
+
     const stats = [
         { label: "EXP_YRS", value: "02+", desc: "Years Experience" },
-        { label: "PRJ_CMP", value: "05+", desc: "Projects Completed" },
-        { label: "AI_RDY", value: "YES", desc: "Future Ready" },
-        { label: "STATUS", value: "ACT", desc: "Always Learning", active: true },
+        { label: "PRJ_CMP", value: "10+", desc: "Projects Completed" },
+        { label: "CLOUD", value: "AWS", desc: "Native Solutions" },
+        { label: "AVAIL", value: "OPEN", desc: "For New Oppurtunities", active: true },
     ];
 
     return (
@@ -157,7 +154,7 @@ const AwardWinningAbout: React.FC = () => {
             id="about"
             onMouseMove={!isTouch ? handleMouseMove : undefined}
             onMouseLeave={!isTouch ? handleMouseLeave : undefined}
-            className="relative font-sans py-24 md:py-32 px-6 md:px-12 overflow-hidden cursor-crosshair min-h-screen flex flex-col justify-center"
+            className="relative font-sans py-24 md:py-32 px-6 md:px-12 overflow-hidden cursor-crosshair min-h-75vh flex flex-col justify-center"
         >
             {/* --- Swiss Grid Background --- */}
             <div className="absolute inset-0 z-0 pointer-events-none">
@@ -193,16 +190,14 @@ const AwardWinningAbout: React.FC = () => {
                         <FiCornerDownRight className="text-red-500 w-6 h-6" />
                         <span className="font-mono text-xs uppercase tracking-widest text-red-500">Identity // Bio</span>
                     </div>
-                    <h2 ref={titleRef} className="text-[10vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-20 select-none pointer-events-none">
-                        {"WHO_I_AM".split('').map((char, i) => (
-                            <span key={i} className="about-title-char inline-block">{char}</span>
-                        ))}
+                    <h2 ref={titleRef} className="text-[10vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-40 select-none pointer-events-none">
+                        <ScrollRevealText text="WHO_" />
                     </h2>
-                    <div className="absolute top-1/2 left-0 md:left-1/4 transform -translate-y-1/2 w-full md:w-2/3 pl-6 border-l-2 border-red-500">
-                        <p className="about-content-item text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference">
+                    <div className="about-content-item absolute top-1/2 left-0 md:left-1/4 ml-20 transform -translate-y-1/2 w-full md:w-2/3 pl-6 border-l-2 border-red-500">
+                        <p className="text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference">
                             I architect <span className="font-bold">high-performance backend ecosystems</span> using <span className="font-bold text-red-500">Java</span> and <span className="font-bold text-red-500">Spring Boot</span>. My expertise lies in leveraging <span className="font-bold">Spring MVC</span>, <span className="font-bold">Spring Security</span>, and <span className="font-bold">JPA</span> to engineer robust APIs and optimize complex data layers.
                         </p>
-                        <p className="about-content-item text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference mt-6">
+                        <p className="text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference mt-6">
                             Beyond key-strokes, I leverage <span className="font-bold">DevOps</span> principles to bridge development and operations. I utilize <span className="font-bold">CI/CD</span>, <span className="font-bold">Linux</span>, and <span className="font-bold">AWS</span> alongside <span className="font-bold">Docker</span> to orchestrate resilient infrastructure, ensuring seamless, automated delivery.
                         </p>
                     </div>
@@ -216,7 +211,7 @@ const AwardWinningAbout: React.FC = () => {
                                 <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500 group-hover:text-red-500 transition-colors">{stat.label}</span>
                                 {stat.active && <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>}
                             </div>
-                            <div className="text-4xl md:text-5xl font-mono font-light mb-2">{stat.value}</div>
+                            <div className="stat-value text-4xl md:text-5xl font-mono font-light mb-2">{stat.value}</div>
                             <div className="text-xs font-mono uppercase text-gray-400">{stat.desc}</div>
                         </div>
                     ))}

@@ -1,189 +1,204 @@
-// src/components/Timeline.tsx
-
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowUpRight } from 'react-icons/fi';
+import ScrollRevealText from './ScrollRevealText';
 
-// Register the GSAP plugin
 gsap.registerPlugin(ScrollTrigger);
 
-// --- Milestone Data ---
 const milestones = [
     {
         year: '2022',
-        title: 'First Lines of Code',
-        description: 'Discovered programming through Java fundamentals and explored web development basics with HTML & CSS.',
-        tags: ['Java', 'OOP', 'HTML', 'CSS']
-    },
-
-    {
-        year: '2023',
-        title: 'Web Development Beginnings',
-        description: 'Built and deployed end-to-end applications using Java Spring Boot and React.js.',
-        tags: ['Spring Boot', 'MySQL', 'React']
+        title: 'Genesis',
+        description: 'First lines of code written. Explored the fundamentals of Java and web development with HTML & CSS.',
+        tags: ['Java', 'OOP', 'HTML/CSS']
     },
     {
         year: '2023',
-        title: 'Starting DSA',
-        description: 'Began my journey into Data Structures and Algorithms to strengthen problem-solving skills.',
-        tags: ['DSA', 'Problem Solving']
+        title: 'Full Stack',
+        description: 'Built and deployed end-to-end applications using Spring Boot and React.js. Deep dive into databases.',
+        tags: ['Spring Boot', 'React', 'MySQL']
+    },
+    {
+        year: '2023',
+        title: 'Algorithms',
+        description: 'Intensive focus on Data Structures and Algorithms to sharpen problem-solving capabilities.',
+        tags: ['DSA', 'LeetCode', 'Optimization']
     },
     {
         year: '2024',
-        title: 'Started Hackathon Journey',
-        description: 'Participated in my first hackathons, exploring innovation, teamwork, and rapid problem-solving.',
-        tags: ['Hackathons', 'Innovation', 'Teamwork']
+        title: 'Innovation',
+        description: 'Participated in competitive hackathons, fostering rapid prototyping and teamwork skills.',
+        tags: ['Hackathons', 'Teamwork', 'Rapid Dev']
     },
     {
         year: '2024',
-        title: 'Open Source Contributions',
-        description: 'Started contributing to open-source projects on GitHub, collaborating with global developers.',
-        tags: ['Open Source', 'GitHub', 'Collaboration']
+        title: 'Open Source',
+        description: 'Contributed to global repositories on Git, learning collaborative workflows and code reviews.',
+        tags: ['Open Source', 'GitHub', 'CI/CD']
     },
     {
         year: '2025',
-        title: 'Exploring Cloud & DevOps',
-        description: 'Experimented with Docker, Kubernetes, and cloud platforms to learn modern deployment practices.',
-        tags: ['Docker', 'Kubernetes', 'Cloud']
+        title: 'Cloud Native',
+        description: 'Mastering Docker, Kubernetes, and cloud infrastructure for scalable deployment.',
+        tags: ['Docker', 'K8s', 'AWS']
     },
 ];
 
 const Timeline: React.FC = () => {
-    const sectionRef = useRef<HTMLDivElement>(null);
-    const timelineLineRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
-        const timelineItems = gsap.utils.toArray('.timeline-item') as HTMLElement[];
-        if (!timelineItems.length) return;
-
-        // Use a GSAP context for safe cleanup
         const ctx = gsap.context(() => {
-            // Animate the main timeline spine (this is not responsive, it's the same for all)
-            gsap.from(timelineLineRef.current, {
-                scaleY: 0,
-                duration: 1.5,
-                ease: 'power3.out',
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: 'top 70%',
-                    end: 'top 40%',
-                    scrub: 1,
-                }
+            const items = gsap.utils.toArray('.timeline-item');
+
+            items.forEach((item: any) => {
+                const content = item.querySelector('.timeline-content');
+                const arrow = item.querySelector('.timeline-arrow');
+                const title = item.querySelector('.timeline-title');
+                const year = item.querySelector('.timeline-year-text');
+                const line = item.querySelector('.timeline-progress-line');
+
+                // Initial State
+                gsap.set(content, { height: 0, autoAlpha: 0 });
+                if (title) gsap.set(title, { opacity: 1, x: 0 });
+                gsap.set(year, { opacity: 1, color: 'inherit' });
+                gsap.set(line, { height: '0%', opacity: 0 });
+
+                // Hover Logic
+                item.addEventListener('mouseenter', () => expandItem(item));
+                item.addEventListener('mouseleave', () => collapseItem(item));
             });
 
-            // CORRECTED: Use matchMedia for responsive animations
-            ScrollTrigger.matchMedia({
+            function expandItem(item: HTMLElement) {
+                const content = item.querySelector('.timeline-content');
+                const arrow = item.querySelector('.timeline-arrow');
+                const title = item.querySelector('.timeline-title');
+                const year = item.querySelector('.timeline-year-text');
+                const line = item.querySelector('.timeline-progress-line');
 
-                // --- DESKTOP ANIMATION ---
-                "(min-width: 1024px)": function () {
-                    timelineItems.forEach((item) => {
-                        const isLeft = item.classList.contains('timeline-item-left');
-                        gsap.from(item, {
-                            opacity: 0,
-                            x: isLeft ? -50 : 50, // Horizontal animation is active
-                            duration: 2,
-                            ease: 'power3.out',
-                            scrollTrigger: {
-                                trigger: item,
-                                start: 'top 55%',
-                                toggleActions: 'play none none reverse',
-                            }
-                        });
-                    });
-                },
+                gsap.to(content, { height: "auto", autoAlpha: 1, duration: 0.4, ease: "power3.out" }); // Faster
+                gsap.to(arrow, { rotation: 45, opacity: 1, duration: 0.3 });
 
-                // --- MOBILE ANIMATION ---
-                "(max-width: 1023px)": function () {
-                    timelineItems.forEach((item) => {
-                        gsap.from(item, {
-                            opacity: 0,
-                            y: 20, // No horizontal 'x' animation
-                            duration: 1,
-                            ease: 'power3.out',
-                            scrollTrigger: {
-                                trigger: item,
-                                start: 'top 85%',
-                                toggleActions: 'play none none reverse',
-                            }
-                        });
+                // Hollow Title Effect
+                if (title) {
+                    title.classList.add('text-stroke-responsive');
+                    gsap.to(title, {
+                        color: 'transparent',
+                        opacity: 0.3,
+                        x: 10,
+                        scale: 1.05,
+                        originLeft: 0,
+                        duration: 0.3
                     });
                 }
-            });
 
-        }, sectionRef);
+                gsap.to(year, { opacity: 0.8, scale: 1.5, color: "#ef4444", duration: 0.3 });
+                gsap.to(line, { height: "100%", opacity: 1, duration: 0.4, ease: "power2.out" });
 
-        return () => ctx.revert(); // Cleanup GSAP context
+                gsap.to(item, {
+                    backgroundColor: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+                    duration: 0.3
+                });
+            }
+
+            function collapseItem(item: HTMLElement) {
+                const content = item.querySelector('.timeline-content');
+                const arrow = item.querySelector('.timeline-arrow');
+                const title = item.querySelector('.timeline-title');
+                const year = item.querySelector('.timeline-year-text');
+                const line = item.querySelector('.timeline-progress-line');
+
+                gsap.to(content, { height: 0, autoAlpha: 0, duration: 0.3, ease: "power3.in" });
+                gsap.to(arrow, { rotation: 0, opacity: 0.3, duration: 0.3 });
+
+                // Revert Title
+                if (title) {
+                    title.classList.remove('text-stroke-responsive');
+                    gsap.to(title, {
+                        color: 'inherit',
+                        opacity: 0.8,
+                        x: 0,
+                        scale: 1,
+                        duration: 0.3
+                    });
+                }
+
+                gsap.to(year, { opacity: 0.8, scale: 1, color: "inherit", duration: 0.3 });
+                gsap.to(line, { height: "0%", opacity: 0, duration: 0.3 });
+
+                gsap.to(item, { backgroundColor: 'transparent', duration: 0.3 });
+            }
+
+        }, containerRef);
+        return () => ctx.revert();
     }, []);
 
     return (
-        // The `overflow-hidden` class is no longer needed here
-        <section ref={sectionRef} className="font-sans py-24 sm:py-32">
-            <div className="max-w-7xl mx-auto px-6 lg:px-8">
-
-                {/* --- Header Section --- */}
-                <div className="max-w-3xl mx-auto mb-16 lg:mb-24 text-center">
-                    <h2 className="text-4xl md:text-6xl font-light tracking-tight text-gray-900 dark:text-white">
-                        Changelog
+        <section ref={containerRef} id="timeline" className="bg-white dark:bg-black font-sans text-black dark:text-white py-24 md:py-32">
+            {/* Header: Skills Style (Right Aligned) */}
+            <div className="max-w-7xl mx-auto px-6 md:px-12 mb-0 border-b border-black dark:border-white/40 pb-12">
+                <div className="flex flex-col items-end">
+                    <h2 className="text-[10vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-30 select-none pointer-events-none">
+                        <ScrollRevealText text="DIGITAL" />
                     </h2>
-                    <p className="mt-6 text-lg font-light text-gray-600 dark:text-gray-400">
-                        A chronological journey through my development career.
-                    </p>
+                    <div className="flex flex-col md:flex-row w-full justify-between items-end md:items-end gap-6">
+                        {/* Description (Left Side now) */}
+                        <p className="font-mono text-sm max-w-sm text-neutral-500 dark:text-neutral-400 text-left order-2 md:order-1 self-start md:self-end pb-2">
+                             // SYSTEM_LOGS_V3.0<br />
+                            COMMITS_&_MILESTONES
+                        </p>
+
+                        <span className="text-[10vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-black dark:text-white order-1 md:order-2">
+                            <ScrollRevealText text="EVOLUTION_" />
+                        </span>
+                    </div>
                 </div>
+            </div>
 
-                {/* --- Timeline Structure --- */}
-                <div className="relative pb-4">
-                    {/* The central timeline spine */}
-                    <div
-                        ref={timelineLineRef}
-                        className="absolute left-4 lg:left-1/2 w-0.5 h-full bg-gray-700 dark:bg-gray-500 origin-top"
-                    ></div>
+            <div className="max-w-5xl mx-auto">
+                {milestones.map((item, index) => (
+                    <div key={index} className="timeline-item border-b border-black/10 dark:border-white/10 group cursor-default transition-colors overflow-hidden relative">
+                        <div className="py-6 md:py-8 px-6 md:px-12 flex flex-col md:flex-row items-start md:items-baseline gap-4 md:gap-8 relative z-10">
 
-                    <div className="space-y-12 lg:space-y-0">
-                        {milestones.map((item, index) => {
-                            const isLeft = index % 2 === 0;
-                            return (
-                                <div
-                                    key={index}
-                                    className={`timeline-item ${isLeft ? 'timeline-item-left' : 'timeline-item-right'} 
-                                     relative flex items-start lg:grid lg:grid-cols-12 gap-x-8 mb-0 lg:mb-0`}
-                                >
-                                    {/* --- Content Block --- */}
-                                    <div className={`
-                                        col-span-12 lg:col-span-5
-                                        ${isLeft ? 'lg:col-start-1' : 'lg:col-start-8'}
-                                        ${isLeft ? 'lg:text-right' : 'lg:text-left'}
-                                        pl-10 lg:pl-0 lg:pr-0
-                                    `}>
-                                        <p className="text-5xl font-light text-red-700 dark:text-red-700">{item.year}</p>
-                                        <h3 className="mt-4 text-2xl font-light tracking-tight text-gray-900 dark:text-white">{item.title}</h3>
-                                        <p className="mt-3 text-lg font-light text-gray-600 dark:text-gray-400">{item.description}</p>
-                                        <div className={`mt-4 flex flex-wrap gap-2 ${isLeft ? 'lg:justify-end' : 'lg:justify-start'}`}>
-                                            {item.tags.map(tag => (
-                                                <span
-                                                    key={tag}
-                                                    className="text-sm font-light tracking-wide text-gray-500 px-3 py-1 border border-gray-200 dark:border-gray-800"
-                                                >
-                                                    {tag}
+                            {/* Year Column with Active Line */}
+                            <div className="w-16 md:w-20 shrink-0 pt-1 relative h-full min-h-[2rem]">
+                                <span className="timeline-year-text font-mono text-sm md:text-sm tracking-widest opacity-60 transition-colors duration-300 block origin-left">
+                                    {item.year}
+                                </span>
+                                {/* Vertical Progress Line */}
+                                <div className="timeline-progress-line absolute left-0 top-0 w-[2px] bg-red-500 h-0 opacity-0 md:-left-6"></div>
+                            </div>
+
+                            {/* Content Column */}
+                            <div className="flex-grow w-full">
+                                <div className="flex items-center justify-between w-full">
+                                    <h3 className="timeline-title text-2xl md:text-4xl font-bold uppercase tracking-tight transition-all duration-300 origin-left">
+                                        {item.title}
+                                    </h3>
+                                    <FiArrowUpRight className="timeline-arrow w-5 h-5 shrink-0 transition-transform duration-300 opacity-30" />
+                                </div>
+
+                                {/* Expandable Content Area */}
+                                <div className="timeline-content h-0 overflow-hidden opacity-0 will-change-[height,opacity]">
+                                    <div className="pt-4 md:pt-6 max-w-2xl">
+                                        <p className="font-sans text-base md:text-lg opacity-100 leading-relaxed mb-4 font-light">
+                                            {item.description}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2 pb-2">
+                                            {item.tags.map(t => (
+                                                <span key={t} className="text-xs font-mono uppercase tracking-wider border border-black/20 dark:border-white/20 px-3 py-1 rounded-full opacity-60">
+                                                    {t}
                                                 </span>
                                             ))}
                                         </div>
                                     </div>
-
-                                    {/* --- Connector Dot --- */}
-                                    <div className={`
-                                        absolute lg:relative w-full 
-                                        ${isLeft ? 'lg:col-start-6' : 'lg:col-start-7'}
-                                        flex justify-start lg:justify-center items-center h-full
-                                    `}>
-                                        <div className="absolute left-4 lg:left-1/2 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-white dark:bg-black border-2 border-gray-800 dark:border-gray-500"></div>
-                                    </div>
                                 </div>
-                            );
-                        })}
+                            </div>
 
+                        </div>
                     </div>
-                </div>
+                ))}
             </div>
         </section>
     );

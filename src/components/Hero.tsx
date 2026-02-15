@@ -152,7 +152,7 @@ const Hero: React.FC = () => {
                 </span>
               ))}
             </span>
-            <span className="text-[17vw] block -mt-4">
+            <span className="text-[19vw] block -mt-4">
               {"NISHANT_".split('').map((char, i) => (
                 <span key={`n-${i}`} className="hero-char inline-block tracking-[-0.08em] hover:text-transparent hover:text-stroke-black dark:hover:text-stroke-white transition-all duration-300 cursor-default">
                   {char}
@@ -200,26 +200,7 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      <style>{`
-          .text-stroke-black {
-              -webkit-text-stroke: 1px black;
-          }
-           .text-stroke-white {
-              -webkit-text-stroke: 1px white;
-          }
-           .text-stroke-black-strong {
-              -webkit-text-stroke: 2px black;
-          }
-           .text-stroke-white-strong {
-              -webkit-text-stroke: 2px white;
-          }
-           .text-stroke-responsive {
-              -webkit-text-stroke: 2px black;
-           }
-           .dark .text-stroke-responsive {
-              -webkit-text-stroke: 2px white;
-           }
-      `}</style>
+
     </div>
   );
 };

@@ -1,211 +1,181 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiArrowUpRight, FiMail, FiMapPin, FiClock } from 'react-icons/fi';
+import { FiArrowUpRight, FiArrowRight, FiCheck } from 'react-icons/fi';
+import ScrollRevealText from './ScrollRevealText'; // Import the new component
 
 const Contact: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null); // Ref for the h2 element
-
-  const contactMethods = [
-    {
-      label: 'Email',
-      value: 'me.knishant@gmail.com',
-      href: 'mailto:me.knishant@gmail.com',
-      icon: FiMail,
-    },
-    {
-      label: 'LinkedIn',
-      value: 'linkedin.com/in/k-nishant-18',
-      href: 'https://linkedin.com/in/k-nishant-18',
-      icon: FiArrowUpRight,
-    },
-    {
-      label: 'GitHub',
-      value: 'github.com/K-Nishant-18',
-      href: 'https://github.com/K-Nishant-18',
-      icon: FiArrowUpRight,
-    },
-  ];
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
 
-    // Existing animation for contentRef children
-    gsap.fromTo(
-      contentRef.current?.children,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
+      // 1. Header Animation is now handled by distinct ScrollRevealText components!
+      // We don't need to manually stagger ".contact-text-char" here anymore.
+
+      // 2. Info Text: Smooth Slide Up
+      gsap.from(".contact-info-text", {
+        y: 20,
+        opacity: 0,
         duration: 1,
-        stagger: 0.2,
-        ease: 'power2.out',
+        stagger: 0.1,
+        delay: 0.5,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 80%',
-        },
-      }
-    );
+          start: "top 60%",
+          toggleActions: "play none none reverse"
+        }
+      });
 
-    // Animation for "Let's Collaborate" heading
-    gsap.fromTo(
-      headingRef.current?.querySelectorAll('span'),
-      { 
-        y: 40, 
-        opacity: 0, 
-        scale: 0.8, 
-        rotationX: 30 
-      },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        rotationX: 0,
-        duration: 2.2,
-        stagger: 0.3,
-        ease: 'elastic.out(1, 0.5)',
+      // 3. Form: Elastic Stagger
+      gsap.from(".contact-form-item", {
+        y: 40,
+        opacity: 0,
+        duration: 1.2,
+        stagger: 0.05,
+        delay: 0.6,
+        ease: "power3.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 60%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+          start: "top 60%",
+          toggleActions: "play none none reverse"
+        }
+      });
+
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
-  const startConversation = () => {
-    const subject = encodeURIComponent('Project Collaboration Inquiry');
-    const body = encodeURIComponent(`Hi Nishant,
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-I'm interested in discussing a potential project collaboration. Here are some initial details:
-
-Project Type: [Please specify]
-Timeline: [Your preferred timeline]
-Budget Range: [Your budget range]
-
-I'd love to schedule a call to discuss this further.
-
-Best regards,
-[Your name]`);
-    
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Inquiry: ${formData.subject}`);
+    const body = encodeURIComponent(`Hi Nishant,\n\nMy name is ${formData.name}.\n\n${formData.message}\n\nBest,\n${formData.name} (${formData.email})`);
     window.location.href = `mailto:me.knishant@gmail.com?subject=${subject}&body=${body}`;
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 3000);
   };
 
   return (
-    <section
-      id="contact"
-      ref={sectionRef}
-      className="min-h-screen flex items-center px-4 sm:px-6 md:px-8 py-14 sm:py-18 md:py-22 pb-20 sm:pb-22 md:pb-25 max-w-7xl mx-auto"
-    >
-      <div className="w-full">
-        <div ref={contentRef} className="space-y-12 sm:space-y-14 md:space-y-16 pt-0">
+    <section ref={sectionRef} id="contact" className="min-h-screen bg-black text-white py-24 md:py-32 px-6 md:px-12 relative overflow-hidden font-sans border-t border-white/10">
+
+      {/* Swiss Grid Background */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '4rem 4rem' }}>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+
+        {/* Left Column: Context (Title + Info) */}
+        <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-12">
           <div>
-            <h2 ref={headingRef} className="font-bold pt-0 pb-6 sm:pb-8">
-              <span className="block text-6xl sm:text-6xl md:text-8xl lg:text-[10rem] leading-[1] tracking-[-0.04em] sm:tracking-[-0.08em]">Let's</span>
-              <span className="block text-6xl sm:text-6xl md:text-8xl lg:text-[10rem] leading-[0.95] sm:leading-[0.85] -mt-3 sm:-mt-8 tracking-[-0.04em] sm:tracking-[-0.08em]">Collaborate</span>
-            </h2>
-            <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-full sm:max-w-2xl">
-              I'm always interested in new opportunities and collaborations. 
-              Whether you have a project in mind or just want to say hello, feel free to reach out.
-            </p>
-          </div>
+            <div className="flex flex-col text-6xl md:text-8xl font-bold tracking-tighter leading-[1] md:leading-[1] mb-8">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-14 md:gap-16">
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-xs sm:text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4 sm:mb-6">
-                  Get in touch
-                </h3>
-                <div className="space-y-5 sm:space-y-6">
-                  {contactMethods.map((method, index) => (
-                    <div key={index} className="group">
-                      <p className="text-xs sm:text-sm font-light tracking-wide text-gray-500 dark:text-gray-500 mb-1 sm:mb-2">
-                        {method.label}
-                      </p>
-                      <a
-                        href={method.href}
-                        target={method.href.startsWith('http') ? '_blank' : undefined}
-                        rel={method.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="inline-flex items-center text-base sm:text-lg font-light hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300"
-                        data-cursor="pointer"
-                      >
-                        {method.value}
-                        <method.icon className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={16} />
-                      </a>
-                    </div>
-                  ))}
-                </div>
+              {/* "LET'S" */}
+              <div className="block">
+                <ScrollRevealText text="LET'S" className="text-transparent text-stroke-white opacity-40 block" />
               </div>
 
-              <div>
-                <h3 className="text-xs sm:text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4 sm:mb-6">
-                  Location & Availability
-                </h3>
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="flex items-center space-x-2 sm:space-x-3">
-                    <FiMapPin size={16} />
-                    <div>
-                      <p className="font-light text-sm sm:text-base">Bhagalpur, India</p>
-                      <p className="text-xs sm:text-sm font-light text-gray-600 dark:text-gray-400">UTC +5:30</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 sm:space-x-3">
-                    <FiClock size={16} />
-                    <div>
-                      <p className="font-light text-sm sm:text-base">Available for projects</p>
-                      <p className="text-xs sm:text-sm font-light text-green-600 dark:text-green-400">Open to new opportunities</p>
-                    </div>
-                  </div>
-                </div>
+              {/* "CONNECT." (with negative margin) */}
+              <div className="-mt-2 md:-mt-4 block py-1">
+                <span className="block">
+                  <ScrollRevealText text="CONNECT" className="inline-block" />
+                  <span className="text-red-600 inline-block overflow-hidden align-top">
+                    <ScrollRevealText text="." className="text-red-600" />
+                  </span>
+                </span>
               </div>
             </div>
 
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-xs sm:text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4 sm:mb-6">
-                  Services
-                </h3>
-                <div className="space-y-3 sm:space-y-4">
-                  {[
-                    'Full-Stack Development',
-                    'API Development & Integration',
-                    'Database Design & Optimization',
-                    'Technical Consulting',
-                    'Code Review & Mentoring',
-                  ].map((service, index) => (
-                    <p key={index} className="text-base sm:text-lg font-light">
-                      {service}
-                    </p>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-xs sm:text-sm font-light tracking-widest text-gray-500 dark:text-gray-500 uppercase mb-4 sm:mb-6">
-                  Response Time
-                </h3>
-                <p className="font-light text-gray-600 dark:text-gray-400 leading-relaxed text-sm sm:text-base">
-                  I typically respond to inquiries within 24 hours. For urgent projects, 
-                  please mention it in your message and I'll prioritize accordingly.
-                </p>
-              </div>
+            <div className="space-y-6 max-w-md">
+              <p className="contact-info-text text-lg md:text-xl text-gray-400 font-light leading-relaxed">
+                I specialize in engineering robust backend systems and scalable DevOps infrastructures.
+              </p>
+              <p className="contact-info-text text-lg md:text-xl text-gray-400 font-light leading-relaxed">
+                Currently open to discussing technical challenges, architectural consulting, or full-time opportunities.
+              </p>
             </div>
-          </div>
-
-          {/* Call to action */}
-          <div className="pt-10 sm:pt-16 pb-5 sm:pb-8 border-t border-gray-200 dark:border-gray-800">
-            <button
-              onClick={startConversation}
-              className="inline-flex items-center text-xl sm:text-2xl md:text-5xl font-light tracking-tight hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-300 group px-4 py-2 sm:px-6 sm:py-3 rounded-md"
-              data-cursor="pointer"
-            >
-              Start a conversation
-              <FiArrowUpRight className="ml-3 sm:ml-4 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-300" size={24} />
-            </button>
           </div>
         </div>
+
+        {/* Right Column: Minimalist Form */}
+        <div className="lg:col-span-7 pt-4 lg:pt-0">
+          <form onSubmit={handleSubmit} className="space-y-12">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="group relative contact-form-item">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="NAME"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest"
+                />
+              </div>
+              <div className="group relative contact-form-item">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="EMAIL"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest"
+                />
+              </div>
+            </div>
+
+            <div className="group relative contact-form-item">
+              <input
+                type="text"
+                name="subject"
+                placeholder="SUBJECT (E.G. TECHNICAL CONSULTATION, OPPORTUNITY)"
+                value={formData.subject}
+                onChange={handleChange}
+                className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest"
+              />
+            </div>
+
+            <div className="group relative contact-form-item">
+              <textarea
+                name="message"
+                placeholder="MESSAGE"
+                rows={4}
+                required
+                value={formData.message}
+                onChange={handleChange}
+                className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest resize-none"
+              ></textarea>
+            </div>
+
+            <div className="pt-4 flex justify-end contact-form-item">
+              <button
+                type="submit"
+                disabled={submitted}
+                className="group flex items-center gap-4 px-8 py-4 bg-white text-black text-sm font-bold tracking-widest uppercase hover:bg-red-600 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitted ? 'Message Sent' : 'Send Message'}
+                {submitted ? <FiCheck size={18} /> : <FiArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+              </button>
+            </div>
+
+          </form>
+        </div>
+
       </div>
     </section>
   );

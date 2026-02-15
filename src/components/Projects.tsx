@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { FaGithub } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import ScrollRevealText from './ScrollRevealText';
 
 
 
@@ -73,17 +74,7 @@ const projectsData = [
 ];
 
 // --- Fallback for SplitText (No Changes) ---
-const simpleSplitText = (element: HTMLElement) => {
-  const text = element.textContent || "";
-  element.innerHTML = "";
-  for (const char of text) {
-    const span = document.createElement('span');
-    span.className = 'char inline-block';
-    span.textContent = char === ' ' ? '\u00A0' : char;
-    element.appendChild(span);
-  }
-  return Array.from(element.children) as HTMLElement[];
-};
+
 
 // --- NEW: Custom Hook for Media Queries ---
 const useMediaQuery = (query: string) => {
@@ -151,11 +142,7 @@ const AwardWinningProjects: React.FC = () => {
         // yImgTo(gsap.utils.mapRange(0, rect.height, -75, 75, relY));
       };
 
-      const headerChars = simpleSplitText(sectionRef.current!.querySelector('h2')!);
-      gsap.from(headerChars, {
-        yPercent: 100, opacity: 0, stagger: 0.03, duration: 1, ease: 'expo.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
-      });
+
 
       projectItems.forEach(item => {
         const textMask = item.querySelector('.text-mask')!;
@@ -215,7 +202,7 @@ const AwardWinningProjects: React.FC = () => {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="mb-16 sm:mb-16">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight mb-4 sm:mb-20">
-            My Selected Works
+            <ScrollRevealText text="My Selected Works" />
           </h2>
         </div>
 

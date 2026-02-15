@@ -19,11 +19,10 @@ const Home: React.FC = () => {
       <About />
       <Skills />
       <Projects />
-      
       <DevActivity />
       <Timeline />
       <BlogSection />
-      <TestimonialPreview />
+      {/* <TestimonialPreview /> */}
       <Contact />
       <Footer />
     </div>
