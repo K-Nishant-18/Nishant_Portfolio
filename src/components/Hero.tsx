@@ -102,13 +102,13 @@ const Hero: React.FC = () => {
         {/* Vertical Lines */}
         <div className="absolute inset-0 flex justify-between px-6 md:px-12 max-w-[1800px] mx-auto w-full h-full">
           {[...Array(6)].map((_, i) => (
-            <div key={`v-${i}`} className="grid-line-y w-px h-full bg-black/5 dark:bg-white/5 opacity-50"></div>
+            <div key={`v-${i}`} className="grid-line-y w-px h-full bg-black/5 dark:bg-white/5"></div>
           ))}
         </div>
         {/* Horizontal Lines */}
         <div className="absolute inset-0 flex flex-col justify-between py-24 h-full">
           {[...Array(5)].map((_, i) => (
-            <div key={`h-${i}`} className="grid-line-x h-px w-full bg-black/5 dark:bg-white/5 opacity-50"></div>
+            <div key={`h-${i}`} className="grid-line-x h-px w-full bg-black/5 dark:bg-white/5"></div>
           ))}
         </div>
       </div>
@@ -152,7 +152,7 @@ const Hero: React.FC = () => {
                 </span>
               ))}
             </span>
-            <span className="text-[19vw] block -mt-4">
+            <span className="text-[19vw] block -mt-4 opacity-95">
               {"NISHANT_".split('').map((char, i) => (
                 <span key={`n-${i}`} className="hero-char inline-block tracking-[-0.08em] hover:text-transparent hover:text-stroke-black dark:hover:text-stroke-white transition-all duration-300 cursor-default">
                   {char}
