@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
+import { AnimatePresence } from 'framer-motion';
 
 // Import all necessary components and providers
 import Navigation from './components/Navigation';
@@ -22,12 +23,20 @@ gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
-  // This effect manages the loader's visibility duration
+  // Force scroll to top on mount and disable browser scroll restoration
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 3000); // Loader is visible for 2.5 seconds
-    return () => clearTimeout(timer);
+    // Disable browser's native scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    // Force scroll to top immediately
+    window.scrollTo(0, 0);
   }, []);
+
+
 
   // This effect sets up the Lenis smooth scroll library
   useEffect(() => {
@@ -63,10 +72,15 @@ function App() {
     };
   }, []);
 
-  // While loading is true, only show the Loader component
-  if (loading) {
-    return <Loader />;
-  }
+  // Handler for when loader animation completes
+  const handleLoaderComplete = () => {
+    // Start showing content immediately when loader exit begins
+    setShowContent(true);
+    // Remove loader after animation completes
+    setTimeout(() => {
+      setLoading(false);
+    }, 100);
+  };
 
   // Once loading is false, render the main application
   return (
@@ -75,19 +89,26 @@ function App() {
         <Router>
           <TransitionProvider>
             <div className="relative bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
-              {/* The rest of your application components */}
-              <CustomCursor />
-              <Navigation />
-              <Transition />
+              <AnimatePresence mode="wait">
+                {loading && <Loader key="loader" onComplete={handleLoaderComplete} />}
+              </AnimatePresence>
 
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/projects/:id" element={<ProjectDetail />} />
-                <Route path="/guestbook" element={<GuestBook />} />
-              </Routes>
+              {/* Main content - starts fading in when showContent is true */}
+              <div
+                className={`transition-opacity duration-700 ${showContent ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                style={{ visibility: showContent ? 'visible' : 'hidden' }}
+              >
+                <CustomCursor />
+                <Navigation />
+                <Transition />
 
-
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/projects/:id" element={<ProjectDetail />} />
+                  <Route path="/guestbook" element={<GuestBook />} />
+                </Routes>
+              </div>
             </div>
           </TransitionProvider>
         </Router>
