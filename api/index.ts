@@ -161,6 +161,47 @@ app.delete('/api/guestbook/:id', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/api/profile-views', async (req: Request, res: Response) => {
+  try {
+    const response = await fetch('https://komarev.com/ghpvc/?username=K-Nishant-18e&label=PROFILE+VIEWS&style=flat', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch from Komarev: ${response.statusText}`);
+    }
+
+    const svgText = await response.text();
+    // Simple regex to find the number in the SVG
+    // Looking for the last occurrence of a number in text tags usually
+    // The SVG structure roughly has: <text ...>3,523</text>
+    // We can strip commas and look for digits
+
+    // Logic from frontend was: last text node.
+    // Regex strategy:
+    const matches = svgText.match(/>\s*([\d,]+)\s*<\/text>/g);
+    let views = 0;
+    if (matches && matches.length > 0) {
+      // Get the last match
+      const lastMatch = matches[matches.length - 1];
+      // Extract number string
+      const numberStr = lastMatch.replace(/<\/?text>|>|\s|,/g, '');
+      const parsed = parseInt(numberStr, 10);
+      if (!isNaN(parsed)) {
+        views = parsed;
+      }
+    }
+
+    res.json({ views });
+
+  } catch (error) {
+    console.error('Error fetching profile views:', error);
+    res.status(500).json({ error: 'Failed to fetch profile views' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -335,30 +335,29 @@ const DevActivity: React.FC = () => {
           console.warn("Contrib API failed", e);
         }
 
-        // Fetch Profile Views from Komarev SVG
+        // Fetch Profile Views from Backend (Proxy)
+        // Fetch Profile Views from Backend (Proxy)
         try {
-          // Add timestamp to prevent caching
-          const viewsRes = await fetch(`https://corsproxy.io/?https://komarev.com/ghpvc/?username=K-Nishant-18e&label=PROFILE+VIEWS&t=${new Date().getTime()}`);
+          // Use our backend proxy which handles CORS and text parsing
+          // Ensure your backend is running on the expected port (e.g. 5000 or via proxy /api)
+          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          // Correct URL construction: remove duplicate /api/ if apiUrl already has it
+          // OR just assume apiUrl is base. But since .env has /api, we should use /profile-views
+          const fetchUrl = `${apiUrl}/profile-views`;
+          console.log("Fetching Profile Views from:", fetchUrl);
+
+          const viewsRes = await fetch(fetchUrl);
 
           if (viewsRes.ok) {
-            const svgText = await viewsRes.text();
-
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(svgText, "image/svg+xml");
-            const textNodes = xmlDoc.getElementsByTagName("text");
-            const lastNode = textNodes[textNodes.length - 1];
-
-            if (lastNode && lastNode.textContent) {
-              const countText = lastNode.textContent.trim();
-              const parsedCount = parseInt(countText.replace(/,/g, ''), 10);
-
-              if (!isNaN(parsedCount)) {
-                profileViews = parsedCount;
-              }
+            const viewsData = await viewsRes.json();
+            if (typeof viewsData.views === 'number') {
+              profileViews = viewsData.views;
             }
+          } else {
+            console.error(`Profile Views fetch failed: ${viewsRes.status} ${viewsRes.statusText}`);
           }
         } catch (e) {
-          console.warn("Profile Views extraction failed", e);
+          console.warn("Profile Views fetch failed", e);
         }
 
         // If external API failed, use recent events * multiplier or just show recent
