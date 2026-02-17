@@ -23,7 +23,11 @@ const GuestBook: React.FC = () => {
     const formRef = useRef<HTMLFormElement>(null);
     const streamRef = useRef<HTMLDivElement>(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    // In PROD: Use relative '/api' so Vercel rewrites handle it
+    // In DEV: Use localhost or env var
+    const rawApiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+    // Remove duplicate /api if present to avoid /api/api/guestbook
+    const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl.slice(0, -4) + '/api' : rawApiUrl;
 
     useEffect(() => {
         fetchEntries();
