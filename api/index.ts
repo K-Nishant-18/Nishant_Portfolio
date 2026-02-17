@@ -202,6 +202,26 @@ app.get('/api/profile-views', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/api/commit-stats', async (req: Request, res: Response) => {
+  try {
+    // We use the same username "K-Nishant-18" as seen in the frontend code for this card
+    // The previous URL was: https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=K-Nishant-18
+    const response = await fetch(`https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=K-Nishant-18&t=${new Date().getTime()}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch commit stats: ${response.statusText}`);
+    }
+
+    const svgText = await response.text();
+    // Return the SVG text in a JSON object so the frontend can parse it
+    res.json({ svg: svgText });
+
+  } catch (error) {
+    console.error('Error fetching commit stats:', error);
+    res.status(500).json({ error: 'Failed to fetch commit stats' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

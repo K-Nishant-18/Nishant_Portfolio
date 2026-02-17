@@ -133,8 +133,20 @@ const DevActivity: React.FC = () => {
         let parsedLanguageStats: LanguageStat[] = [];
         try {
           // Add timestamp to prevent caching
-          const svgRes = await fetch(`https://corsproxy.io/?https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=${username}&t=${new Date().getTime()}`);
-          const svgText = await svgRes.text();
+          // Clean API URL logic (duplicated for safety/clarity inside this block)
+          // In PROD: Use relative '/api'
+          // In DEV: Use localhost or env var
+          const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+          const cleanApiUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+          const fetchUrl = `${cleanApiUrl}/api/commit-stats`;
+
+          console.log("Fetching Commit Stats from:", fetchUrl);
+
+          const svgRes = await fetch(fetchUrl);
+          if (!svgRes.ok) throw new Error(`Commit stats fetch failed: ${svgRes.status}`);
+
+          const svgData = await svgRes.json();
+          const svgText = svgData.svg;
 
           const parser = new DOMParser();
 
@@ -339,11 +351,19 @@ const DevActivity: React.FC = () => {
         // Fetch Profile Views from Backend (Proxy)
         try {
           // Use our backend proxy which handles CORS and text parsing
-          // Ensure your backend is running on the expected port (e.g. 5000 or via proxy /api)
-          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-          // Correct URL construction: remove duplicate /api/ if apiUrl already has it
-          // OR just assume apiUrl is base. But since .env has /api, we should use /profile-views
-          const fetchUrl = `${apiUrl}/profile-views`;
+          // In PROD: Use relative '/api' so Vercel rewrites handle it (defined in vercel.json)
+          // In DEV: Use localhost or env var
+          const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+
+          // Remove duplicate /api if present (just in case)
+          const cleanApiUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+
+          // Construct the final URL. 
+          // If we want to hit /api/profile-views:
+          // Local: http://localhost:5000/api/profile-views
+          // Prod (via Vercel): /api/profile-views -> https://nishant-portfolio-api.onrender.com/api/profile-views
+          const fetchUrl = `${cleanApiUrl}/api/profile-views`;
+
           console.log("Fetching Profile Views from:", fetchUrl);
 
           const viewsRes = await fetch(fetchUrl);
