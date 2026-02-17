@@ -72,7 +72,7 @@ const Contact: React.FC = () => {
     <section ref={sectionRef} id="contact" className="min-h-screen bg-black text-white py-24 md:py-32 px-6 md:px-12 relative overflow-hidden font-sans border-t border-white/10">
 
       {/* Swiss Grid Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
         style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '4rem 4rem' }}>
       </div>
 
@@ -123,7 +123,7 @@ const Contact: React.FC = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest"
+                  className="w-full bg-transparent border-b border-white/50 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-400 placeholder:text-sm placeholder:tracking-widest"
                 />
               </div>
               <div className="group relative contact-form-item">
@@ -134,7 +134,7 @@ const Contact: React.FC = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest"
+                  className="w-full bg-transparent border-b border-white/50 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-400 placeholder:text-sm placeholder:tracking-widest"
                 />
               </div>
             </div>
@@ -146,7 +146,7 @@ const Contact: React.FC = () => {
                 placeholder="SUBJECT (E.G. TECHNICAL CONSULTATION, OPPORTUNITY)"
                 value={formData.subject}
                 onChange={handleChange}
-                className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest"
+                className="w-full bg-transparent border-b border-white/50 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-400 placeholder:text-sm placeholder:tracking-widest"
               />
             </div>
 
@@ -158,7 +158,7 @@ const Contact: React.FC = () => {
                 required
                 value={formData.message}
                 onChange={handleChange}
-                className="w-full bg-transparent border-b border-white/20 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-600 placeholder:text-sm placeholder:tracking-widest resize-none"
+                className="w-full bg-transparent border-b border-white/50 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-400 placeholder:text-sm placeholder:tracking-widest resize-none"
               ></textarea>
             </div>
 

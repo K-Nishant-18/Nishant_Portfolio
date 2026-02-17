@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiStar, FiCode, FiGitPullRequest, FiAlertCircle, FiArrowUpRight, FiEye } from 'react-icons/fi';
+import { FiStar, FiCode, FiGitPullRequest, FiAlertCircle, FiArrowUpRight, FiEye, FiCornerDownRight } from 'react-icons/fi';
 import ScrollRevealText from './ScrollRevealText';
 import MetricCard from './MetricCard';
 import RepoCard from './RepoCard';
@@ -434,15 +434,14 @@ const DevActivity: React.FC = () => {
     >
       <div className="max-w-8xl mx-auto px-6 md:px-16 relative z-10">
 
-        {/* --- Header --- */}
         <div ref={titleRef} className="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-black/20 dark:border-white/20 pb-8">
           <div className="md:col-span-8">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2 h-2 bg-red-600"></span>
-              <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">Activity_Log</span>
+            <div className="flex items-center gap-4 mb-4">
+              <FiCornerDownRight className="text-red-500 w-6 h-6" />
+              <span className="font-mono text-xs uppercase tracking-widest text-red-500">Activity // Log</span>
             </div>
-            <h2 className="text-[10vw] md:text-[6vw] leading-[0.9] font-bold uppercase tracking-tighter mix-blend-difference">
-              <ScrollRevealText text="OPEN_SOURCE" />
+            <h2 className="text-[10vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-40 select-none pointer-events-none">
+              <ScrollRevealText text="CODE_BASE " />
             </h2>
           </div>
           <div className="md:col-span-4 flex flex-col justify-end">
