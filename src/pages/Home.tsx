@@ -12,10 +12,14 @@ import DevActivity from '../components/DevActivity';
 
 
 
-const Home: React.FC = () => {
+interface HomeProps {
+  startAnimation?: boolean;
+}
+
+const Home: React.FC<HomeProps> = ({ startAnimation = false }) => {
   return (
     <div className="relative overflow-x-hidden">
-      <Hero />
+      <Hero startAnimation={startAnimation} />
       <About />
       <Skills />
       <Projects />

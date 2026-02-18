@@ -103,7 +103,7 @@ function App() {
                 <Transition />
 
                 <Routes>
-                  <Route path="/" element={<Home />} />
+                  <Route path="/" element={<Home startAnimation={showContent} />} />
                   <Route path="/projects" element={<Projects />} />
                   <Route path="/projects/:id" element={<ProjectDetail />} />
                   <Route path="/guestbook" element={<GuestBook />} />

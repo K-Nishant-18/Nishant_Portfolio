@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { gsap } from "gsap";
 import { useTheme } from "../context/ThemeContext";
 
 interface LoaderProps {
@@ -12,21 +13,81 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
   const [phase, setPhase] = useState<"loading" | "exit">("loading");
 
   useEffect(() => {
-    // Increment counter
-    const interval = setInterval(() => {
-      setCount((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
+    // Smooth Counter Animation
+    const ctx = gsap.context(() => {
+      const target = { val: 0 };
+      gsap.to(target, {
+        val: 100,
+        duration: 3.5, // Slower, more deliberate
+        ease: "power3.inOut", // Stronger ease-in-out for "premium" feel
+        onUpdate: () => {
+          setCount(Math.round(target.val));
         }
-        // Random increment for a "digital" feel
-        const jump = Math.random() > 0.8 ? 5 : 1;
-        return Math.min(prev + jump, 100);
       });
-    }, 40);
-
-    return () => clearInterval(interval);
+    });
+    return () => ctx.revert();
   }, []);
+
+  // GSAP GRID ANIMATION
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Setup Elements
+      const vLines = gsap.utils.toArray<HTMLElement>('.loader-grid-line-y');
+      const hLines = gsap.utils.toArray<HTMLElement>('.loader-grid-line-x');
+
+      // Asymmetry Logic (Matching Hero)
+      const vAnimate = vLines.filter((_, i) => i % 2 !== 0 || i === 0);
+      const vStatic = vLines.filter((_, i) => i % 2 === 0 && i !== 0);
+
+      const hAnimate = hLines.filter((_, i) => i % 3 !== 0);
+      const hStatic = hLines.filter((_, i) => i % 3 === 0);
+
+      // Initial State
+      gsap.set(vAnimate, { scaleY: 0, opacity: 0.2 });
+      gsap.set(hAnimate, { scaleX: 0, opacity: 0.2 });
+      gsap.set(vStatic, { scaleY: 1, opacity: 0.1 });
+      gsap.set(hStatic, { scaleX: 1, opacity: 0.1 });
+
+      // Reveal Animation
+      const tl = gsap.timeline();
+
+      tl.to(vAnimate, {
+        scaleY: 1,
+        duration: 2.2, // Slower
+        stagger: { from: "center", amount: 0.8 }, // More spread out
+        ease: 'power3.inOut', // Smoother ease
+        transformOrigin: 'top'
+      })
+        .to(hAnimate, {
+          scaleX: 1,
+          duration: 2.2, // Slower
+          stagger: { from: "start", amount: 0.8 },
+          ease: 'power3.inOut',
+          transformOrigin: 'left'
+        }, "<")
+
+        // Fade to subtle state
+        .to([...vAnimate, ...hAnimate], {
+          opacity: 0.1, // Match static opacity
+          duration: 1.0,
+          ease: "power2.out"
+        });
+
+    }); // No scope ref needed as we target unique classes
+
+    return () => ctx.revert();
+  }, []); // Run on mount
+
+  // GRID EXIT
+  useEffect(() => {
+    if (phase === "exit") {
+      gsap.to(['.loader-grid-line-y', '.loader-grid-line-x'], {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.in"
+      });
+    }
+  }, [phase]);
 
   useEffect(() => {
     if (count === 100) {
@@ -44,7 +105,7 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
   const borderColor = isDark ? "border-white/5" : "border-gray-900/5";
   const accentColor = isDark ? "text-green-400" : "text-green-600";
   const barBg = isDark ? "bg-white/20" : "bg-gray-900/20";
-  const barFill = isDark ? "bg-white" : "bg-gray-900";
+  const barFill = isDark ? "bg-red-600" : "bg-red-600";
 
   return (
     <motion.div
@@ -112,6 +173,30 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
             <span className="text-xs font-mono block">SYSTEM_CHECK</span>
             <span className={`text-xs font-mono ${accentColor}`}>OPTIMAL</span>
           </div>
+        </div>
+
+        {/* 
+          GRID CONTAINER
+          This is an overlay on top of the columns, but behind the main content.
+        */}
+        <div className="absolute inset-0 z-[5] pointer-events-none grid-layer overflow-hidden">
+          {/* 
+              Swiss Asymmetrical Grid
+              Manually positioned lines to break symmetry.
+            */}
+
+          {/* Vertical Lines - Irregular Spacing */}
+          <div className="absolute top-0 bottom-0 w-px bg-current opacity-10 left-[12%] loader-grid-line-y"></div>
+          <div className="absolute top-0 bottom-0 w-px bg-current opacity-10 left-[28%] loader-grid-line-y"></div>
+          <div className="absolute top-0 bottom-0 w-px bg-current opacity-10 left-[45%] loader-grid-line-y"></div>
+          <div className="absolute top-0 bottom-0 w-px bg-current opacity-10 left-[62%] loader-grid-line-y"></div>
+          <div className="absolute top-0 bottom-0 w-px bg-current opacity-10 left-[88%] loader-grid-line-y"></div>
+
+          {/* Horizontal Lines - Golden Ratio / Irregular */}
+          <div className="absolute left-0 right-0 h-px bg-current opacity-10 top-[15%] loader-grid-line-x"></div>
+          <div className="absolute left-0 right-0 h-px bg-current opacity-10 top-[38%] loader-grid-line-x"></div>
+          <div className="absolute left-0 right-0 h-px bg-current opacity-10 top-[62%] loader-grid-line-x"></div>
+          <div className="absolute left-0 right-0 h-px bg-current opacity-10 top-[85%] loader-grid-line-x"></div>
         </div>
 
         {/* Center / Main */}

@@ -4,7 +4,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { FiArrowDown, FiGlobe, FiDatabase, FiServer, FiCpu } from 'react-icons/fi';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  startAnimation?: boolean;
+}
+
+const Hero: React.FC<HeroProps> = ({ startAnimation = false }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const [time, setTime] = useState<string>("");
@@ -18,46 +22,78 @@ const Hero: React.FC = () => {
     updateTime();
     const timer = setInterval(updateTime, 1000);
 
-    // Initial Animation
+    // Initial Animation - Triggered by startAnimation
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
+      // 1. Setup Elements
+      const vLines = gsap.utils.toArray<HTMLElement>('.grid-line-y');
+      const hLines = gsap.utils.toArray<HTMLElement>('.grid-line-x');
 
-      // 1. Grid Reveal (Draw lines)
-      tl.from('.grid-line-y', {
-        scaleY: 0,
-        duration: 1.5,
-        stagger: 0.1,
-        ease: 'power3.inOut',
-        transformOrigin: 'top'
-      })
-        .from('.grid-line-x', {
-          scaleX: 0,
-          duration: 1.5,
-          stagger: 0.1,
-          ease: 'power3.inOut',
-          transformOrigin: 'left'
-        }, "<");
+      // Swiss Asymmetry: Randomly pick which lines animate vs stay static
+      // We'll use a deterministic pattern for consistency or random for chaos.
+      // Let's go Pattern: Alternate or skipping.
 
-      // 2. Name Reveal (Staggered Up)
-      tl.fromTo('.hero-char', {
-        y: 200,
-        opacity: 0
-      }, {
-        y: 0,
-        opacity: 1,
-        duration: 1.2,
-        stagger: 0.05,
-        ease: 'power4.out'
-      }, "-=1");
+      const vAnimate = vLines.filter((_, i) => i % 2 !== 0 || i === 0); // Animate 0, 2, 4... actually i%2!==0 is 1,3,5. Let's animate odds + first.
+      const vStatic = vLines.filter((_, i) => i % 2 === 0 && i !== 0);
 
-      // 3. Metadata Reveal
-      tl.from('.meta-item', {
-        opacity: 0,
-        y: 20,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power2.out'
-      }, "-=0.5");
+      const hAnimate = hLines.filter((_, i) => i % 3 !== 0); // Animate most, leave 0 and 3 static
+      const hStatic = hLines.filter((_, i) => i % 3 === 0);
+
+      // Hide Animated lines initially
+      gsap.set(vAnimate, { scaleY: 0, opacity: 0.1 });
+      gsap.set(hAnimate, { scaleX: 0, opacity: 0.1 });
+
+      // Static lines start visible (but maybe slightly lower opacity for hierarchy)
+      gsap.set(vStatic, { scaleY: 1, opacity: 0.05 });
+      gsap.set(hStatic, { scaleX: 1, opacity: 0.05 });
+
+      gsap.set('.hero-char', { y: 200, opacity: 0 });
+      gsap.set('.meta-item', { opacity: 0, y: 20 });
+
+      if (startAnimation) {
+        const tl = gsap.timeline();
+
+        // 1. Grid Reveal (Smoother, Liquid Feel)
+        tl.to(vAnimate, {
+          scaleY: 1,
+          duration: 1.8,
+          stagger: { from: "center", amount: 0.8 },
+          ease: 'power2.inOut',
+          transformOrigin: 'top'
+        })
+          .to(hAnimate, {
+            scaleX: 1,
+            duration: 1.8,
+            stagger: { from: "top", amount: 0.8 },
+            ease: 'power2.inOut',
+            transformOrigin: 'left'
+          }, "<")
+
+          // 2. Fade ONLY Animated Grid to match static background (if needed)
+          // Actually, let's keep them at 0.1 or fade them to 0.05 to match static.
+          .to([...vAnimate, ...hAnimate], {
+            opacity: 0.05,
+            duration: 1.0,
+            ease: "power2.out"
+          })
+
+          // 3. Name Reveal (Staggered Up)
+          .to('.hero-char', {
+            y: 0,
+            opacity: 1,
+            duration: 1.2,
+            stagger: 0.05,
+            ease: 'power4.out'
+          }, "-=1.2") // Contrast with grid fade
+
+          // 4. Metadata Reveal
+          .to('.meta-item', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power2.out'
+          }, "-=0.5");
+      }
 
     }, containerRef);
 
@@ -77,12 +113,7 @@ const Hero: React.FC = () => {
         ease: 'power2.out'
       });
 
-      gsap.to('.grid-layer', {
-        x: x * 10,
-        y: y * 10,
-        duration: 1,
-        ease: 'power2.out'
-      });
+
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -92,23 +123,27 @@ const Hero: React.FC = () => {
       ctx.revert();
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [startAnimation]);
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden font-sans selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
 
       {/* --- Swiss Grid Background --- */}
       <div className="absolute inset-0 z-0 grid-layer pointer-events-none">
+
         {/* Vertical Lines */}
         <div className="absolute inset-0 flex justify-between px-6 md:px-12 max-w-[1800px] mx-auto w-full h-full">
           {[...Array(6)].map((_, i) => (
-            <div key={`v-${i}`} className="grid-line-y w-px h-full bg-black/5 dark:bg-white/5"></div>
+            <div key={`v-${i}`} className="relative h-full">
+              <div className="grid-line-y w-px h-full bg-black dark:bg-white origin-top"></div>
+            </div>
           ))}
         </div>
+
         {/* Horizontal Lines */}
-        <div className="absolute inset-0 flex flex-col justify-between py-24 h-full">
+        <div className="absolute inset-0 flex flex-col justify-between py-24 h-full pointer-events-none">
           {[...Array(5)].map((_, i) => (
-            <div key={`h-${i}`} className="grid-line-x h-px w-full bg-black/5 dark:bg-white/5"></div>
+            <div key={`h-${i}`} className="grid-line-x h-px w-full bg-black dark:bg-white origin-left"></div>
           ))}
         </div>
       </div>

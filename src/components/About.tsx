@@ -90,47 +90,69 @@ const AwardWinningAbout: React.FC = () => {
     // --- Stats Typing/Counting Animation ---
     useEffect(() => {
         const ctx = gsap.context(() => {
+            // Stats animation enabled with once: true for stability
+            // Stats Animation
             gsap.utils.toArray<HTMLElement>('.stat-value').forEach((el) => {
-                const originalText = el.innerText;
+                const originalText = el.innerText || ""; // Safety fallback
+
+                // Skip if empty to avoid issues
+                if (!originalText.trim()) return;
+
                 const isNumber = /^[0-9]/.test(originalText);
 
+                // Set initial state - fully visible but we'll animate content
+                // We use a ScrollTrigger to start the "activity"
                 ScrollTrigger.create({
                     trigger: el,
                     start: "top 85%",
+                    once: true,
                     onEnter: () => {
                         if (isNumber) {
-                            // Counting Animation for Numbers (02+, 05+)
-                            const numValue = parseInt(originalText) || 0;
-                            const suffix = originalText.replace(/[0-9]/g, '');
+                            // Number Counter
+                            // Extract numeric part safely
+                            const numericPart = originalText.replace(/[^0-9]/g, '');
+                            const val = parseInt(numericPart, 10);
+                            const suffix = originalText.replace(/[0-9]/g, ''); // e.g. "+"
                             const proxy = { val: 0 };
 
                             gsap.to(proxy, {
-                                val: numValue,
-                                duration: 1.5,
+                                val: val,
+                                duration: 2, // Slower for visibility
                                 ease: "power3.out",
                                 onUpdate: () => {
+                                    // Pad with leading zero if original had it (simple heuristic: length of numeric part)
+                                    // But user data is "02+", "10+". So padding to 2 is safe.
                                     el.innerText = Math.floor(proxy.val).toString().padStart(2, '0') + suffix;
                                 }
                             });
                         } else {
-                            // Typing/Scramble Animation for Text (YES, ACT)
+                            // Text Scramble
                             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                            const targetText = originalText;
                             const proxy = { val: 0 };
 
                             gsap.to(proxy, {
-                                val: targetText.length,
+                                val: 1, // Progress 0 to 1
                                 duration: 1,
                                 ease: "none",
                                 onUpdate: () => {
-                                    const progress = Math.floor(proxy.val);
-                                    // Mix of real chars and random chars
-                                    const realPart = targetText.substring(0, progress);
-                                    const randomPart = targetText.substring(progress).split('').map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
-                                    el.innerText = realPart + (progress < targetText.length ? randomPart.charAt(0) : ''); // Show 1 random char ahead
+                                    const progress = proxy.val;
+                                    const len = originalText.length;
+                                    const revealNum = Math.floor(progress * len);
+
+                                    const revealPart = originalText.substring(0, revealNum);
+                                    let randomPart = "";
+
+                                    // Only add random chars if not finished
+                                    if (revealNum < len) {
+                                        for (let i = 0; i < len - revealNum; i++) {
+                                            randomPart += chars[Math.floor(Math.random() * chars.length)];
+                                        }
+                                    }
+
+                                    el.innerText = revealPart + randomPart;
                                 },
                                 onComplete: () => {
-                                    el.innerText = targetText;
+                                    el.innerText = originalText; // Ensure final state is perfect
                                 }
                             });
                         }
@@ -138,14 +160,23 @@ const AwardWinningAbout: React.FC = () => {
                 });
             });
         }, sectionRef);
-        return () => ctx.revert();
+
+        // Refresh ScrollTrigger to ensure correct positions after layout calculation
+        const timer = setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 500);
+
+        return () => {
+            ctx.revert();
+            clearTimeout(timer);
+        };
     }, []);
 
     const stats = [
         { label: "EXP_YRS", value: "02+", desc: "Years Experience" },
         { label: "PRJ_CMP", value: "10+", desc: "Projects Completed" },
         { label: "CLOUD", value: "AWS", desc: "Native Solutions" },
-        { label: "AVAIL", value: "OPEN", desc: "For New Oppurtunities", active: true },
+        { label: "AVAIL", value: "OPEN", desc: "For New Opportunities", active: true },
     ];
 
     return (
@@ -154,7 +185,7 @@ const AwardWinningAbout: React.FC = () => {
             id="about"
             onMouseMove={!isTouch ? handleMouseMove : undefined}
             onMouseLeave={!isTouch ? handleMouseLeave : undefined}
-            className="relative font-sans py-24 md:py-32 px-6 md:px-12 overflow-hidden cursor-crosshair min-h-75vh flex flex-col justify-center"
+            className="relative font-sans py-24 md:py-32 overflow-hidden cursor-crosshair min-h-75vh flex flex-col justify-center"
         >
             {/* --- Swiss Grid Background --- */}
             <div className="absolute inset-0 z-0 pointer-events-none">
@@ -182,7 +213,7 @@ const AwardWinningAbout: React.FC = () => {
             {!isTouch && <div ref={stackContainerRef} className="absolute inset-0 z-[50] pointer-events-none" />}
 
             {/* --- Main Content --- */}
-            <div ref={contentRef} className="relative z-10 max-w-[1800px] mx-auto w-full">
+            <div ref={contentRef} className="relative z-10 max-w-[1800px] mx-auto w-full px-6 md:px-12">
 
                 {/* Header: Monumental Outline Text */}
                 <div className="mb-16 md:mb-24 relative">
@@ -211,7 +242,7 @@ const AwardWinningAbout: React.FC = () => {
                                 <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500 group-hover:text-red-500 transition-colors">{stat.label}</span>
                                 {stat.active && <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>}
                             </div>
-                            <div className="stat-value text-4xl md:text-5xl font-mono font-light mb-2">{stat.value}</div>
+                            <div className="stat-value text-4xl md:text-5xl font-mono font-light mb-2 text-black dark:text-white" data-value={stat.value}>{stat.value}</div>
                             <div className="text-xs font-mono uppercase text-gray-400">{stat.desc}</div>
                         </div>
                     ))}
