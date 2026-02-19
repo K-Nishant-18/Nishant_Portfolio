@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiArrowUpRight } from 'react-icons/fi';
 
@@ -38,8 +39,21 @@ const projects = [
 const Projects: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    // offset: ["start end", "center center"] // Slower
+    // offset: ["start end", "start center"] // Faster
+    offset: ["start end", "start 50%"] // Tune this value (e.g., 0% to 50%) to adjust speed
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 1], [15, 1]);
+  const y = useTransform(scrollYProgress, [0, 1], [-300, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 1], [0, 1, 1]);
+  const blur = useTransform(scrollYProgress, [0, 1], [10, 0]);
+  const letterSpacing = useTransform(scrollYProgress, [0, 1], ["10rem", "0.2rem"]); // Using rem to ensure responsiveness
+
   return (
-    <section ref={containerRef} className="relative bg-gray-50 dark:bg-black text-black dark:text-white min-h-[100vh] py-12 px-4 sm:px-8 font-sans overflow-hidden md:px-12">
+    <section ref={containerRef} className="relative bg-gray-50 dark:bg-black text-black dark:text-white min-h-[100vh] py-12 px-4 sm:px-8 font-sans md:px-12 z-20">
 
       {/* Background Decor: massive Swiss Grid */}
       <div
@@ -57,8 +71,20 @@ const Projects: React.FC = () => {
       <div className="max-w-[1920px] mx-auto relative z-10 w-full">
 
         {/* Header: Small, Technical */}
-        <div className="text-center  mb-24 md:pb-12 border-b border-black/50 dark:border-white/50 pb-4">
-          <h2 className="text-xl font-mono uppercase tracking-widest">[ My Selected Works ]</h2>
+        {/* Header: Small, Technical */}
+        <div className="text-center mb-24 md:pb-12 border-b border-black/50 dark:border-white/50 pb-4">
+          <motion.h2
+            style={{
+              scale,
+              y,
+              opacity,
+              filter: useTransform(blur, (v) => `blur(${v}px)`),
+              letterSpacing
+            }}
+            className="text-xl font-mono uppercase tracking-widest origin-center whitespace-nowrap"
+          >
+            Selected Works
+          </motion.h2>
 
         </div>
 
@@ -77,7 +103,7 @@ const Projects: React.FC = () => {
           {/* Title (Massive, Spanning) */}
           <div className="col-span-12 md:col-span-10 md:col-start-3 relative z-20">
             <Link to={projects[0].link} className="block">
-              <h3 className="text-[14vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
+              <h3 className="text-[18vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
                 {projects[0].title}
               </h3>
             </Link>
@@ -96,7 +122,7 @@ const Projects: React.FC = () => {
           {/* Title (Massive, Right Aligned) */}
           <div className="col-span-12 md:col-span-10 md:col-start-1 order-2 md:order-2 text-right relative z-20">
             <Link to={projects[1].link} className="block">
-              <h3 className="text-[14vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-right text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
+              <h3 className="text-[18vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-right text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
                 {projects[1].title}
               </h3>
             </Link>
@@ -135,7 +161,7 @@ const Projects: React.FC = () => {
           {/* Title (Massive, Spanning) */}
           <div className="col-span-12 md:col-span-10 md:col-start-3 relative z-20">
             <Link to={projects[2].link} className="block">
-              <h3 className="text-[14vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
+              <h3 className="text-[18vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
                 SKILL<br />BLOOM+
               </h3>
             </Link>

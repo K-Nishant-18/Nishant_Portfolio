@@ -71,7 +71,7 @@ const Hero: React.FC<HeroProps> = ({ startAnimation = false }) => {
           // 2. Fade ONLY Animated Grid to match static background (if needed)
           // Actually, let's keep them at 0.1 or fade them to 0.05 to match static.
           .to([...vAnimate, ...hAnimate], {
-            opacity: 0.05,
+            opacity: 0.09,
             duration: 1.0,
             ease: "power2.out"
           })

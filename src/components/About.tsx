@@ -193,7 +193,7 @@ const AwardWinningAbout: React.FC = () => {
                 <div className="absolute inset-0 flex justify-between px-6 md:px-12 max-w-[1800px] mx-auto w-full h-full">
                     {[...Array(6)].map((_, i) => (
                         <div key={`v-${i}`} className="relative h-full">
-                            <div className="grid-line w-px h-full bg-black/5 dark:bg-white/5"></div>
+                            <div className="grid-line w-px h-full bg-black/5 dark:bg-white/10"></div>
                             {/* Crosshairs at intersections */}
                             {[...Array(5)].map((_, j) => (
                                 <div key={`ch-${i}-${j}`} className="grid-crosshair absolute -left-[3px] w-[7px] h-[7px] border-l border-t border-black/20 dark:border-white/20" style={{ top: `${(j + 1) * 20}%` }}></div>
