@@ -190,7 +190,7 @@ const Skills: React.FC = () => {
 
         {/* --- Header (Preserved) --- */}
         <div className="mb-20 px-6 md:px-12 border-b border-black/10 dark:border-white/10 pb-12">
-          <h2 ref={titleRef} className="text-[12vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-40 select-none pointer-events-none mb-4">
+          <h2 ref={titleRef} className="text-[12vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none mb-4">
             <ScrollRevealText text="TECHNICAL" />
           </h2>
           <div className="flex flex-col md:flex-row justify-between items-end gap-6">
