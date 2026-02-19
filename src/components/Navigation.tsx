@@ -192,6 +192,15 @@ const Navigation: React.FC = () => {
             <FiDownload size={14} />
             <span>Download Resume</span>
           </button>
+
+          <button
+            onClick={toggleMute}
+            className="menu-item flex items-center gap-2 text-sm font-mono uppercase tracking-widest border border-black/10 dark:border-white/10 px-6 py-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300"
+            style={{ cursor: 'none' }}
+          >
+            {isMuted ? <FiVolumeX size={14} /> : <FiVolume2 size={14} />}
+            <span>{isMuted ? 'Unmute Audio' : 'Mute Audio'}</span>
+          </button>
         </div>
       </div>
     </>
