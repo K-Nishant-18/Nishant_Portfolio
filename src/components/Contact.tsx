@@ -85,7 +85,7 @@ const Contact: React.FC = () => {
 
               {/* "LET'S" */}
               <div className="block">
-                <ScrollRevealText text="LET'S" className="text-transparent text-stroke-white opacity-40 block" />
+                <ScrollRevealText text="LET'S" className="text-transparent text-stroke-white opacity-70 block" />
               </div>
 
               {/* "CONNECT." (with negative margin) */}
