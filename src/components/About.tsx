@@ -221,10 +221,10 @@ const AwardWinningAbout: React.FC = () => {
                         <FiCornerDownRight className="text-red-500 w-6 h-6" />
                         <span className="font-mono text-xs uppercase tracking-widest text-red-500">Identity // Bio</span>
                     </div>
-                    <h2 ref={titleRef} className="text-[10vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-40 select-none pointer-events-none">
+                    <h2 ref={titleRef} className="text-[25vw] md:text-[10vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none break-words">
                         <ScrollRevealText text="WHO_" />
                     </h2>
-                    <div className="about-content-item absolute top-1/2 left-0 md:left-1/4 ml-20 transform -translate-y-1/2 w-full md:w-2/3 pl-6 border-l-2 border-red-500">
+                    <div className="about-content-item relative md:absolute md:top-1/2 left-0 md:left-1/4 mt-12 md:mt-0 ml-0 md:ml-20 transform md:-translate-y-1/2 w-full md:w-2/3 pl-6 border-l-2 border-red-500">
                         <p className="text-lg md:text-2xl font-light leading-relaxed text-black dark:text-white mix-blend-difference">
                             I architect <span className="font-bold">high-performance backend ecosystems</span> using <span className="font-bold text-red-500">Java</span> and <span className="font-bold text-red-500">Spring Boot</span>. My expertise lies in leveraging <span className="font-bold">Spring MVC</span>, <span className="font-bold">Spring Security</span>, and <span className="font-bold">JPA</span> to engineer robust APIs and optimize complex data layers.
                         </p>
