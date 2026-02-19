@@ -42,12 +42,12 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-white dark:bg-black text-black dark:text-white border-t border-black/10 dark:border-white/10 font-sans">
-      <div className="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-4 min-h-[400px]">
-        {/* Column 1: Brand & Context */}
-        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col justify-between">
+      <div className="max-w-[1800px] mx-auto grid grid-cols-2 md:grid-cols-4 min-h-[400px]">
+        {/* Column 1: Brand & Context (Full Width on Mobile) */}
+        <div className="col-span-2 md:col-span-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col justify-between">
           <div>
             <Link to="/" onClick={scrollToTop} className="block group">
-              <div className="flex items-center text-2xl sm:text-3xl md:text-4xl lg:text-4xl tracking-tighter">
+              <div className="flex items-center text-4xl sm:text-4xl md:text-3xl lg:text-4xl tracking-tighter">
                 <span className="text-red-600 font-bold">KUMAR</span>
                 <span className="font-light ml-2 dark:text-white">NISHANT</span>
                 <span className="text-red-600 font-bold ml-1">.</span>
@@ -64,15 +64,15 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Column 2: Index / Navigation */}
-        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col">
+        {/* Column 2: Index (Half Width on Mobile, Left) */}
+        <div className="col-span-1 md:col-span-1 p-6 md:p-12 border-b md:border-b-0 border-r border-black/10 dark:border-white/10 flex flex-col">
           <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Index</div>
           <ul className="space-y-4 flex-grow">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <button
                   onClick={link.action}
-                  className="text-2xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
+                  className="text-xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
                 >
                   {link.name}
                   <span className="opacity-0 group-hover:opacity-100 text-sm transition-opacity duration-300">→</span>
@@ -82,8 +82,8 @@ const Footer: React.FC = () => {
           </ul>
         </div>
 
-        {/* Column 3: Socials */}
-        <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col">
+        {/* Column 3: Socials (Half Width on Mobile, Right) */}
+        <div className="col-span-1 md:col-span-1 p-6 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col">
           <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Connect</div>
           <ul className="space-y-4 flex-grow">
             {socialLinks.map((link) => (
@@ -92,7 +92,7 @@ const Footer: React.FC = () => {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-2xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
+                  className="text-xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
                 >
                   {link.name}
                   <FiArrowUpRight className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -102,8 +102,9 @@ const Footer: React.FC = () => {
           </ul>
         </div>
 
-        {/* Column 4: Status & CTA */}
-        <div className="p-8 md:p-12 flex flex-col justify-between">
+
+        {/* Column 4: Status & CTA (Full Width on Mobile) */}
+        <div className="col-span-2 md:col-span-1 p-8 md:p-12 flex flex-col justify-between">
           <div>
             <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Status</div>
             <div className="flex items-center gap-3">
@@ -130,7 +131,7 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-black/10 dark:border-white/10 py-6 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest">
+      <div className="border-t border-black/10 dark:border-white/10 py-6 px-6 md:px-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest">
         <div>
           &copy; {new Date().getFullYear()} Kumar Nishant. All Rights Reserved.
         </div>
