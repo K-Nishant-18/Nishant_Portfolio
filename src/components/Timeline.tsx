@@ -54,7 +54,6 @@ const Timeline: React.FC = () => {
 
             items.forEach((item: any) => {
                 const content = item.querySelector('.timeline-content');
-                const arrow = item.querySelector('.timeline-arrow');
                 const title = item.querySelector('.timeline-title');
                 const year = item.querySelector('.timeline-year-text');
                 const line = item.querySelector('.timeline-progress-line');
@@ -85,7 +84,7 @@ const Timeline: React.FC = () => {
                     title.classList.add('text-stroke-responsive');
                     gsap.to(title, {
                         color: 'transparent',
-                        opacity: 0.3,
+                        opacity: 0.75,
                         x: 10,
                         scale: 1.05,
                         originLeft: 0,
@@ -139,7 +138,7 @@ const Timeline: React.FC = () => {
             {/* Header: Skills Style (Right Aligned) */}
             <div className="max-w-7xl mx-auto px-6 md:px-12 mb-0 border-b border-black dark:border-white/40 pb-12">
                 <div className="flex flex-col items-end">
-                    <h2 className="text-[10vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-30 select-none pointer-events-none">
+                    <h2 className="text-[18vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none">
                         <ScrollRevealText text="DIGITAL" />
                     </h2>
                     <div className="flex flex-col md:flex-row w-full justify-between items-end md:items-end gap-6">
@@ -149,7 +148,7 @@ const Timeline: React.FC = () => {
                             COMMITS_&_MILESTONES
                         </p>
 
-                        <span className="text-[10vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-black dark:text-white order-1 md:order-2">
+                        <span className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-black dark:text-white order-1 md:order-2">
                             <ScrollRevealText text="EVOLUTION_" />
                         </span>
                     </div>
@@ -159,21 +158,25 @@ const Timeline: React.FC = () => {
             <div className="max-w-5xl mx-auto">
                 {milestones.map((item, index) => (
                     <div key={index} className="timeline-item border-b border-black/10 dark:border-white/10 group cursor-default transition-colors overflow-hidden relative">
-                        <div className="py-6 md:py-8 px-6 md:px-12 flex flex-col md:flex-row items-start md:items-baseline gap-4 md:gap-8 relative z-10">
+                        <div className="py-4 md:py-8 px-4 md:px-12 flex flex-col md:flex-row items-start md:items-baseline gap-2 md:gap-8 relative z-10 w-full">
 
-                            {/* Year Column with Active Line */}
-                            <div className="w-16 md:w-20 shrink-0 pt-1 relative h-full min-h-[2rem]">
-                                <span className="timeline-year-text font-mono text-sm md:text-sm tracking-widest opacity-60 transition-colors duration-300 block origin-left">
+                            {/* Year Column / Eyebrow Label */}
+                            {/* Mobile: Small Red Label above Title | Desktop: Static Left Column */}
+                            <div className="w-full md:w-20 shrink-0 pt-1 relative md:h-full md:min-h-[2rem]">
+                                <span className="timeline-year-text font-mono font-bold
+                                    text-sm text-red-500 mb-1 block
+                                    md:text-sm md:font-normal md:tracking-widest md:text-inherit md:text-stroke-0 md:opacity-60 md:mb-0
+                                    transition-colors duration-300 origin-left">
                                     {item.year}
                                 </span>
-                                {/* Vertical Progress Line */}
-                                <div className="timeline-progress-line absolute left-0 top-0 w-[2px] bg-red-500 h-0 opacity-0 md:-left-6"></div>
+                                {/* Vertical Progress Line - Desktop Only */}
+                                <div className="timeline-progress-line absolute left-0 top-0 w-[2px] bg-red-500 h-0 opacity-0 md:-left-6 hidden md:block"></div>
                             </div>
 
                             {/* Content Column */}
-                            <div className="flex-grow w-full">
+                            <div className="flex-grow w-full z-10 relative">
                                 <div className="flex items-center justify-between w-full">
-                                    <h3 className="timeline-title text-2xl md:text-4xl font-bold uppercase tracking-tight transition-all duration-300 origin-left">
+                                    <h3 className="timeline-title text-xl md:text-4xl font-bold uppercase tracking-tight leading-[0.9] md:leading-tight transition-all duration-300 origin-left mb-2 md:mb-0">
                                         {item.title}
                                     </h3>
                                     <FiArrowUpRight className="timeline-arrow w-5 h-5 shrink-0 transition-transform duration-300 opacity-30" />
@@ -181,13 +184,13 @@ const Timeline: React.FC = () => {
 
                                 {/* Expandable Content Area */}
                                 <div className="timeline-content h-0 overflow-hidden opacity-0 will-change-[height,opacity]">
-                                    <div className="pt-4 md:pt-6 max-w-2xl">
-                                        <p className="font-sans text-base md:text-lg opacity-100 leading-relaxed mb-4 font-light">
+                                    <div className="pt-2 md:pt-6 max-w-2xl">
+                                        <p className="font-sans text-sm md:text-lg opacity-100 leading-relaxed mb-4 font-light">
                                             {item.description}
                                         </p>
                                         <div className="flex flex-wrap gap-2 pb-2">
                                             {item.tags.map(t => (
-                                                <span key={t} className="text-xs font-mono uppercase tracking-wider border border-black/20 dark:border-white/20 px-3 py-1 rounded-full opacity-60">
+                                                <span key={t} className="text-[10px] md:text-xs font-mono uppercase tracking-wider border border-black/20 dark:border-white/20 px-2 py-0.5 md:px-3 md:py-1 rounded-full opacity-60">
                                                     {t}
                                                 </span>
                                             ))}

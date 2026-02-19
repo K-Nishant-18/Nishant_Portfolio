@@ -63,7 +63,7 @@ const Hero: React.FC<HeroProps> = ({ startAnimation = false }) => {
           .to(hAnimate, {
             scaleX: 1,
             duration: 1.8,
-            stagger: { from: "top", amount: 0.8 },
+            stagger: { from: "start", amount: 0.8 },
             ease: 'power2.inOut',
             transformOrigin: 'left'
           }, "<")
@@ -180,14 +180,14 @@ const Hero: React.FC<HeroProps> = ({ startAnimation = false }) => {
         {/* Center: Monumental Typography */}
         <div className="flex-1 flex flex-col justify-center items-center w-full relative">
           <h1 ref={nameRef} className="font-bold tracking-[-0.1em] uppercase text-center z-20 whitespace-nowrap text-black dark:text-white flex flex-col items-start leading-[0.85]">
-            <span className="text-[4vw] block -mb-2 md:-mb-2 ml-16 md:ml-4">
+            <span className="text-[12vw] md:text-[4vw] block mb-2 md:-mb-2 self-center md:self-start ml-6 md:ml-4">
               {"KUMAR".split('').map((char, i) => (
                 <span key={`k-${i}`} className="hero-char inline-block text-transparent text-stroke-responsive transition-all duration-300 cursor-default hover:text-black dark:hover:text-white">
                   {char}
                 </span>
               ))}
             </span>
-            <span className="text-[19vw] block -mt-4 opacity-95">
+            <span className="text-[21vw] md:text-[19vw] block -mt-4 opacity-95">
               {"NISHANT_".split('').map((char, i) => (
                 <span key={`n-${i}`} className="hero-char inline-block tracking-[-0.08em] hover:text-transparent hover:text-stroke-black dark:hover:text-stroke-white transition-all duration-300 cursor-default">
                   {char}
@@ -197,7 +197,7 @@ const Hero: React.FC<HeroProps> = ({ startAnimation = false }) => {
           </h1>
 
           {/* Role Badge - Floating */}
-          <div className="hidden md:flex absolute -bottom-10 left-1/2 -translate-x-1/2 meta-item flex-col items-center z-10">
+          <div className="flex md:flex relative mt-12 md:absolute md:mt-0 md:-bottom-10 left-auto md:left-1/2 md:-translate-x-1/2 meta-item flex-col items-center z-10">
             <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-xs font-mono uppercase tracking-widest mb-2">
               Backend & DevOps Engineer
             </div>
