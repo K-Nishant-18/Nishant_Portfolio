@@ -440,7 +440,7 @@ const DevActivity: React.FC = () => {
               <FiCornerDownRight className="text-red-500 w-6 h-6" />
               <span className="font-mono text-xs uppercase tracking-widest text-red-500">Activity // Log</span>
             </div>
-            <h2 className="text-[10vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-40 select-none pointer-events-none">
+            <h2 className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none">
               <ScrollRevealText text="CODE_BASE " />
             </h2>
           </div>
@@ -452,36 +452,36 @@ const DevActivity: React.FC = () => {
         </div>
 
         {/* --- Profile & Metrics Split --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 mb-16 px-36">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 mb-16 px-0 lg:px-36">
 
           {/* LEFT: Profile Section */}
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="flex flex-row items-center gap-4">
-              <div className="w-16 h-16 md:w-16 md:h-16 bg-black dark:bg-white overflow-hidden rounded-full grayscale mix-blend-multiply dark:mix-blend-normal flex-shrink-0">
+          <div className="lg:col-span-4 flex flex-row md:flex-col gap-3 md:gap-6 justify-between md:justify-start items-center md:items-start">
+            <div className="flex flex-row items-center gap-3 md:gap-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-black dark:bg-white overflow-hidden rounded-full grayscale mix-blend-multiply dark:mix-blend-normal flex-shrink-0">
                 <img src={data.user.avatar_url} alt={data.user.login} className="w-full h-full object-cover" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold uppercase tracking-tight">{data.user.login}</h3>
-                <a href={data.user.html_url} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-zinc-500 hover:text-red-500 transition-colors">
+                <h3 className="text-lg md:text-2xl font-bold uppercase tracking-tight">{data.user.login}</h3>
+                <a href={data.user.html_url} target="_blank" rel="noopener noreferrer" className="text-[10px] md:text-xs font-mono text-zinc-500 hover:text-red-500 transition-colors">
                   @github_profile
                 </a>
               </div>
             </div>
 
-            <div className="flex flex-row gap-8">
-              <div className="flex flex-col border-l-2 border-black dark:border-white pl-4">
-                <span className="text-3xl font-bold leading-none">{data.user.followers}</span>
+            <div className="flex flex-row gap-4 md:gap-8">
+              <div className="flex flex-col border-l-2 border-black dark:border-white pl-3 md:pl-4">
+                <span className="text-xl md:text-3xl font-bold leading-none">{data.user.followers}</span>
                 <span className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">Followers</span>
               </div>
-              <div className="flex flex-col border-l-2 border-black dark:border-white pl-4">
-                <span className="text-3xl font-bold leading-none">{data.user.following}</span>
+              <div className="flex flex-col border-l-2 border-black dark:border-white pl-3 md:pl-4">
+                <span className="text-xl md:text-3xl font-bold leading-none">{data.user.following}</span>
                 <span className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">Following</span>
               </div>
             </div>
           </div>
 
           {/* RIGHT: Metrics Grid (Compacted) */}
-          <div ref={cardsRef} className="lg:col-span-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div ref={cardsRef} className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-6">
             <MetricCard
               icon={<FiStar />}
               title="Total Stars"
@@ -510,10 +510,10 @@ const DevActivity: React.FC = () => {
         </div>
 
         {/* --- Detailed Stats Grid --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 px-36">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 px-0 lg:px-36">
 
           {/* Recent Projects (List) */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 order-2 lg:order-1">
             <div className="flex items-baseline justify-between mb-8 border-b-2 border-black dark:border-white pb-2">
               <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-tight">Recent Projects</h3>
               <span className="font-mono text-xs uppercase tracking-widest text-red-600">Latest_Push</span>
@@ -543,7 +543,7 @@ const DevActivity: React.FC = () => {
           </div>
 
           {/* Language Distribution (Minimal) */}
-          <div ref={languageBarsRef} className="lg:col-span-4">
+          <div ref={languageBarsRef} className="lg:col-span-4 order-1 lg:order-2">
             <div className="flex items-baseline justify-between mb-8 border-b-2 border-black dark:border-white pb-2">
               <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-tight">Top language</h3>
               <span className="font-mono text-xs uppercase tracking-widest text-red-600">Usage%</span>
