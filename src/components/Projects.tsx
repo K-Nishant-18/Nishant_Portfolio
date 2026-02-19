@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowUpRight, FiGithub } from 'react-icons/fi';
+import { FiArrowUpRight } from 'react-icons/fi';
 
 const projects = [
   {
@@ -43,14 +43,14 @@ const Projects: React.FC = () => {
 
       {/* Background Decor: massive Swiss Grid */}
       <div
-        className="absolute inset-0 grid grid-cols-12 pointer-events-none opacity-10"
+        className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 pointer-events-none opacity-10"
         style={{
           maskImage: 'linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)'
         }}
       >
         {[...Array(12)].map((_, i) => (
-          <div key={i} className="border-r border-black dark:border-white h-full last:border-r-0"></div>
+          <div key={i} className={`border-r border-black dark:border-white h-full last:border-r-0 ${i % 2 !== 0 ? 'hidden md:block' : ''}`}></div>
         ))}
       </div>
 
@@ -63,7 +63,7 @@ const Projects: React.FC = () => {
         </div>
 
         {/* --- PROJECT 01: COLLEGIA (Left Heavy) --- */}
-        <div className="group relative mb-4 md:mb-8 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-start">
+        <div className="group relative mb-24 md:mb-8 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-start">
           {/* Meta (Absolute Left) */}
           <div className="col-span-12 md:col-span-2 md:sticky md:top-32 self-start mb-8 md:mb-0">
             <span className="text-sm font-mono block mb-2 text-red-600">01 / 2024</span>
@@ -92,9 +92,9 @@ const Projects: React.FC = () => {
 
 
         {/* --- PROJECT 02: 0XKID (Right Heavy) --- */}
-        <div className="group relative mb-4 md:mb-8 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-start">
+        <div className="group relative mb-24 md:mb-8 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-start">
           {/* Title (Massive, Right Aligned) */}
-          <div className="col-span-12 md:col-span-10 md:col-start-1 md:order-2 text-right relative z-20">
+          <div className="col-span-12 md:col-span-10 md:col-start-1 order-2 md:order-2 text-right relative z-20">
             <Link to={projects[1].link} className="block">
               <h3 className="text-[14vw] md:text-[14vw] font-black uppercase tracking-tighter leading-[0.8] transition-all duration-300 text-right text-black dark:text-white hover:italic hover:text-transparent hover:[-webkit-text-stroke:1px_black] dark:hover:[-webkit-text-stroke:1px_white]">
                 {projects[1].title}
@@ -109,7 +109,7 @@ const Projects: React.FC = () => {
           </div>
 
           {/* Meta (Right) */}
-          <div className="col-span-12 md:col-span-2 md:order-3 md:sticky md:top-32 self-start mb-8 md:mb-0 text-right flex flex-col items-end">
+          <div className="col-span-12 md:col-span-2 order-1 md:order-3 md:sticky md:top-32 self-start mb-8 md:mb-0 text-right flex flex-col items-end">
             <span className="text-sm font-mono block mb-2 text-red-600">02 / 2024</span>
             <h4 className="text-xl font-bold uppercase leading-tight whitespace-pre-wrap text-black dark:text-white">{projects[1].category}</h4>
             <div className="h-px w-8 bg-black dark:bg-white my-4"></div>
