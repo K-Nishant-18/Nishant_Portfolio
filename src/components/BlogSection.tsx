@@ -56,12 +56,12 @@ const BlogSection: React.FC = () => {
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
 
         {/* --- HEADER --- */}
-        <div className="mb-16 md:mb-16 relative">
+        <div className="mb-8 md:mb-16 relative">
           <div className="flex items-center gap-4 mb-4">
             <FiCornerDownRight className="text-red-500 w-6 h-6" />
             <span className="font-mono text-xs uppercase tracking-widest text-red-500">Thinking // Journals</span>
           </div>
-          <h2 ref={titleRef} className="text-[12vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive select-none pointer-events-none whitespace-nowrap opacity-100">
+          <h2 ref={titleRef} className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive select-none pointer-events-none whitespace-nowrap opacity-60">
             <ScrollRevealText text="INSIGHTS" />
           </h2>
         </div>
@@ -81,7 +81,7 @@ const BlogSection: React.FC = () => {
                   href={posts[0].link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group md:col-span-7 border-b md:border-b-0 md:border-r border-black dark:border-white p-6 md:p-12 flex flex-col justify-between relative overflow-hidden transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black duration-500"
+                  className="group md:col-span-7 border-b md:border-b-0 md:border-r border-black dark:border-white p-8 md:p-12 flex flex-col justify-between relative overflow-hidden transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black duration-500"
                 >
                   {/* Background Texture on Hover? Maybe too much "banner". Keep strict. */}
 
