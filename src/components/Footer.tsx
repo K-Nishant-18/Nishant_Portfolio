@@ -27,10 +27,10 @@ const Footer: React.FC = () => {
   };
 
   const socialLinks = [
-    { name: "LINKEDIN", url: "https://linkedin.com/in/k-nishant-18", icon: <FiLinkedin /> },
+    { name: "LINKEDIN", url: "https://www.linkedin.com/in/kumar-nishant-dev/", icon: <FiLinkedin /> },
     { name: "GITHUB", url: "https://github.com/K-Nishant-18", icon: <FiGithub /> },
     { name: "EMAIL", url: "mailto:me.knishant@gmail.com", icon: <FiMail /> },
-    { name: "INSTAGRAM", url: "https://instagram.com/nishant_kumar_18", icon: <FiInstagram /> },
+    { name: "INSTAGRAM", url: "https://www.instagram.com/me.nishant_18/", icon: <FiInstagram /> },
   ];
 
   const navLinks = [
