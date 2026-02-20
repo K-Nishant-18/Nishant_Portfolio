@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProjectArchitecture } from '../data/projects';
 import MermaidDiagram from './MermaidDiagram';
 
@@ -17,6 +17,12 @@ type TabId = typeof TABS[number]['id'];
 
 const ArchitectureTabs: React.FC<ArchitectureTabsProps> = ({ architecture, projectId }) => {
     const [active, setActive] = useState<TabId>('dataflow');
+
+    useEffect(() => {
+        // Set initial tab based on screen size (runs once on mount)
+        const isLarge = window.innerWidth >= 768;
+        setActive(isLarge ? 'dataflow' : 'hld');
+    }, []);
 
     const diagramMap: Record<TabId, string> = {
         dataflow: architecture.dataFlow,

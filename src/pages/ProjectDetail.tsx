@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowLeft, FiArrowUpRight } from 'react-icons/fi';
 import { projects } from '../data/projects';
 import ArchitectureTabs from '../components/ArchitectureTabs';
+import Footer from '../components/Footer';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,7 +62,7 @@ const ProjectDetail: React.FC = () => {
             </div>
 
             {/* Hero Section */}
-            <section className="relative z-10 pt-20 md:pt-32 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[50vh] md:min-h-[80vh] flex flex-col justify-end">
+            <section className="relative z-10 pt-36 md:pt-32 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto min-h-[50vh] md:min-h-[80vh] flex flex-col justify-end">
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12">
                         <h1 className="text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase break-words mix-blend-difference text-black dark:text-white">
@@ -204,7 +205,7 @@ const ProjectDetail: React.FC = () => {
                 </div>
 
                 {/* 3. Technical Blueprint */}
-                <div className="grid grid-cols-12 gap-6 mb-40">
+                <div className="grid grid-cols-12 gap-6 mb-16">
                     <div className="col-span-12 mb-6 content-block">
                         <h2 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase mb-4">Core Architecture</h2>
                         <div className="h-px w-full bg-black dark:bg-white mb-2" />
@@ -225,6 +226,7 @@ const ProjectDetail: React.FC = () => {
                 </div>
 
             </div>
+            <Footer />
         </div>
     );
 };
