@@ -11,7 +11,7 @@ const projects = [
     year: '2024',
     description: 'A scalable campus ERP system built with Microservices (Spring Boot). Handles discrete academic modules with independent scaling.',
     tech: ['Java', 'Microservices', 'Docker'],
-    link: '#',
+    link: '/projects/01',
     color: '#FF4D00', // A vibrant Swiss orange/red
   },
   {
@@ -21,7 +21,7 @@ const projects = [
     year: '2024',
     description: 'Interactive ed-tech platform with AI code analysis. Sandboxed execution environments for safe code running.',
     tech: ['MongoDB', 'WebSockets', 'OpenAI'],
-    link: '#',
+    link: '/projects/03',
     color: '#FF4D00', // International Klein Blue
   },
   {
@@ -31,7 +31,7 @@ const projects = [
     year: '2023',
     description: 'Gamified LMS with automated GitHub verification Webhooks and Redis caching for leaderboards.',
     tech: ['PostgreSQL', 'Redis', 'OAuth2'],
-    link: '#',
+    link: '/projects/04',
     color: '#FF4D00', // Jade
   }
 ];
@@ -57,7 +57,7 @@ const Projects: React.FC = () => {
 
       {/* Background Decor: massive Swiss Grid */}
       <div
-        className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 pointer-events-none opacity-10"
+        className="absolute inset-0 grid grid-cols-6 md:grid-cols-12 pointer-events-none opacity-20"
         style={{
           maskImage: 'linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)'
@@ -72,7 +72,7 @@ const Projects: React.FC = () => {
 
         {/* Header: Small, Technical */}
         {/* Header: Small, Technical */}
-        <div className="text-center mb-24 md:pb-12 border-b border-black/50 dark:border-white/50 pb-4">
+        <div className="text-center mb-24 md:pb-12 pb-4">
           <motion.h2
             style={{
               scale,
