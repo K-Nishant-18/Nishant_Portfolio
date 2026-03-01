@@ -219,7 +219,7 @@ const AwardWinningAbout: React.FC = () => {
                 <div className="mb-16 md:mb-24 relative">
                     <div className="flex items-center gap-4 mb-4">
                         <FiCornerDownRight className="text-red-500 w-6 h-6" />
-                        <span className="font-mono text-xs uppercase tracking-widest text-red-500">Identity // Bio</span>
+                        <span className="font-mono text-xs uppercase tracking-widest text-red-500">Identity</span>
                     </div>
                     <h2 ref={titleRef} className="text-[25vw] md:text-[10vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none break-words">
                         <ScrollRevealText text="WHO_" />
