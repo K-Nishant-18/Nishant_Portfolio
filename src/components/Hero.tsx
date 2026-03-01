@@ -24,8 +24,8 @@ export default function Hero() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left + 60); // 60px offset for the expanded mask container
-    mouseY.set(e.clientY - rect.top + 60);
+    mouseX.set(e.clientX - rect.left + 150); // 150px offset to match the expanded mask container
+    mouseY.set(e.clientY - rect.top + 150);
   };
 
   return (
@@ -244,8 +244,9 @@ export default function Hero() {
           text-align: right;
           font-family: 'Aileron', 'Inter', sans-serif;
           font-size: clamp(20px, 2.6vw, 44px); /* Increased from 1.8vw to 2.3vw */
-          line-height: 1.4;
+          line-height: 1.1; /* Tighter line height to reduce vertical space */
           letter-spacing: 0.02em;
+          font-weight: 600;
           cursor: none; /* Hide default cursor to show the red circle cleanly */
         }
 
@@ -416,16 +417,16 @@ export default function Hero() {
               className="quote-reveal"
               style={{
                 position: "absolute",
-                top: -60,
-                left: -60,
-                right: -60,
-                bottom: -60,
-                padding: 60,
-                backgroundColor: "#e50914", // Vibrant Red background
+                top: -150,    // Drastically expanded bounds so the circle doesn't clip
+                left: -150,   //
+                right: -150,  //
+                bottom: -150, //
+                padding: 150, // Counters the absolute expansion to keep text aligned
+                backgroundColor: "#d80711ff", // Vibrant Red background
                 WebkitMaskImage: maskImage,
                 maskImage: maskImage,
                 pointerEvents: "none",
-                zIndex: 20,
+                zIndex: 100,
               }}
             >
               In a world where deadlines are tomorrow and bugs are ‘minor’, engineering is damage control.

@@ -185,7 +185,7 @@ const AwardWinningAbout: React.FC = () => {
             id="about"
             onMouseMove={!isTouch ? handleMouseMove : undefined}
             onMouseLeave={!isTouch ? handleMouseLeave : undefined}
-            className="relative font-sans py-24 md:py-32 overflow-hidden cursor-crosshair min-h-75vh flex flex-col justify-center"
+            className="relative font-sans py-24 md:py-32 overflow-visible cursor-crosshair min-h-75vh flex flex-col justify-center"
         >
             {/* --- Swiss Grid Background --- */}
             <div className="absolute inset-0 z-0 pointer-events-none">
