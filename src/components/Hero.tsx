@@ -58,7 +58,7 @@ export default function Hero() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600&family=Syncopate:wght@400;700&display=swap');
         @import url('https://fonts.cdnfonts.com/css/aileron');
 
         .hero-root {
@@ -206,7 +206,7 @@ export default function Hero() {
           right: -38px;
           bottom: -25px;
           left: 30px;
-          border: 8px solid rgba(255, 255, 255, 1); /* White border in light mode */
+          border: 10px solid #F9FAFB; /* White border in light mode */
           z-index: 1;
           pointer-events: none;
         }
@@ -220,7 +220,7 @@ export default function Hero() {
           top: 33px;
           right: -30px;
           bottom: -25px;
-          left: 22px;
+          left: 2px;
           z-index: 2;
           overflow: hidden;
         }
@@ -247,14 +247,15 @@ export default function Hero() {
           right: 5vw;
           text-align: right;
           z-index: 10;
-          font-family: 'Courier New', Courier, monospace;
+          font-family: 'Syncopate', 'Courier New', Courier, monospace;
+          font-weight: 500;
           font-size: 0.9vw;
           letter-spacing: 0.1em;
           line-height: 1.5;
-          color: #444444; /* Darker gray for light mode */
+          color: #000000ff; /* Darker gray for light mode */
         }
         .dark .hero-meta {
-          color: #cccccc; /* Lighter gray for dark mode */
+          color: #eeeeeeff; /* Lighter gray for dark mode */
         }
         .meta-gap { margin-top: 2rem; }
 
@@ -356,9 +357,9 @@ export default function Hero() {
           }
 
           .hero-meta { 
-            top: 50vh; 
+            top: 54vh; 
             right: 6vw; 
-            font-size: 2.8vw; 
+            font-size: 2.5vw; 
           }
 
           .quotes-container { 
