@@ -129,6 +129,7 @@ app.post('/api/guestbook',
       return;
     }
     const { name, message, email, avatar } = req.body;
+    console.log('[POST /api/guestbook] Incoming payload:', { name, message, email, avatar });
     try {
       const result = await pool.query(
         'INSERT INTO guestbook (name, message, email, avatar) VALUES ($1, $2, $3, $4) RETURNING id',

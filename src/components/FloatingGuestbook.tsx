@@ -86,6 +86,7 @@ const FloatingGuestbook: React.FC = () => {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const profile = await res.json();
+        console.log('[Google Auth] Profile fetched:', profile);
         const user: GoogleUser = {
           name: profile.name || profile.given_name || 'Guest',
           email: profile.email || '',
@@ -99,7 +100,10 @@ const FloatingGuestbook: React.FC = () => {
         setIsSigningIn(false);
       }
     },
-    onError: () => setIsSigningIn(false),
+    onError: (err) => {
+      console.error('[Google Auth] Error:', err);
+      setIsSigningIn(false);
+    },
   });
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -142,15 +146,18 @@ const FloatingGuestbook: React.FC = () => {
     setIsSubmitting(true);
     setStatus(null);
 
+    const payload = {
+      ...formData,
+      email: googleUser?.email || null,
+      avatar: googleUser?.picture || null,
+    };
+    console.log('[Guestbook Submit] Sending payload:', payload);
+
     try {
       const response = await fetch(`${API_URL}/guestbook`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          email: googleUser?.email || null,
-          avatar: googleUser?.picture || null,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
