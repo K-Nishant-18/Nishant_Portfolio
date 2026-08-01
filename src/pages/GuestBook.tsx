@@ -8,6 +8,8 @@ interface GuestBookEntry {
     id: number;
     name: string;
     message: string;
+    email?: string;
+    avatar?: string;
     created_at: string;
 }
 
@@ -281,8 +283,22 @@ const GuestBook: React.FC = () => {
 
                                             {/* Content Col */}
                                             <div className="flex-1 p-4 flex flex-col justify-center">
-                                                <div className="mb-2 font-mono text-xs uppercase tracking-wider text-black dark:text-white">
-                                                    {entry.name}
+                                                <div className="mb-2 flex items-center gap-2">
+                                                    {entry.avatar ? (
+                                                        <img
+                                                            src={entry.avatar}
+                                                            alt={entry.name}
+                                                            className="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                                                            referrerPolicy="no-referrer"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-5 h-5 rounded-full bg-red-600/10 text-red-600 dark:bg-red-400/20 dark:text-red-400 font-mono text-[9px] flex items-center justify-center font-bold flex-shrink-0">
+                                                            {entry.name ? entry.name.charAt(0).toUpperCase() : 'G'}
+                                                        </div>
+                                                    )}
+                                                    <div className="font-mono text-xs uppercase tracking-wider text-black dark:text-white">
+                                                        {entry.name}
+                                                    </div>
                                                 </div>
                                                 <div className="text-sm font-light text-gray-600 dark:text-gray-300 leading-relaxed font-sans">
                                                     {entry.message}

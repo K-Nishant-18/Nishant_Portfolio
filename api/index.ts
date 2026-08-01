@@ -40,8 +40,12 @@ const initDB = async () => {
                 id SERIAL PRIMARY KEY,
                 name TEXT NOT NULL,
                 message TEXT NOT NULL,
+                email TEXT,
+                avatar TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+            ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS email TEXT;
+            ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS avatar TEXT;
         `);
     console.log('Guestbook table ensured.');
   } catch (err) {
@@ -124,11 +128,11 @@ app.post('/api/guestbook',
       res.status(400).json({ success: false, errors: errors.array() });
       return;
     }
-    const { name, message } = req.body;
+    const { name, message, email, avatar } = req.body;
     try {
       const result = await pool.query(
-        'INSERT INTO guestbook (name, message) VALUES ($1, $2) RETURNING id',
-        [name, message]
+        'INSERT INTO guestbook (name, message, email, avatar) VALUES ($1, $2, $3, $4) RETURNING id',
+        [name, message, email || null, avatar || null]
       );
       res.status(201).json({ success: true, message: 'Guestbook entry added!', id: result.rows[0].id });
     } catch (err) {

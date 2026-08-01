@@ -165,11 +165,11 @@ const Loader: React.FC<LoaderProps> = ({ onComplete, onExitStart }) => {
               muted
               playsInline
               preload="auto"
+              onPlay={handlePlay}
               onEnded={handleVideoEnded}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
             >
-              <source src="/Logo-loader.webm" type="video/webm" />
               <source src="/Logo-loader.mp4" type="video/mp4" />
             </video>
           </motion.div>

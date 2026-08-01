@@ -85,9 +85,9 @@ function App() {
     setLoading(false);
   };
 
-  // Once loading is false, render the main application
-  return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+
+  const appContent = (
     <ThemeProvider>
       <MusicProvider>
         <Router>
@@ -124,9 +124,14 @@ function App() {
           </TransitionProvider>
         </Router>
       </MusicProvider>
-      </ThemeProvider>
-    </GoogleOAuthProvider>
+    </ThemeProvider>
   );
+
+  // Only wrap with GoogleOAuthProvider when the client ID is configured
+  // (prevents crash on Vercel if env var is not yet set in dashboard)
+  return googleClientId
+    ? <GoogleOAuthProvider clientId={googleClientId}>{appContent}</GoogleOAuthProvider>
+    : appContent;
 }
 
 export default App;

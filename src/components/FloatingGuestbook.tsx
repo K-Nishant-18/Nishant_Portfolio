@@ -9,6 +9,8 @@ interface GuestBookEntry {
   id: number;
   name: string;
   message: string;
+  email?: string;
+  avatar?: string;
   created_at: string;
 }
 
@@ -144,7 +146,11 @@ const FloatingGuestbook: React.FC = () => {
       const response = await fetch(`${API_URL}/guestbook`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          email: googleUser?.email || null,
+          avatar: googleUser?.picture || null,
+        }),
       });
 
       const data = await response.json();
@@ -468,8 +474,22 @@ const FloatingGuestbook: React.FC = () => {
 
                           {/* Right: Message Content */}
                           <div className="flex-1 min-w-0">
-                            <div className="font-mono text-xs font-semibold text-black dark:text-white uppercase mb-1 truncate">
-                              {entry.name}
+                            <div className="flex items-center gap-2 mb-1">
+                              {entry.avatar ? (
+                                <img
+                                  src={entry.avatar}
+                                  alt={entry.name}
+                                  className="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-red-600/10 text-red-600 dark:bg-red-400/20 dark:text-red-400 font-mono text-[9px] flex items-center justify-center font-bold flex-shrink-0">
+                                  {entry.name ? entry.name.charAt(0).toUpperCase() : 'G'}
+                                </div>
+                              )}
+                              <div className="font-mono text-xs font-semibold text-black dark:text-white uppercase truncate">
+                                {entry.name}
+                              </div>
                             </div>
                             <p className="text-xs font-light text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans break-words">
                               {entry.message}
