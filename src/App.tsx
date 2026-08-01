@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { AnimatePresence } from 'framer-motion';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Import all necessary components and providers
 import Navigation from './components/Navigation';
@@ -12,6 +13,7 @@ import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import GuestBook from './pages/GuestBook';
 import Loader from './components/Loader';
+import FloatingGuestbook from './components/FloatingGuestbook';
 
 import CustomCursor from './components/CustomCursor';
 import ThemeProvider from './context/ThemeContext';
@@ -85,6 +87,7 @@ function App() {
 
   // Once loading is false, render the main application
   return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <ThemeProvider>
       <MusicProvider>
         <Router>
@@ -107,6 +110,7 @@ function App() {
               >
                 <CustomCursor />
                 <Navigation />
+                <FloatingGuestbook />
                 <Transition />
 
                 <Routes>
@@ -120,7 +124,8 @@ function App() {
           </TransitionProvider>
         </Router>
       </MusicProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   );
 }
 

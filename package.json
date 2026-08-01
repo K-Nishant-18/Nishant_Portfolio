@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fontsource/syncopate": "^5.2.8",
+    "@react-oauth/google": "^0.13.5",
     "@splinetool/react-spline": "^4.0.0",
     "@studio-freight/lenis": "^1.0.42",
     "@supabase/supabase-js": "^2.50.2",

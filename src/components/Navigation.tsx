@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // @ts-ignore
 import TransitionLink from './TransitionLink';
 import { FiSun, FiMoon, FiMenu, FiX, FiDownload, FiVolume2, FiVolumeX } from 'react-icons/fi';
@@ -12,6 +12,7 @@ const Navigation: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const { isMuted, toggleMute } = useMusic();
   const location = useLocation();
+  const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -59,10 +60,34 @@ const Navigation: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  const scrollToContact = () => {
+    const doScroll = () => {
+      const el = document.getElementById('contact');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    if (location.pathname === '/') {
+      doScroll();
+    } else {
+      navigate('/');
+      // Wait for Home to mount and Contact section to appear
+      const tryScroll = (attempts = 0) => {
+        const el = document.getElementById('contact');
+        if (el) {
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        } else if (attempts < 20) {
+          setTimeout(() => tryScroll(attempts + 1), 100);
+        }
+      };
+      setTimeout(() => tryScroll(), 300);
+    }
+  };
+
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Engineering', path: '/projects' },
-    { name: 'GuestBook', path: '/guestbook' },
   ];
 
   return (
@@ -104,6 +129,16 @@ const Navigation: React.FC = () => {
                 </span>
               </TransitionLink>
             ))}
+
+            {/* Contact me — scrolls to #contact section */}
+            <button
+              onClick={scrollToContact}
+              className="relative px-4 py-2 text-xs font-mono uppercase tracking-widest transition-all duration-300 group overflow-hidden text-gray-500 hover:text-black dark:hover:text-white"
+              style={{ cursor: 'none' }}
+            >
+              <div className="absolute inset-0 bg-black/5 dark:bg-white/5 transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"></div>
+              <span className="relative z-10">Contact me</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -178,6 +213,16 @@ const Navigation: React.FC = () => {
               {item.name}
             </TransitionLink>
           ))}
+
+          {/* Contact me in mobile menu */}
+          <button
+            onClick={() => { scrollToContact(); setIsMenuOpen(false); }}
+            className="menu-item text-4xl font-mono uppercase font-light tracking-tighter hover:text-red-500 transition-colors duration-300 flex items-center gap-4 group"
+            style={{ cursor: 'none' }}
+          >
+            <span className="text-xs text-gray-400 font-mono tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">0{navItems.length + 1}</span>
+            Contact me
+          </button>
 
           <div className="w-12 h-px bg-black/10 dark:bg-white/10 my-8"></div>
 

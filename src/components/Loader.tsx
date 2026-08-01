@@ -8,7 +8,7 @@ interface LoaderProps {
 }
 
 // Customize this to control how long the video plays (in seconds) before transitioning
-const PLAYBACK_DURATION = 4.30; 
+const PLAYBACK_DURATION = 2.60; 
 
 const Loader: React.FC<LoaderProps> = ({ onComplete, onExitStart }) => {
   const { isDark } = useTheme();
