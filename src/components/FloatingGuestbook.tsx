@@ -318,6 +318,9 @@ const FloatingGuestbook: React.FC = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              data-lenis-prevent
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
               className="fixed top-0 right-0 h-full w-full sm:w-[480px] md:w-[560px] bg-white dark:bg-zinc-950 border-l border-black/10 dark:border-zinc-800 z-50 shadow-2xl flex flex-col font-sans text-black dark:text-white"
             >
               {/* Swiss grid overlay inside the drawer */}
@@ -346,7 +349,10 @@ const FloatingGuestbook: React.FC = () => {
               </div>
 
               {/* Scrollable Content Container */}
-              <div className="flex-1 overflow-y-auto relative z-10 p-6 space-y-8 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
+              <div
+                data-lenis-prevent
+                className="flex-1 overflow-y-auto relative z-10 p-6 space-y-8 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800"
+              >
                 
                 {/* Form Section */}
                 <div className="space-y-4">
@@ -486,11 +492,15 @@ const FloatingGuestbook: React.FC = () => {
                                 <img
                                   src={entry.avatar}
                                   alt={entry.name}
-                                  className="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                                  className="w-6 h-6 rounded-full object-cover flex-shrink-0 border border-black/10 dark:border-white/10"
                                   referrerPolicy="no-referrer"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
                                 />
-                              ) : (
-                                <div className="w-5 h-5 rounded-full bg-red-600/10 text-red-600 dark:bg-red-400/20 dark:text-red-400 font-mono text-[9px] flex items-center justify-center font-bold flex-shrink-0">
+                              ) : null}
+                              {(!entry.avatar) && (
+                                <div className="w-6 h-6 rounded-full bg-red-600/10 text-red-600 dark:bg-red-400/20 dark:text-red-400 font-mono text-[10px] flex items-center justify-center font-bold flex-shrink-0">
                                   {entry.name ? entry.name.charAt(0).toUpperCase() : 'G'}
                                 </div>
                               )}

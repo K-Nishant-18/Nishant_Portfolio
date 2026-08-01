@@ -288,11 +288,15 @@ const GuestBook: React.FC = () => {
                                                         <img
                                                             src={entry.avatar}
                                                             alt={entry.name}
-                                                            className="w-5 h-5 rounded-full object-cover flex-shrink-0"
+                                                            className="w-6 h-6 rounded-full object-cover flex-shrink-0 border border-black/10 dark:border-white/10"
                                                             referrerPolicy="no-referrer"
+                                                            onError={(e) => {
+                                                                e.currentTarget.style.display = 'none';
+                                                            }}
                                                         />
-                                                    ) : (
-                                                        <div className="w-5 h-5 rounded-full bg-red-600/10 text-red-600 dark:bg-red-400/20 dark:text-red-400 font-mono text-[9px] flex items-center justify-center font-bold flex-shrink-0">
+                                                    ) : null}
+                                                    {(!entry.avatar) && (
+                                                        <div className="w-6 h-6 rounded-full bg-red-600/10 text-red-600 dark:bg-red-400/20 dark:text-red-400 font-mono text-[10px] flex items-center justify-center font-bold flex-shrink-0">
                                                             {entry.name ? entry.name.charAt(0).toUpperCase() : 'G'}
                                                         </div>
                                                     )}
