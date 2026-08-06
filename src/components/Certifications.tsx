@@ -1,247 +1,338 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCornerDownRight, FiArrowLeft, FiArrowRight, FiArrowUpRight, FiMaximize2, FiX } from 'react-icons/fi';
+import { FiCornerDownRight, FiArrowUpRight, FiX, FiMaximize2, FiShield } from 'react-icons/fi';
 import { CERTIFICATIONS_DATA, Certification } from '../data/certifications';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Certifications: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [direction, setDirection] = useState<number>(1);
-  const [modalImage, setModalImage] = useState<Certification | null>(null);
+  const [hovered, setHovered] = useState<Certification | null>(null);
+  const [lightbox, setLightbox] = useState<Certification | null>(null);
 
-  const totalCerts = CERTIFICATIONS_DATA.length;
-  const currentCert = CERTIFICATIONS_DATA[currentIndex];
+  // Smooth image follow cursor
+  const rawX = useRef<number | null>(null);
+  const rawY = useRef<number | null>(null);
+  const animX = useRef<number>(0);
+  const animY = useRef<number>(0);
+  const rafId = useRef<number | null>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
 
-  const handleNext = useCallback(() => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % totalCerts);
-  }, [totalCerts]);
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-  const handlePrev = useCallback(() => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + totalCerts) % totalCerts);
-  }, [totalCerts]);
+  const runLerp = () => {
+    if (rawX.current !== null && rawY.current !== null) {
+      animX.current = lerp(animX.current, rawX.current, 0.15);
+      animY.current = lerp(animY.current, rawY.current, 0.15);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (modalImage) return;
-      if (e.key === 'ArrowRight') handleNext();
-      if (e.key === 'ArrowLeft') handlePrev();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, modalImage]);
+      if (imgRef.current) {
+        // Clamp to prevent image from clipping off-screen
+        const winW = typeof window !== 'undefined' ? window.innerWidth : 1000;
+        const winH = typeof window !== 'undefined' ? window.innerHeight : 800;
+        const clampedX = Math.min(Math.max(animX.current, 140), winW - 140);
+        const clampedY = Math.min(Math.max(animY.current, 100), winH - 100);
 
-  // Framer Motion slide variants
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 80 : -80,
-      opacity: 0,
-      scale: 0.98,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
-    },
-    exit: (dir: number) => ({
-      x: dir < 0 ? 80 : -80,
-      opacity: 0,
-      scale: 0.98,
-      transition: { duration: 0.25, ease: [0.7, 0, 0.84, 0] },
-    }),
+        imgRef.current.style.transform = `translate3d(${clampedX}px, ${clampedY}px, 0) translate(-50%, -60%)`;
+      }
+    }
+    rafId.current = requestAnimationFrame(runLerp);
   };
 
-  return (
-    <section
-      ref={sectionRef}
-      id="certifications"
-      className="py-16 md:py-24 bg-white dark:bg-black text-black dark:text-white font-sans transition-colors duration-300 border-t border-black/10 dark:border-white/10"
-    >
-      <div className="max-w-4xl mx-auto px-6">
-        
-        {/* Minimal Header */}
-        <div className="flex items-end justify-between mb-8 pb-4 border-b border-black/10 dark:border-white/10">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <FiCornerDownRight className="text-red-500 w-4 h-4" />
-              <span className="font-mono text-[11px] uppercase tracking-widest text-red-500 font-semibold">
-                [04] // CERTIFICATIONS
-              </span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-tight">
-              Certifications
-            </h2>
-          </div>
+  useEffect(() => {
+    rafId.current = requestAnimationFrame(runLerp);
+    return () => {
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
+  }, []);
 
-          {/* Index Counter & Navigation */}
-          <div className="flex items-center gap-4">
-            <span className="font-mono text-xs text-zinc-500">
-              0{currentIndex + 1} / 0{totalCerts}
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={handlePrev}
-                className="p-2.5 rounded-full border border-black/15 dark:border-white/15 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-                aria-label="Previous"
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (rawX.current === null) {
+      // First move initialization to avoid flying in from (0,0)
+      rawX.current = e.clientX;
+      rawY.current = e.clientY;
+      animX.current = e.clientX;
+      animY.current = e.clientY;
+    } else {
+      rawX.current = e.clientX;
+      rawY.current = e.clientY;
+    }
+  };
+
+  // Robust GSAP header entrance with refresh
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const els = sectionRef.current?.querySelectorAll('.reveal-el');
+      if (els && els.length > 0) {
+        gsap.fromTo(
+          els,
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.08,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+            clearProps: 'transform,opacity',
+          }
+        );
+      }
+    }, sectionRef);
+
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
+    return () => {
+      ctx.revert();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <>
+      <section
+        ref={sectionRef}
+        id="certifications"
+        className="relative py-16 md:py-24 bg-white dark:bg-black text-black dark:text-white font-sans border-t border-black/10 dark:border-white/10 transition-colors duration-300 overflow-hidden"
+        onMouseMove={handleMouseMove}
+      >
+        {/* ── FLOATING PREVIEW IMAGE (follows cursor smoothly) ── */}
+        <div
+          ref={imgRef}
+          className="fixed top-0 left-0 z-40 pointer-events-none"
+          style={{ willChange: 'transform' }}
+        >
+          <AnimatePresence mode="wait">
+            {hovered && (
+              <motion.div
+                key={hovered.id}
+                initial={{ opacity: 0, scale: 0.85, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.85, y: 10 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                className="relative overflow-hidden rounded-xl shadow-2xl border-2 border-black dark:border-white bg-zinc-900"
+                style={{ width: 280, height: 180 }}
               >
-                <FiArrowLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleNext}
-                className="p-2.5 rounded-full border border-black/15 dark:border-white/15 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-                aria-label="Next"
-              >
-                <FiArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+                <img
+                  src={hovered.image}
+                  alt={hovered.title}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                />
+                {/* Accent Color Bottom Bar */}
+                <div
+                  className="absolute bottom-0 left-0 h-1 w-full"
+                  style={{ background: hovered.accentColor }}
+                />
+                {/* Code Tag Badge */}
+                <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/80 text-white font-mono text-[10px] font-bold rounded backdrop-blur-sm border border-white/20">
+                  {hovered.code}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Minimal Certificate Card Slider */}
-        <div className="relative min-h-[380px] md:min-h-[420px] flex flex-col justify-between bg-zinc-50/80 dark:bg-zinc-950/80 border border-black/10 dark:border-white/10 rounded-2xl p-6 md:p-8 overflow-hidden shadow-sm">
-          
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.div
-              key={currentCert.id}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center"
-            >
-              {/* Certificate Image Frame */}
-              <div className="md:col-span-7 relative group cursor-pointer overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-black shadow-md">
+        <div className="max-w-5xl mx-auto px-6 md:px-10">
+
+          {/* ── ASYMMETRIC SWISS HEADER ── */}
+          <div className="reveal-el grid grid-cols-12 items-end gap-y-3 mb-10 pb-6 border-b border-black/15 dark:border-white/15">
+            {/* Left: Section Label & Numeral */}
+            <div className="col-span-12 md:col-span-3 font-mono">
+              <div className="text-xs uppercase tracking-[0.25em] text-red-500 font-bold mb-1 flex items-center gap-1.5">
+                <FiCornerDownRight className="w-4 h-4" />
+                <span>[04] // ACCREDITATIONS</span>
+              </div>
+              <div className="text-4xl md:text-5xl font-black tracking-tight text-black dark:text-white mt-1">
+                0{CERTIFICATIONS_DATA.length} <span className="text-zinc-400 font-normal text-xl">CERTS</span>
+              </div>
+            </div>
+
+            {/* Center: Asymmetric Title */}
+            <div className="col-span-12 md:col-span-6 md:pl-4">
+              <h2 className="font-black uppercase tracking-tight leading-none text-3xl md:text-5xl">
+                Certified <br />
+                <span className="text-transparent" style={{ WebkitTextStroke: '1.5px currentColor', opacity: 0.4 }}>
+                  Expertise
+                </span>
+              </h2>
+            </div>
+
+            {/* Right: Subtitle */}
+            <div className="col-span-12 md:col-span-3 md:text-right">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-sans">
+                Hover row to preview credential.<br />100% Verified Accreditations.
+              </p>
+            </div>
+          </div>
+
+          {/* ── CERTIFICATION INDEX LIST ── */}
+          <div className="space-y-1">
+            {CERTIFICATIONS_DATA.map((cert, idx) => (
+              <div
+                key={cert.id}
+                onMouseEnter={() => setHovered(cert)}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => setLightbox(cert)}
+                className={`reveal-el group relative grid grid-cols-12 items-center gap-x-4 py-4 md:py-5 px-3 md:px-4 border-b border-black/10 dark:border-white/10 cursor-pointer rounded-lg transition-all duration-300 ${
+                  hovered?.id === cert.id
+                    ? 'bg-black/[0.04] dark:bg-white/[0.05]'
+                    : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
+                }`}
+              >
+                {/* Accent Color Left Edge Bar */}
                 <div
-                  className="aspect-[16/10] w-full overflow-hidden"
-                  onClick={() => setModalImage(currentCert)}
-                >
-                  <img
-                    src={currentCert.image}
-                    alt={currentCert.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  className={`absolute left-0 top-0 bottom-0 w-[3px] transition-all duration-300 ${
+                    hovered?.id === cert.id ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50'
+                  }`}
+                  style={{ background: cert.accentColor }}
+                />
+
+                {/* Index number */}
+                <div className="col-span-2 sm:col-span-1 font-mono text-xs font-bold text-zinc-400 dark:text-zinc-500 group-hover:text-red-500 transition-colors">
+                  0{idx + 1}
                 </div>
 
-                {/* Quick Expand Button overlay */}
-                <button
-                  onClick={() => setModalImage(currentCert)}
-                  className="absolute bottom-3 right-3 p-2 bg-black/70 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
-                  title="Expand Image"
-                >
-                  <FiMaximize2 className="w-4 h-4" />
-                </button>
+                {/* Title */}
+                <div className="col-span-10 sm:col-span-7 md:col-span-6">
+                  <h3 className="font-bold uppercase tracking-tight text-base md:text-xl group-hover:translate-x-1.5 transition-transform duration-300">
+                    {cert.title}
+                  </h3>
+                  {/* Mobile Issuer & Date line */}
+                  <div className="flex items-center gap-2 font-mono text-[10px] text-zinc-500 md:hidden mt-1">
+                    <span>{cert.issuer}</span>
+                    <span>•</span>
+                    <span>{cert.date}</span>
+                  </div>
+                </div>
+
+                {/* Issuer (Desktop) */}
+                <div className="hidden md:block md:col-span-3 text-right">
+                  <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                    {cert.issuer}
+                  </span>
+                </div>
+
+                {/* Date & Action Buttons */}
+                <div className="hidden sm:flex col-span-2 md:col-span-2 items-center justify-end gap-3 font-mono text-xs">
+                  <span className="text-zinc-400 text-[11px]">{cert.date}</span>
+
+                  <a
+                    href={cert.verificationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 hover:text-red-500 transition-colors"
+                    title="Verify Link"
+                  >
+                    <FiArrowUpRight className="w-4 h-4" />
+                  </a>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLightbox(cert);
+                    }}
+                    className="p-1.5 rounded hover:bg-black/10 dark:hover:bg-white/10 hover:text-red-500 transition-colors"
+                    title="Inspect Certificate"
+                  >
+                    <FiMaximize2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Tag Pills */}
+                <div className="col-span-12 flex flex-wrap gap-1.5 mt-2">
+                  {cert.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider bg-black/5 dark:bg-white/10 rounded text-zinc-600 dark:text-zinc-300"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── FOOTER BAR ── */}
+          <div className="reveal-el mt-8 pt-4 border-t border-black/10 dark:border-white/10 flex items-center justify-between font-mono text-xs text-zinc-500">
+            <span>{CERTIFICATIONS_DATA.length} Verified Credentials</span>
+            <span className="flex items-center gap-1.5 text-emerald-500 font-bold uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              100% Authenticated
+            </span>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── LIGHTBOX MODAL ── */}
+      <AnimatePresence>
+        {lightbox && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-md animate-fade-in"
+            onClick={() => setLightbox(null)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-3xl bg-white dark:bg-zinc-950 border border-black/20 dark:border-white/20 rounded-2xl p-6 md:p-8 shadow-2xl text-black dark:text-white font-sans"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setLightbox(null)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-red-500 hover:text-white transition-colors"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2 mb-4 font-mono text-xs text-red-500 font-bold uppercase tracking-widest">
+                <FiShield />
+                <span>{lightbox.code} // OFFICIAL CERTIFICATE</span>
               </div>
 
-              {/* Minimal Info */}
-              <div className="md:col-span-5 flex flex-col justify-between h-full">
-                <div>
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-red-500 font-semibold mb-2">
-                    {currentCert.issuer}
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-2 leading-snug">
-                    {currentCert.title}
-                  </h3>
-                  <p className="font-mono text-xs text-zinc-500 mb-4">
-                    Issued: {currentCert.date}
-                  </p>
+              {/* Certificate Image */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-black border border-black/10 dark:border-white/10 mb-6">
+                <img
+                  src={lightbox.image}
+                  alt={lightbox.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-                  <div className="flex flex-wrap gap-1.5 mb-6">
-                    {currentCert.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 font-mono text-[10px] bg-black/5 dark:bg-white/10 text-zinc-700 dark:text-zinc-300 rounded"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
+              {/* Info & Actions */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+                <div>
+                  <h4 className="text-xl font-bold font-sans text-black dark:text-white leading-tight">
+                    {lightbox.title}
+                  </h4>
+                  <p className="text-zinc-500 mt-1">
+                    Issued by <span className="text-black dark:text-white font-bold">{lightbox.issuer}</span> • {lightbox.date}
+                  </p>
                 </div>
 
                 <a
-                  href={currentCert.verificationUrl}
+                  href={lightbox.verificationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-wider rounded-lg hover:bg-red-600 dark:hover:bg-red-500 dark:hover:text-white transition-colors shrink-0"
                 >
                   <span>Verify Credential</span>
                   <FiArrowUpRight className="w-4 h-4" />
                 </a>
               </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Bottom Dot Nav */}
-          <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-black/5 dark:border-white/5">
-            {CERTIFICATIONS_DATA.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setDirection(idx > currentIndex ? 1 : -1);
-                  setCurrentIndex(idx);
-                }}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  currentIndex === idx
-                    ? 'w-6 bg-red-500'
-                    : 'w-1.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400'
-                }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* Lightbox Image Preview Modal */}
-      {modalImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in"
-          onClick={() => setModalImage(null)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-3xl w-full bg-white dark:bg-zinc-900 border border-black/20 dark:border-white/20 rounded-2xl p-4 overflow-hidden shadow-2xl"
-          >
-            <button
-              onClick={() => setModalImage(null)}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-red-500 transition-colors"
-            >
-              <FiX className="w-5 h-5" />
-            </button>
-
-            <img
-              src={modalImage.image}
-              alt={modalImage.title}
-              className="w-full max-h-[75vh] object-contain rounded-lg"
-            />
-
-            <div className="mt-4 flex items-center justify-between font-mono text-xs">
-              <div>
-                <span className="font-bold text-black dark:text-white">{modalImage.title}</span>
-                <span className="text-zinc-500 ml-2">• {modalImage.issuer}</span>
-              </div>
-              <a
-                href={modalImage.verificationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-red-500 font-bold uppercase hover:underline flex items-center gap-1"
-              >
-                <span>Verify</span>
-                <FiArrowUpRight />
-              </a>
             </div>
           </div>
-        </div>
-      )}
-    </section>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
