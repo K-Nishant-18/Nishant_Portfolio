@@ -24,8 +24,8 @@ const Skills: React.FC = () => {
       icon: <FiServer size={24} />,
       skills: [
         { name: 'Java (Core & Advanced)', level: 95 },
-        { name: 'Spring Boot / MVC', level: 90 },
-        { name: 'Spring Security / JWT', level: 85 },
+        { name: 'Spring Boot & MVC', level: 90 },
+        { name: 'Spring Security & JWT', level: 75 },
         { name: 'Microservices Arch.', level: 85 },
         { name: 'RESTful API Design', level: 90 },
       ],
@@ -37,9 +37,9 @@ const Skills: React.FC = () => {
       skills: [
         { name: 'MySQL / PostgreSQL', level: 85 },
         { name: 'Hibernate & JPA', level: 85 },
-        { name: 'Redis / Caching', level: 80 },
+        { name: 'Redis & Caching', level: 65 },
         { name: 'Database Design', level: 85 },
-        { name: 'Query Optimization', level: 75 },
+        { name: 'Query Optimization', level: 70 },
       ],
     },
     {

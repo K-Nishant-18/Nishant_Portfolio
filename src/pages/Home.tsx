@@ -9,8 +9,7 @@ import Footer from '../components/Footer';
 import Projects from '../components/Projects';
 import Timeline from '../components/Timeline';
 import DevActivity from '../components/DevActivity';
-
-
+import Certifications from '../components/Certifications';
 
 interface HomeProps {
   startAnimation?: boolean;
@@ -24,7 +23,8 @@ const Home: React.FC<HomeProps> = ({ startAnimation = false }) => {
       <Skills />
       <Projects />
       <DevActivity />
-      <Timeline />
+      <Certifications />
+      {/* <Timeline /> */}
       <BlogSection />
       {/* <TestimonialPreview /> */}
       <Contact />
