@@ -438,7 +438,7 @@ const DevActivity: React.FC = () => {
           <div className="md:col-span-8">
             <div className="flex items-center gap-4 mb-4">
               <FiCornerDownRight className="text-red-500 w-6 h-6" />
-              <span className="font-mono text-xs uppercase tracking-widest text-red-500">Activity // Log</span>
+              <span className="font-mono text-xs uppercase tracking-widest text-red-500">GitHub Stats</span>
             </div>
             <h2 className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none">
               <ScrollRevealText text="CODE_BASE " />
@@ -463,7 +463,7 @@ const DevActivity: React.FC = () => {
               <div>
                 <h3 className="text-lg md:text-2xl font-bold uppercase tracking-tight">{data.user.login}</h3>
                 <a href={data.user.html_url} target="_blank" rel="noopener noreferrer" className="text-[10px] md:text-xs font-mono text-zinc-500 hover:text-red-500 transition-colors">
-                  @github_profile
+                  GitHub Profile
                 </a>
               </div>
             </div>

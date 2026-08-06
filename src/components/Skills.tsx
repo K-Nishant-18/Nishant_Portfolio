@@ -36,7 +36,7 @@ const Skills: React.FC = () => {
       icon: <FiDatabase size={24} />,
       skills: [
         { name: 'MySQL / PostgreSQL', level: 85 },
-        { name: 'Hibernate / JPA', level: 85 },
+        { name: 'Hibernate & JPA', level: 85 },
         { name: 'Redis / Caching', level: 80 },
         { name: 'Database Design', level: 85 },
         { name: 'Query Optimization', level: 75 },
@@ -47,11 +47,12 @@ const Skills: React.FC = () => {
       title: 'DevOps & Cloud',
       icon: <FiTerminal size={24} />,
       skills: [
-        { name: 'Docker / Kubernetes', level: 80 },
-        { name: 'AWS (EC2, S3, RDS)', level: 75 },
-        { name: 'CI/CD (Jenkins)', level: 75 },
-        { name: 'Nginx / Reverse Proxy', level: 70 },
-        { name: 'Linux Administration', level: 80 },
+        { name: 'Docker', level: 80 },
+        { name: 'Kubernetes', level: 60 },
+
+        { name: 'AWS (EC2, S3, RDS, +3)', level: 75 },
+        { name: 'CI/CD (Jenkins & GitHub Actions)', level: 75 },
+        { name: 'Grafana', level: 70 },
       ],
     },
     {
@@ -59,11 +60,11 @@ const Skills: React.FC = () => {
       title: 'Architecture & Core',
       icon: <FiLayers size={24} />,
       skills: [
-        { name: 'System Design', level: 80 },
+        { name: 'System Design', level: 30 },
         { name: 'Data Structures & Algo', level: 85 },
-        { name: 'Message Queues (Kafka)', level: 75 },
+        { name: 'Message Queues (Kafka)', level: 65 },
         { name: 'Shell Scripting', level: 75 },
-        { name: 'Git / Version Control', level: 90 },
+        { name: 'Git / Version Control', level: 95 },
       ],
     },
   ];
@@ -198,8 +199,8 @@ const Skills: React.FC = () => {
               <ScrollRevealText text="STACK_" />
             </span>
             <p className="font-mono text-sm max-w-md text-gray-500 text-right pb-2">
-                            // SYSTEM_INVENTORY_V2.2<br />
-              OPTIMIZED FOR SCALABILITY & PERFORMANCE
+                            BEHIND THE CODE<br />
+              THE TOOLS AND TECHNOLOGIES THAT POWER MY PROJECTS
             </p>
           </div>
         </div>
