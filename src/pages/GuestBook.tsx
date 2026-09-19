@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { FiArrowRight, FiX, FiCheck, FiMoreHorizontal, FiTrash2 } from 'react-icons/fi'; // Using Feather icons for sharp look
 import Navbar from '../components/Navigation';
 import Footer from '../components/Footer';
+import { loadMyEntries, saveMyEntries, type MyEntry } from '../lib/guestbook';
 
 interface GuestBookEntry {
     id: number;
@@ -18,7 +19,7 @@ const GuestBook: React.FC = () => {
     const [formData, setFormData] = useState({ name: '', message: '' });
     const [status, setStatus] = useState<null | 'success' | 'error'>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [myEntryIds, setMyEntryIds] = useState<number[]>([]);
+    const [myEntries, setMyEntries] = useState<MyEntry[]>([]);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -31,10 +32,20 @@ const GuestBook: React.FC = () => {
     // Remove duplicate /api if present to avoid /api/api/guestbook
     const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl.slice(0, -4) + '/api' : rawApiUrl;
 
+    const fetchEntries = useCallback(async () => {
+        try {
+            const res = await fetch(`${API_URL}/guestbook`);
+            const data = await res.json();
+            setEntries(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error('Failed to fetch guestbook entries:', err);
+            setEntries([]);
+        }
+    }, [API_URL]);
+
     useEffect(() => {
         fetchEntries();
-        const stored = localStorage.getItem('myGuestbookEntries');
-        if (stored) setMyEntryIds(JSON.parse(stored));
+        setMyEntries(loadMyEntries());
 
         // Swiss Entrance Animation
         const ctx = gsap.context(() => {
@@ -67,7 +78,7 @@ const GuestBook: React.FC = () => {
             });
         }, containerRef);
         return () => ctx.revert();
-    }, []);
+    }, [fetchEntries]);
 
     // Staggered entry reveal when entries load
     useEffect(() => {
@@ -78,17 +89,6 @@ const GuestBook: React.FC = () => {
             );
         }
     }, [entries]);
-
-    async function fetchEntries() {
-        try {
-            const res = await fetch(`${API_URL}/guestbook`);
-            const data = await res.json();
-            setEntries(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error('Failed to fetch guestbook entries:', err);
-            setEntries([]);
-        }
-    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -110,15 +110,19 @@ const GuestBook: React.FC = () => {
                 const result = await response.json();
                 setStatus('success');
                 setFormData({ name: '', message: '' });
-                const updated = [...myEntryIds, result.id];
-                setMyEntryIds(updated);
-                localStorage.setItem('myGuestbookEntries', JSON.stringify(updated));
+                if (result.id && result.editToken) {
+                    const updated = [...myEntries, { id: result.id, editToken: result.editToken }];
+                    setMyEntries(updated);
+                    saveMyEntries(updated);
+                } else {
+                    saveMyEntries(myEntries);
+                }
                 setTimeout(() => setStatus(null), 3000);
                 fetchEntries();
             } else {
                 setStatus('error');
             }
-        } catch (error) {
+        } catch {
             setStatus('error');
         } finally {
             setIsSubmitting(false);
@@ -127,12 +131,17 @@ const GuestBook: React.FC = () => {
 
     const handleDelete = async (id: number) => {
         if (!confirm('CONFIRM DELETION COMMAND?')) return;
+        const entry = myEntries.find(e => e.id === id);
+        if (!entry) return;
         try {
-            const response = await fetch(`${API_URL}/guestbook/${id}`, { method: 'DELETE' });
+            const response = await fetch(`${API_URL}/guestbook/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${entry.editToken}` },
+            });
             if (response.ok) {
-                const updated = myEntryIds.filter(entryId => entryId !== id);
-                setMyEntryIds(updated);
-                localStorage.setItem('myGuestbookEntries', JSON.stringify(updated));
+                const updated = myEntries.filter(e => e.id !== id);
+                setMyEntries(updated);
+                saveMyEntries(updated);
                 fetchEntries();
             }
         } catch (error) {
@@ -311,7 +320,7 @@ const GuestBook: React.FC = () => {
 
                                             {/* Actions Col */}
                                             <div className="w-10 flex items-center justify-center relative">
-                                                {myEntryIds.includes(entry.id) && (
+                                                {myEntries.some(e => e.id === entry.id) && (
                                                     <button
                                                         onClick={() => setOpenMenuId(openMenuId === entry.id ? null : entry.id)}
                                                         className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"

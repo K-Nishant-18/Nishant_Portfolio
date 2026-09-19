@@ -43,7 +43,7 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
                     filter: "blur(0px)",
                     y: 0,
                     scale: 1,
-                    duration: 0.8,
+                    duration: duration,
                     stagger: stagger,
                     ease: "power3.out",
                     scrollTrigger: {
@@ -65,7 +65,7 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
             ctx.revert();
             clearTimeout(timer);
         };
-    }, [text, triggerStart, stagger]);
+    }, [text, triggerStart, stagger, duration]);
 
     return (
         <div ref={containerRef} className={`inline-block ${className}`}>

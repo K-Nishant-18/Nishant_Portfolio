@@ -12,9 +12,7 @@ const Skills: React.FC = () => {
   const categoryRefs = useRef<(HTMLDivElement | null)[]>([]);
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const logoCarouselRef = useRef<HTMLDivElement>(null);
-  const logoContainerRef = useRef<HTMLDivElement>(null);
   const logoCarouselRef2 = useRef<HTMLDivElement>(null);
-  const logoContainerRef2 = useRef<HTMLDivElement>(null);
 
   // New Data Structure (Backend/DevOps Focused) - 4 Categories
   const skillCategories = [

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { FiArrowRight, FiX, FiMoreHorizontal, FiTrash2, FiCheck, FiBookOpen, FiLogOut } from 'react-icons/fi';
 import { useGoogleLogin } from '@react-oauth/google';
+import { loadMyEntries, saveMyEntries, type MyEntry } from '../lib/guestbook';
 
 interface GuestBookEntry {
   id: number;
@@ -27,7 +28,7 @@ const FloatingGuestbook: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', message: '' });
   const [status, setStatus] = useState<null | 'success' | 'error'>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [myEntryIds, setMyEntryIds] = useState<number[]>([]);
+  const [myEntries, setMyEntries] = useState<MyEntry[]>([]);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
@@ -43,10 +44,7 @@ const FloatingGuestbook: React.FC = () => {
 
   // Sync self-created posts from LocalStorage
   useEffect(() => {
-    const stored = localStorage.getItem('myGuestbookEntries');
-    if (stored) {
-      setMyEntryIds(JSON.parse(stored));
-    }
+    setMyEntries(loadMyEntries());
   }, []);
 
   const fetchEntries = useCallback(async () => {
@@ -86,7 +84,6 @@ const FloatingGuestbook: React.FC = () => {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const profile = await res.json();
-        console.log('[Google Auth] Profile fetched:', profile);
         const user: GoogleUser = {
           name: profile.name || profile.given_name || 'Guest',
           email: profile.email || '',
@@ -151,7 +148,6 @@ const FloatingGuestbook: React.FC = () => {
       email: googleUser?.email || null,
       avatar: googleUser?.picture || null,
     };
-    console.log('[Guestbook Submit] Sending payload:', payload);
 
     try {
       const response = await fetch(`${API_URL}/guestbook`, {
@@ -165,11 +161,15 @@ const FloatingGuestbook: React.FC = () => {
       if (response.ok && data.success) {
         setStatus('success');
         setFormData({ name: '', message: '' });
-        
-        // Save the new entry ID to localStorage to enable deletion later
-        const updatedIds = [...myEntryIds, data.id];
-        setMyEntryIds(updatedIds);
-        localStorage.setItem('myGuestbookEntries', JSON.stringify(updatedIds));
+
+        // Save the new entry (id + edit token) to localStorage to enable deletion later
+        if (data.id && data.editToken) {
+          const updatedEntries: MyEntry[] = [...myEntries, { id: data.id, editToken: data.editToken }];
+          setMyEntries(updatedEntries);
+          saveMyEntries(updatedEntries);
+        } else {
+          saveMyEntries(myEntries);
+        }
 
         // Refetch logs immediately to show the new entry
         await fetchEntries();
@@ -186,13 +186,18 @@ const FloatingGuestbook: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
+    const entry = myEntries.find(e => e.id === id);
+    if (!entry) return;
     try {
-      const response = await fetch(`${API_URL}/guestbook/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${API_URL}/guestbook/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${entry.editToken}` },
+      });
       if (response.ok) {
         // Remove locally and refetch
-        const updated = myEntryIds.filter(item => item !== id);
-        setMyEntryIds(updated);
-        localStorage.setItem('myGuestbookEntries', JSON.stringify(updated));
+        const updated = myEntries.filter(e => e.id !== id);
+        setMyEntries(updated);
+        saveMyEntries(updated);
         await fetchEntries();
       }
     } catch (err) {
@@ -514,7 +519,7 @@ const FloatingGuestbook: React.FC = () => {
                           </div>
 
                           {/* Deletion Option */}
-                          {myEntryIds.includes(entry.id) && (
+                          {myEntries.some(e => e.id === entry.id) && (
                             <div className="flex-shrink-0 flex items-start">
                               <button
                                 onClick={() => setOpenMenuId(openMenuId === entry.id ? null : entry.id)}

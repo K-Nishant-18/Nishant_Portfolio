@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-// @ts-ignore
 import TransitionLink from './TransitionLink';
 import { FiSun, FiMoon, FiMenu, FiX, FiDownload, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { gsap } from 'gsap';

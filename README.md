@@ -24,17 +24,17 @@ It is designed to serve as both an impressive personal showcase and a learning r
 ### Frontend (Client-Side)
 - 🎭 **Smooth Scrolling:** Powered by [Lenis](https://lenis.studiofreight.com/) and Locomotive Scroll for a buttery, physics-based scrolling experience.
 - ✨ **Cinematic Animations:** Deep integration of [GSAP](https://greensock.com/gsap/) and [Framer Motion](https://www.framer.com/motion/) for text reveals, parallax, and page transitions.
-- 🎨 **WebGL / 3D Integration:** Leveraging `ogl` and `@splinetool/react-spline` to render lightweight 3D elements directly in the browser.
+- � **WebGL / 3D Integration:** Leveraging `ogl` and `@splinetool/react-spline` to render lightweight 3D elements directly in the browser.
 - 🎵 **Ambient Experience:** A custom music player background and a custom interactive cursor (`CustomCursor.tsx`).
 
 ### Backend (Server-Side)
 - ⚙️ **Express API Layer:** A cohesive Node.js `/api` instance designed to handle heavy lifting, avoiding frontend bloat.
 - 📧 **Email Integration:** Uses [Resend](https://resend.com/) for handling contact form submissions securely.
-- 🗄️ **Database Integration:** Pre-configured to interact with [Supabase](https://supabase.com/).
+- �️ **Database Integration:** Pre-configured to interact with [Supabase](https://supabase.com/).
 
 ---
 
-## 🚀 Getting Started
+## � Getting Started
 
 Follow these steps to set up the project locally on your machine.
 
@@ -109,8 +109,7 @@ Nishant_Portfolio/
 │   ├── components/             # Reusable UI Blocks
 │   │   ├── About.tsx           # Bio and Skills section
 │   │   ├── CustomCursor.tsx    # GSAP powered custom cursor
-│   │   ├── Hero.tsx            # Spline 3D Hero section
-│   │   ├── SystemArchitecture.tsx # Architecture diagram visualizer
+│   │   ├── Hero.tsx            # Hero section
 │   │   └── ...
 │   ├── pages/                  # Full-page Views (Home, ProjectDetail)
 │   ├── context/                # Global State (Theme & Music Context)
@@ -133,7 +132,7 @@ If you are cloning this to build your own portfolio, you should update the follo
 
 ---
 
-## 📦 Deployment Guides
+## � Deployment Guides
 
 ### Deploying the Frontend (Vercel or Netlify)
 1. Push your code to GitHub.

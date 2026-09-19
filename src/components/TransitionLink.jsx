@@ -3,7 +3,7 @@ import React from 'react';
 import { useTransition } from '../context/TransitionContext';
 
 // Add the onClick prop here
-const TransitionLink = ({ to, children, className, onClick }) => {
+const TransitionLink = ({ to, children, className, onClick = () => {}, ...rest }) => {
   const { playTransition } = useTransition();
 
   const handleClick = (e) => {
@@ -19,7 +19,7 @@ const TransitionLink = ({ to, children, className, onClick }) => {
   };
 
   return (
-    <a href={to} onClick={handleClick} className={className}>
+    <a href={to} onClick={handleClick} className={className} {...rest}>
       {children}
     </a>
   );

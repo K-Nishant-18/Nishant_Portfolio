@@ -157,14 +157,12 @@ export default defineConfig({
 // Lazy load pages
 const Projects = lazy(() => import('./pages/Projects'));
 const GuestBook = lazy(() => import('./pages/GuestBook'));
-const Collaborate = lazy(() => import('./pages/Collaborate'));
 
 // Wrap in Suspense
 <Suspense fallback={<div>Loading...</div>}>
   <Routes>
     <Route path="/projects" element={<Projects />} />
     <Route path="/guestbook" element={<GuestBook />} />
-    <Route path="/collaborate" element={<Collaborate />} />
   </Routes>
 </Suspense>
 ```

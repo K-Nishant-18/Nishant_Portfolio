@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring, useMotionTemplate, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useMotionTemplate, useScroll, useTransform, type Transition } from "framer-motion";
 
 // ─── Replace these with your actual image imports or URLs ───────────────────
 const PHOTO_1 = "/Hero-2.png"; // smiling, arms open
 const PHOTO_2 = "/Hero-1.png"; // standing with bag
 // ────────────────────────────────────────────────────────────────────────────
 
-export default function Hero() {
+interface HeroProps {
+  startAnimation?: boolean;
+}
+
+export default function Hero({ startAnimation = true }: HeroProps) {
   const [isQuoteHovered, setIsQuoteHovered] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
 
@@ -53,7 +57,7 @@ export default function Hero() {
 
   const photo2X = useTransform(pMouseX, [0, windowWidth], ["2%", "-2%"]);
 
-  const transitionSettings: any = { duration: 1.4, ease: [0.16, 1, 0.3, 1] };
+  const transitionSettings: Transition = { duration: 1.4, ease: [0.16, 1, 0.3, 1] };
 
   return (
     <>
@@ -398,7 +402,7 @@ export default function Hero() {
             <span className="hero-left-word w1" style={{ overflow: "hidden" }}>
               <motion.span
                 initial={{ y: "100%" }}
-                animate={{ y: "0%" }}
+                animate={startAnimation ? { y: "0%" } : { y: "100%" }}
                 transition={{ ...transitionSettings, delay: 0.4 }}
                 style={{ display: "inline-block" }}
               >
@@ -408,7 +412,7 @@ export default function Hero() {
             <span className="hero-left-word w2" style={{ overflow: "hidden" }}>
               <motion.span
                 initial={{ y: "100%" }}
-                animate={{ y: "0%" }}
+                animate={startAnimation ? { y: "0%" } : { y: "100%" }}
                 transition={{ ...transitionSettings, delay: 0.45 }}
                 style={{ display: "inline-block" }}
               >
@@ -418,7 +422,7 @@ export default function Hero() {
             <span className="hero-left-word w3" style={{ overflow: "hidden" }}>
               <motion.span
                 initial={{ y: "100%" }}
-                animate={{ y: "0%" }}
+                animate={startAnimation ? { y: "0%" } : { y: "100%" }}
                 transition={{ ...transitionSettings, delay: 0.5 }}
                 style={{ display: "inline-block" }}
               >
@@ -435,13 +439,13 @@ export default function Hero() {
             <motion.div
               className="photo2-outline"
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={startAnimation ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
               transition={{ ...transitionSettings, delay: 0.6 }}
             />
             <motion.div
               style={{ width: "100%", height: "100%", left: "-10px", position: "relative", overflow: "hidden", zIndex: 2 }}
               initial={{ clipPath: "inset(100% 0 0 0)" }}
-              animate={{ clipPath: "inset(0% 0 0 0)" }}
+              animate={startAnimation ? { clipPath: "inset(0% 0 0 0)" } : { clipPath: "inset(100% 0 0 0)" }}
               transition={{ ...transitionSettings, delay: 0.6 }}
             >
               <motion.img
@@ -449,7 +453,7 @@ export default function Hero() {
                 className="photo2-img"
                 alt="Kumar Nishant standing"
                 initial={{ scale: 1.9 }}
-                animate={{ scale: 1 }}
+                animate={startAnimation ? { scale: 1 } : { scale: 1.9 }}
                 transition={{ ...transitionSettings, delay: 0.6 }}
                 style={{ left: 0 }}
               />
@@ -461,20 +465,20 @@ export default function Hero() {
             <motion.div
               className="photo1-outline"
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={startAnimation ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
               transition={{ ...transitionSettings, delay: 0.7 }}
             />
             <motion.div
               className="photo1-img"
               initial={{ clipPath: "inset(100% 0 0 0)" }}
-              animate={{ clipPath: "inset(0% 0 0 0)" }}
+              animate={startAnimation ? { clipPath: "inset(0% 0 0 0)" } : { clipPath: "inset(100% 0 0 0)" }}
               transition={{ ...transitionSettings, delay: 0.7 }}
             >
               <motion.img
                 src={PHOTO_1}
                 alt="Kumar Nishant smiling"
                 initial={{ scale: 1.3 }}
-                animate={{ scale: 1 }}
+                animate={startAnimation ? { scale: 1 } : { scale: 1.3 }}
                 transition={{ ...transitionSettings, delay: 0.7 }}
                 style={{
                   position: "relative",
@@ -490,7 +494,7 @@ export default function Hero() {
             className="hero-arrow"
             style={{ y: arrowY }}
             initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            animate={startAnimation ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0.5, rotate: -15 }}
             transition={{ ...transitionSettings, delay: 1 }}
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
@@ -503,7 +507,7 @@ export default function Hero() {
         <motion.div
           className="hero-meta"
           initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
+          animate={startAnimation ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
           transition={{ ...transitionSettings, delay: 0.8 }}
         >
           <p>
@@ -520,7 +524,7 @@ export default function Hero() {
         <motion.div
           className="quotes-container"
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={startAnimation ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ ...transitionSettings, delay: 0.9 }}
         >
           <img src="/quote.png" alt="quote marks" style={{ width: 'auto', height: '36vh', objectFit: 'contain' }} />

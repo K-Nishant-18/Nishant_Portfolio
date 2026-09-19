@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { body, validationResult } from 'express-validator';
 import type { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -26,11 +29,85 @@ pool.connect()
   })
   .catch((err) => console.error('PostgreSQL connection error:', err));
 
+// ── Security middleware ──────────────────────────────────────────────
+
+// Basic security headers (CSP is relaxed so Swagger UI keeps loading)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com', 'https://cdn.jsdelivr.net'],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+      imgSrc: ["'self'", 'data:', 'https://unpkg.com'],
+      fontSrc: ["'self'", 'data:', 'https://unpkg.com', 'https://cdn.jsdelivr.net'],
+    },
+  },
+}));
+
+// CORS: open by default (dev). Set ALLOWED_ORIGINS (comma separated) to enforce.
+const configuredOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',').map((o) => o.trim()).filter(Boolean);
+const useCorsWhitelist = configuredOrigins.length > 0;
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!useCorsWhitelist || !origin || configuredOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      callback(new Error('Origin not allowed by CORS'));
+    }
+  },
+}));
+
+app.use(express.json({ limit: '10kb' }));
+
+// Rate limiting
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests, please try again later.' },
+});
+const writeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests, please try again later.' },
+});
+const deleteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests, please try again later.' },
+});
+
+app.use('/api', generalLimiter);
+
 // Global Request Logger
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
+
+// Constant-time string comparison for the admin key
+const safeEqual = (a: string, b: string): boolean => {
+  const ab = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
+};
+
+const isAdminRequest = (req: Request): boolean => {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey) return false;
+  const bearer = req.headers.authorization?.startsWith('Bearer ')
+    ? req.headers.authorization.slice(7)
+    : undefined;
+  const headerKey = req.headers['x-admin-key'] as string | undefined;
+  return (!!bearer && safeEqual(bearer, adminKey)) || (!!headerKey && safeEqual(headerKey, adminKey));
+};
 
 // Initialize Tables
 const initDB = async () => {
@@ -42,10 +119,12 @@ const initDB = async () => {
                 message TEXT NOT NULL,
                 email TEXT,
                 avatar TEXT,
+                edit_token TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS email TEXT;
             ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS avatar TEXT;
+            ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS edit_token TEXT;
         `);
     console.log('Guestbook table ensured.');
   } catch (err) {
@@ -53,9 +132,6 @@ const initDB = async () => {
   }
 };
 initDB();
-
-app.use(cors());
-app.use(express.json());
 
 // Swagger Documentation
 import swaggerUi from 'swagger-ui-express';
@@ -87,9 +163,12 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Collaboration endpoint (Email only for now, DB optional or future)
 app.post('/api/collaborate',
+  writeLimiter,
   [
-    body('name').notEmpty().withMessage('Name is required'),
-    body('email').isEmail().withMessage('Valid email is required'),
+    body('name').notEmpty().withMessage('Name is required').isLength({ max: 80 }).withMessage('Name must be 80 characters or fewer'),
+    body('email').isEmail().withMessage('Valid email is required').isLength({ max: 120 }).withMessage('Email must be 120 characters or fewer'),
+    body('description').optional().isLength({ max: 2000 }).withMessage('Description must be 2000 characters or fewer'),
+    body('requirements').optional().isLength({ max: 2000 }).withMessage('Requirements must be 2000 characters or fewer'),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -118,9 +197,11 @@ app.post('/api/collaborate',
 
 // Guestbook endpoint
 app.post('/api/guestbook',
+  writeLimiter,
   [
-    body('name').notEmpty().withMessage('Name is required'),
-    body('message').notEmpty().withMessage('Message is required'),
+    body('name').notEmpty().withMessage('Name is required').isLength({ max: 80 }).withMessage('Name must be 80 characters or fewer'),
+    body('message').notEmpty().withMessage('Message is required').isLength({ max: 1000 }).withMessage('Message must be 1000 characters or fewer'),
+    body('email').optional().isEmail().withMessage('Valid email is required').isLength({ max: 120 }),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -129,13 +210,18 @@ app.post('/api/guestbook',
       return;
     }
     const { name, message, email, avatar } = req.body;
-    console.log('[POST /api/guestbook] Incoming payload:', { name, message, email, avatar });
+    const editToken = crypto.randomBytes(24).toString('base64url');
     try {
       const result = await pool.query(
-        'INSERT INTO guestbook (name, message, email, avatar) VALUES ($1, $2, $3, $4) RETURNING id',
-        [name, message, email || null, avatar || null]
+        'INSERT INTO guestbook (name, message, email, avatar, edit_token) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+        [name, message, email || null, avatar || null, editToken]
       );
-      res.status(201).json({ success: true, message: 'Guestbook entry added!', id: result.rows[0].id });
+      res.status(201).json({
+        success: true,
+        message: 'Guestbook entry added!',
+        id: result.rows[0].id,
+        editToken,
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ success: false, error: 'Failed to add guestbook entry.' });
@@ -143,11 +229,10 @@ app.post('/api/guestbook',
   }
 );
 
+// Public list (never exposes email or edit_token)
 app.get('/api/guestbook', async (req: Request, res: Response) => {
-  console.log('GET /api/guestbook called');
   try {
-    const result = await pool.query('SELECT * FROM guestbook ORDER BY created_at DESC');
-    console.log('Query success, rows:', result.rowCount);
+    const result = await pool.query('SELECT id, name, message, avatar, created_at FROM guestbook ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching guestbook:', err);
@@ -155,10 +240,38 @@ app.get('/api/guestbook', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/guestbook/:id', async (req: Request, res: Response) => {
+// Delete requires either the per-entry edit token (Bearer) or the admin API key
+app.delete('/api/guestbook/:id', deleteLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId) || numericId <= 0) {
+    res.status(400).json({ success: false, error: 'Invalid entry id.' });
+    return;
+  }
+  const bearer = req.headers.authorization?.startsWith('Bearer ')
+    ? req.headers.authorization.slice(7)
+    : undefined;
+
+  if (!bearer) {
+    res.status(401).json({ success: false, error: 'Missing authorization token.' });
+    return;
+  }
+
   try {
-    await pool.query('DELETE FROM guestbook WHERE id = $1', [id]);
+    if (isAdminRequest(req)) {
+      await pool.query('DELETE FROM guestbook WHERE id = $1', [id]);
+      res.json({ success: true, message: 'Entry deleted' });
+      return;
+    }
+
+    const result = await pool.query(
+      'DELETE FROM guestbook WHERE id = $1 AND edit_token = $2 RETURNING id',
+      [id, bearer]
+    );
+    if (result.rowCount === 0) {
+      res.status(403).json({ success: false, error: 'Not authorized to delete this entry.' });
+      return;
+    }
     res.json({ success: true, message: 'Entry deleted' });
   } catch (err) {
     console.error('Error deleting guestbook entry:', err);

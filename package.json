@@ -5,32 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "cd api && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
-    "@fontsource/syncopate": "^5.2.8",
     "@react-oauth/google": "^0.13.5",
-    "@splinetool/react-spline": "^4.0.0",
-    "@studio-freight/lenis": "^1.0.42",
-    "@supabase/supabase-js": "^2.50.2",
-    "axios": "^1.6.2",
     "framer-motion": "^12.19.1",
     "gsap": "^3.13.0",
     "lenis": "^1.0.42",
-    "locomotive-scroll": "^4.1.4",
-    "lucide-react": "^0.344.0",
     "mermaid": "^11.12.3",
-    "ogl": "^1.0.11",
-    "poppins": "^0.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^4.12.0",
-    "react-router-dom": "^6.20.1",
-    "resend": "^4.6.0"
+    "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

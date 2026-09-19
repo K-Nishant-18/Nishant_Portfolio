@@ -3,11 +3,9 @@ import Hero from '../components/Hero';
 import About from '../components/About';
 import Skills from '../components/Skills';
 import BlogSection from '../components/BlogSection';
-import TestimonialPreview from '../components/TestimonialPreview';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import Projects from '../components/Projects';
-import Timeline from '../components/Timeline';
 import DevActivity from '../components/DevActivity';
 import Certifications from '../components/Certifications';
 
@@ -24,9 +22,7 @@ const Home: React.FC<HomeProps> = ({ startAnimation = false }) => {
       <Projects />
       <DevActivity />
       <Certifications />
-      {/* <Timeline /> */}
       <BlogSection />
-      {/* <TestimonialPreview /> */}
       <Contact />
       <Footer />
     </div>

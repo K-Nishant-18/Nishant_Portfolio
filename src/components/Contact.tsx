@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiArrowUpRight, FiArrowRight, FiCheck } from 'react-icons/fi';
+import { FiArrowRight, FiCheck } from 'react-icons/fi';
 import ScrollRevealText from './ScrollRevealText'; // Import the new component
 
 const Contact: React.FC = () => {

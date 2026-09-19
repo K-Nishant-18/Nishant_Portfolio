@@ -77,7 +77,7 @@ const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ code, id, maxWidth = '1
         return () => {
             cancelled = true;
         };
-    }, [code, id]);
+    }, [code, id, maxWidth]);
 
     return (
         <div

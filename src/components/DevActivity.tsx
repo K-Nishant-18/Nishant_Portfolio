@@ -31,7 +31,7 @@ interface GitHubData {
     totalStars: number;
     totalCommits: number;
     totalContributions: number;
-    profileViews: number; // Added for Profile Views
+    profileViews: number;
   };
 }
 
@@ -39,6 +39,14 @@ interface LanguageStat {
   lang: string;
   percentage: number;
   color: string;
+}
+
+interface GHRepo {
+  fork?: boolean;
+  stargazers_count: number;
+  forks_count: number;
+  language?: string | null;
+  size?: number;
 }
 
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -268,7 +276,7 @@ const DevActivity: React.FC = () => {
         let totalForks = 0;
 
         if (Array.isArray(reposData)) {
-          reposData.forEach((repo: any) => {
+          reposData.forEach((repo: GHRepo) => {
             if (repo.fork) return;
             totalStars += repo.stargazers_count;
             totalForks += repo.forks_count;
@@ -290,16 +298,12 @@ const DevActivity: React.FC = () => {
           setLanguagePercentages(top3);
         } else {
           // If SVG parsing failed, fall back to repo-based calculation
-          let totalStars = 0;
-          let totalForks = 0;
           const langCounts: Record<string, number> = {};
 
           if (Array.isArray(reposData)) {
-            reposData.forEach((repo: any) => {
+            reposData.forEach((repo: GHRepo) => {
               if (repo.fork) return;
 
-              totalStars += repo.stargazers_count;
-              totalForks += repo.forks_count;
               if (repo.language) {
                 const weight = repo.size || 1;
                 langCounts[repo.language] = (langCounts[repo.language] || 0) + weight;
@@ -341,43 +345,37 @@ const DevActivity: React.FC = () => {
             const contribData = await contribRes.json();
 
             // Sum all years for All Time Contributions
-            totalContributions = Object.values(contribData.total || {}).reduce((a: any, b: any) => a + b, 0) as number;
+            const totalPerYear: Record<string, number> = contribData.total || {};
+            totalContributions = Object.values(totalPerYear).reduce((a: number, b: number) => a + b, 0);
           }
         } catch (e) {
           console.warn("Contrib API failed", e);
         }
 
-        // Fetch Profile Views from Backend (Proxy)
-        // Fetch Profile Views from Backend (Proxy)
-        try {
-          // Use our backend proxy which handles CORS and text parsing
-          // In PROD: Use relative '/api' so Vercel rewrites handle it (defined in vercel.json)
-          // In DEV: Use localhost or env var
-          const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+        // Fetch Profile Views: extract the number from the komarev badge.
+        // The badge SVG can't be read directly in the browser (komarev sends no
+        // CORS headers), so it goes through the backend proxy (/api/profile-views).
+        // Try local dev API → Vercel-rewritten relative path → direct Render API
+        // (which is CORS-open), so the number shows even if the API isn't local.
+        const viewSources = [
+          import.meta.env.DEV ? 'http://localhost:5000/api/profile-views' : '',
+          import.meta.env.PROD ? '/api/profile-views' : '',
+          'https://nishant-portfolio-1.onrender.com/api/profile-views',
+        ].filter(Boolean);
 
-          // Remove duplicate /api if present (just in case)
-          const cleanApiUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-
-          // Construct the final URL. 
-          // If we want to hit /api/profile-views:
-          // Local: http://localhost:5000/api/profile-views
-          // Prod (via Vercel): /api/profile-views -> https://nishant-portfolio-api.onrender.com/api/profile-views
-          const fetchUrl = `${cleanApiUrl}/api/profile-views`;
-
-          console.log("Fetching Profile Views from:", fetchUrl);
-
-          const viewsRes = await fetch(fetchUrl);
-
-          if (viewsRes.ok) {
-            const viewsData = await viewsRes.json();
-            if (typeof viewsData.views === 'number') {
-              profileViews = viewsData.views;
+        for (const url of viewSources) {
+          try {
+            const viewsRes = await fetch(url);
+            if (viewsRes.ok) {
+              const viewsData = await viewsRes.json();
+              if (typeof viewsData.views === 'number') {
+                profileViews = viewsData.views;
+                break;
+              }
             }
-          } else {
-            console.error(`Profile Views fetch failed: ${viewsRes.status} ${viewsRes.statusText}`);
+          } catch (e) {
+            console.warn(`Profile Views fetch failed (${url})`, e);
           }
-        } catch (e) {
-          console.warn("Profile Views fetch failed", e);
         }
 
         // If external API failed, use recent events * multiplier or just show recent
@@ -390,12 +388,12 @@ const DevActivity: React.FC = () => {
             totalStars,
             totalCommits: totalForks, // REPURPOSED field to hold Forks count
             totalContributions,
-            profileViews
+            profileViews,
           }
         });
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error fetching GitHub data:', err);
-        setError(err.message || "Failed to load GitHub data");
+        setError(err instanceof Error ? err.message : "Failed to load GitHub data");
       } finally {
         setLoading(false);
       }

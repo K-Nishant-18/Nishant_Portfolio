@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,7 +23,7 @@ const Certifications: React.FC = () => {
 
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-  const runLerp = () => {
+  const runLerp = useCallback(() => {
     if (rawX.current !== null && rawY.current !== null) {
       animX.current = lerp(animX.current, rawX.current, 0.15);
       animY.current = lerp(animY.current, rawY.current, 0.15);
@@ -38,14 +38,14 @@ const Certifications: React.FC = () => {
       }
     }
     rafId.current = requestAnimationFrame(runLerp);
-  };
+  }, []);
 
   useEffect(() => {
     rafId.current = requestAnimationFrame(runLerp);
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, []);
+  }, [runLerp]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (rawX.current === null) {

@@ -10,7 +10,7 @@ interface RepoCardProps {
     updated: string;
 }
 
-const RepoCard: React.FC<RepoCardProps> = ({ name, stars, forks, language, url, updated }) => {
+const RepoCard: React.FC<RepoCardProps> = ({ name, stars, forks, language, url }) => {
     return (
         <a
             href={url}

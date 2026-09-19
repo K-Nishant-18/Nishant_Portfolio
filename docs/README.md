@@ -18,16 +18,13 @@ This is a modern, minimalist portfolio website built with React, TypeScript, and
 1. **Home**: Main portfolio showcase
 2. **Projects**: Detailed project gallery
 3. **GuestBook**: Testimonial collection system
-4. **Collaborate**: Project inquiry form
 
 ### Components
 - **Navigation**: Fixed header with theme toggle and resume download
 - **Hero**: Large typography-focused introduction
 - **About**: Personal introduction with decorative elements
 - **Skills**: Technical expertise showcase
-- **Timeline**: Professional journey visualization
 - **Blog Section**: Latest articles and insights
-- **Testimonials**: Client feedback display
 - **Contact**: Multiple contact methods and availability
 
 ## 🛠 Technology Stack
@@ -62,13 +59,12 @@ src/
 │   ├── Hero.tsx
 │   ├── Navigation.tsx
 │   ├── Skills.tsx
-│   ├── TestimonialPreview.tsx
-│   └── Timeline.tsx
+│   └── ...
 ├── pages/              # Page components
 │   ├── Home.tsx
 │   ├── Projects.tsx
-│   ├── GuestBook.tsx
-│   └── Collaborate.tsx
+│   ├── ProjectDetail.tsx
+│   └── GuestBook.tsx
 ├── context/            # React context providers
 │   └── ThemeContext.tsx
 ├── App.tsx             # Main application component

@@ -26,7 +26,13 @@ jobs:
     
     - name: Install Frontend Dependencies
       run: npm ci
-    
+
+    - name: Typecheck Frontend
+      run: npx tsc -b
+
+    - name: Lint Frontend
+      run: npm run lint
+
     - name: Build Frontend
       run: npm run build
       

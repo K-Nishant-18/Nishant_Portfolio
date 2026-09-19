@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useTheme } from "../context/ThemeContext";
 
 interface LoaderProps {
   onComplete?: () => void;
@@ -8,7 +7,6 @@ interface LoaderProps {
 }
 
 const Loader: React.FC<LoaderProps> = ({ onComplete, onExitStart }) => {
-  const { isDark } = useTheme();
   const [phase, setPhase] = useState<"loading" | "exit">("loading");
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
   const [gifSrc] = useState<string>("/Name-Logo.gif");

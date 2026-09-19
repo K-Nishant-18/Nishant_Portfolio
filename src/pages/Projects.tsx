@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiGithub, FiExternalLink, FiArrowUpRight } from 'react-icons/fi';
+import { FiArrowUpRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { projects } from '../data/projects';
 import Footer from '../components/Footer';

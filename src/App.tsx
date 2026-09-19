@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -52,7 +52,7 @@ function App() {
       touchMultiplier: 2,
     });
 
-    function raf(time) {
+    function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
@@ -61,7 +61,7 @@ function App() {
 
     lenis.on('scroll', ScrollTrigger.update);
 
-    const tickerCallback = (time) => {
+    const tickerCallback = (time: number) => {
       lenis.raf(time * 1000);
     };
 
