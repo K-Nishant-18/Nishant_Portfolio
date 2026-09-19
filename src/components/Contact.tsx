@@ -12,6 +12,15 @@ const Contact: React.FC = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // In PROD: relative '/api' so Vercel rewrites route it to the Express API
+  // In DEV: localhost (or env var) — normalize to avoid /api/api
+  const rawApiUrl =
+    import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+  const apiBase = rawApiUrl.endsWith('/api') ? rawApiUrl.slice(0, -4) : rawApiUrl;
+  const COLLABORATE_URL = `${apiBase}/api/collaborate`;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -58,13 +67,39 @@ const Contact: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Inquiry: ${formData.subject}`);
-    const body = encodeURIComponent(`Hi Nishant,\n\nMy name is ${formData.name}.\n\n${formData.message}\n\nBest,\n${formData.name} (${formData.email})`);
-    window.location.href = `mailto:me.knishant@gmail.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setSending(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch(COLLABORATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.subject,
+          description: formData.message,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setSubmitted(false), 3000);
+      } else if (res.status === 400 && Array.isArray(data.errors)) {
+        setSubmitError(data.errors.map((err: { msg: string }) => err.msg).join(' '));
+      } else {
+        setSubmitError('Something went wrong. Please try again, or email me directly at me.knishant@gmail.com.');
+      }
+    } catch (err) {
+      console.error('Collaborate submit failed:', err);
+      setSubmitError('Could not reach the server. Please try again, or email me directly at me.knishant@gmail.com.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -161,13 +196,16 @@ const Contact: React.FC = () => {
               ></textarea>
             </div>
 
-            <div className="pt-4 flex justify-end contact-form-item">
+            <div className="pt-4 flex flex-col items-end gap-4 contact-form-item">
+              {submitError && (
+                <p className="text-sm text-red-500 font-light max-w-md text-right">{submitError}</p>
+              )}
               <button
                 type="submit"
-                disabled={submitted}
+                disabled={submitted || sending}
                 className="group flex items-center gap-4 px-8 py-4 bg-white text-black text-sm font-bold tracking-widest uppercase hover:bg-red-600 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitted ? 'Message Sent' : 'Send Message'}
+                {submitted ? 'Message Sent' : sending ? 'Sending…' : 'Send Message'}
                 {submitted ? <FiCheck size={18} /> : <FiArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
               </button>
             </div>
