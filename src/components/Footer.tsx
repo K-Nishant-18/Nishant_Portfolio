@@ -92,6 +92,7 @@ const Footer: React.FC = () => {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-cursor-text="OPEN"
                   className="text-xl md:text-3xl font-light hover:italic hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group"
                 >
                   {link.name}

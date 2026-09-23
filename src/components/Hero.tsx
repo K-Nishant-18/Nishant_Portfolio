@@ -492,6 +492,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
           {/* ARROW */}
           <motion.div
             className="hero-arrow"
+            data-cursor-text="SCROLL"
             style={{ y: arrowY }}
             initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
             animate={startAnimation ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0.5, rotate: -15 }}

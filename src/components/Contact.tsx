@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { FiArrowRight, FiCheck } from 'react-icons/fi';
 import ScrollRevealText from './ScrollRevealText'; // Import the new component
+import ContactBlob from './three/ContactBlob';
 
 const Contact: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -110,6 +111,9 @@ const Contact: React.FC = () => {
         style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '4rem 4rem' }}>
       </div>
 
+      {/* WebGL distorted sphere — subtle ambient 3D moment */}
+      <ContactBlob />
+
       <div className="max-w-[1400px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
         {/* Left Column: Context (Title + Info) */}
@@ -202,6 +206,7 @@ const Contact: React.FC = () => {
               )}
               <button
                 type="submit"
+                data-cursor-text="SEND"
                 disabled={submitted || sending}
                 className="group flex items-center gap-4 px-8 py-4 bg-white text-black text-sm font-bold tracking-widest uppercase hover:bg-red-600 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >

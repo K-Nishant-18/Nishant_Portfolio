@@ -94,6 +94,7 @@ const Projects: React.FC = () => {
             <div
               key={index}
               onClick={() => navigate(`/projects/${project.id}`)}
+              data-cursor-text="OPEN"
               className="grid-cell group grid grid-cols-1 md:grid-cols-12 gap-0 border-b border-gray-200 dark:border-gray-800 hover:border-black dark:hover:border-white transition-colors duration-300 cursor-pointer overflow-hidden relative"
             >
 

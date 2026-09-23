@@ -16,6 +16,7 @@ const RepoCard: React.FC<RepoCardProps> = ({ name, stars, forks, language, url }
             href={url}
             target="_blank"
             rel="noopener noreferrer"
+            data-cursor-text="OPEN"
             className="group block border-t border-black/20 dark:border-white/20 py-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200"
         >
             <div className="flex items-baseline justify-between gap-4">

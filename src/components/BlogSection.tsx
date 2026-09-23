@@ -81,6 +81,7 @@ const BlogSection: React.FC = () => {
                   href={posts[0].link}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-cursor-text="READ"
                   className="group md:col-span-7 border-b md:border-b-0 md:border-r border-black dark:border-white p-8 md:p-12 flex flex-col justify-between relative overflow-hidden transition-colors hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black duration-500"
                 >
                   {/* Background Texture on Hover? Maybe too much "banner". Keep strict. */}
@@ -119,6 +120,7 @@ const BlogSection: React.FC = () => {
                     href={post.link}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-cursor-text="READ"
                     className={`group flex-1 p-8 border-b border-black dark:border-white ${index === 1 ? 'md:border-b-0' : ''} flex flex-col justify-between hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-500`}
                   >
                     <div>

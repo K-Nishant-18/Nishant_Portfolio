@@ -534,6 +534,7 @@ const DevActivity: React.FC = () => {
               href={data.user.html_url}
               target="_blank"
               rel="noopener noreferrer"
+              data-cursor-text="OPEN"
               className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-black text-white dark:bg-white dark:text-black text-xs font-bold uppercase tracking-widest hover:opacity-80 transition-opacity duration-300"
             >
               Visit My GitHub <FiArrowUpRight />

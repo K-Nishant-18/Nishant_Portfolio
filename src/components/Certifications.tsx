@@ -188,6 +188,7 @@ const Certifications: React.FC = () => {
                   onMouseEnter={() => setHovered(cert)}
                   onMouseLeave={() => setHovered(null)}
                   onClick={() => setLightbox(cert)}
+                  data-cursor-text="VIEW"
                   className={`reveal-el group relative grid grid-cols-12 items-center gap-x-4 py-4 md:py-5 px-3 md:px-4 border-b border-black/10 dark:border-white/10 cursor-pointer rounded-lg transition-all duration-300 ${
                     hovered?.id === cert.id
                       ? 'bg-black/[0.04] dark:bg-white/[0.05]'
@@ -343,6 +344,7 @@ const Certifications: React.FC = () => {
                   href={lightbox.verificationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-cursor-text="VERIFY"
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-wider rounded-lg hover:bg-red-600 dark:hover:bg-red-500 dark:hover:text-white transition-colors shrink-0"
                 >
                   <span>Verify Credential</span>

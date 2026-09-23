@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -16,6 +16,7 @@ import Loader from './components/Loader';
 import FloatingGuestbook from './components/FloatingGuestbook';
 
 import CustomCursor from './components/CustomCursor';
+import GrainTexture from './components/GrainTexture';
 import ThemeProvider from './context/ThemeContext';
 import { MusicProvider } from './context/MusicContext';
 import { TransitionProvider } from './context/TransitionContext';
@@ -108,7 +109,9 @@ function App() {
                 className={`transition-opacity duration-700 ${showContent ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ visibility: showContent ? 'visible' : 'hidden' }}
               >
+                <GrainTexture />
                 <CustomCursor />
+
                 <Navigation />
                 <FloatingGuestbook />
                 <Transition />
