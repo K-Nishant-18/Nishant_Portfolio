@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
 
-const COUNT = 90;
+const COUNT = 70;
 const LINK_DIST = 1.9;
 const MAX_SEGMENTS = 6000;
 const CURSOR_LINKS = 4;
@@ -57,7 +57,7 @@ function ConnectField() {
   const speeds = useMemo(() => {
     const s = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
-      s[i] = (Math.random() * 2 - 1) * 0.12 + (Math.random() < 0.5 ? -0.05 : 0.05);
+      s[i] = (Math.random() * 2 - 1) * 0.52 + (Math.random() < 0.5 ? -0.05 : 0.05);
     }
     return s;
   }, []);
@@ -100,7 +100,6 @@ function ConnectField() {
   }, []);
 
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
     const camera = state.camera;
 
     // Cursor → point on the z=0 field plane
@@ -119,22 +118,15 @@ function ConnectField() {
       }
     }
 
-    // Drift points along orbital swirls (idle motion even without mouse)
+    // Static constellation — dots hold their base positions, so lines never relink
     for (let i = 0; i < COUNT; i++) {
-      const bx = base[i * 3];
-      const by = base[i * 3 + 1];
-      const bz = base[i * 3 + 2];
-      const a = speeds[i] * t;
-      const ca = Math.cos(a);
-      const sa = Math.sin(a);
-      posArray[i * 3] = bx * ca + bz * sa;
-      posArray[i * 3 + 1] = by;
-      posArray[i * 3 + 2] = -bx * sa + bz * ca;
+      posArray[i * 3] = base[i * 3];
+      posArray[i * 3 + 1] = base[i * 3 + 1];
+      posArray[i * 3 + 2] = base[i * 3 + 2];
     }
     pointsGeo.attributes.position.needsUpdate = true;
 
     // Constellate: connect close pairs + nearest cursor nodes
-    const pulse = 0.85 + 0.15 * Math.sin(t * 0.4);
     const cx = cursorWorld.current.x;
     const cy = cursorWorld.current.y;
     const cz = cursorWorld.current.z;
@@ -144,7 +136,7 @@ function ConnectField() {
       if (idx + 6 > lineCol.length) return false;
       linePos[idx] = ax; linePos[idx + 1] = ay; linePos[idx + 2] = az;
       linePos[idx + 3] = bx; linePos[idx + 4] = by; linePos[idx + 5] = bz;
-      const c = glow * pulse;
+      const c = glow;
       lineCol[idx] = BASE_COLOR.r * c;
       lineCol[idx + 1] = BASE_COLOR.g * c;
       lineCol[idx + 2] = BASE_COLOR.b * c;
@@ -165,16 +157,10 @@ function ConnectField() {
         const dy = ay - posArray[j * 3 + 1];
         const dz = az - posArray[j * 3 + 2];
         if (dx * dx + dy * dy + dz * dz < d2) {
-          const mid = Math.sqrt(
-            ((ax + posArray[j * 3]) / 2 - cx) ** 2 +
-              ((ay + posArray[j * 3 + 1]) / 2 - cy) ** 2 +
-              ((az + posArray[j * 3 + 2]) / 2 - cz) ** 2
-          );
-          const glow = 0.1 + 0.25 * Math.max(0, 1 - mid / 5);
           push(
             ax, ay, az,
             posArray[j * 3], posArray[j * 3 + 1], posArray[j * 3 + 2],
-            glow
+            0.35
           );
         }
       }
@@ -203,7 +189,7 @@ function ConnectField() {
         push(
           posArray[i * 3], posArray[i * 3 + 1], posArray[i * 3 + 2],
           cx, cy, cz,
-          0.45
+          0.35
         );
       }
     }

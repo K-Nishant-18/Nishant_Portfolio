@@ -41,10 +41,10 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-white dark:bg-black text-black dark:text-white border-t border-black/10 dark:border-white/10 font-sans">
+    <footer className="bg-white dark:bg-black text-black dark:text-white border-t border-black/40 dark:border-white/40 font-sans">
       <div className="max-w-[1800px] mx-auto grid grid-cols-2 md:grid-cols-4 min-h-[400px]">
         {/* Column 1: Brand & Context (Full Width on Mobile) */}
-        <div className="col-span-2 md:col-span-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col justify-between">
+        <div className="col-span-2 md:col-span-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/40 dark:border-white/40 flex flex-col justify-between">
           <div>
             <Link to="/" onClick={scrollToTop} className="block group">
               <div className="flex items-center text-4xl sm:text-4xl md:text-3xl lg:text-4xl tracking-tighter">
@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Column 2: Index (Half Width on Mobile, Left) */}
-        <div className="col-span-1 md:col-span-1 p-6 md:p-12 border-b md:border-b-0 border-r border-black/10 dark:border-white/10 flex flex-col">
+        <div className="col-span-1 md:col-span-1 p-6 md:p-12 border-b md:border-b-0 border-r border-black/40 dark:border-white/40 flex flex-col">
           <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Index</div>
           <ul className="space-y-4 flex-grow">
             {navLinks.map((link) => (
@@ -83,7 +83,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Column 3: Socials (Half Width on Mobile, Right) */}
-        <div className="col-span-1 md:col-span-1 p-6 md:p-12 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 flex flex-col">
+        <div className="col-span-1 md:col-span-1 p-6 md:p-12 border-b md:border-b-0 md:border-r border-black/40 dark:border-white/40 flex flex-col">
           <div className="font-mono text-xs text-gray-500 mb-8 uppercase tracking-widest">Connect</div>
           <ul className="space-y-4 flex-grow">
             {socialLinks.map((link) => (
@@ -123,7 +123,7 @@ const Footer: React.FC = () => {
               className="group flex flex-col items-start gap-2"
             >
               <span className="font-mono text-xs text-gray-500 uppercase tracking-widest group-hover:text-black dark:group-hover:text-white transition-colors">Back to Top</span>
-              <div className="w-10 h-10 border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all duration-300">
+              <div className="w-10 h-10 border border-black/40 dark:border-white/40 rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all duration-300">
                 ↑
               </div>
             </button>
@@ -132,7 +132,7 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-black/10 dark:border-white/10 py-6 px-6 md:px-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest">
+      <div className="border-t border-black/40 dark:border-white/40 py-6 px-6 md:px-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest">
         <div>
           &copy; {new Date().getFullYear()} Kumar Nishant. All Rights Reserved.
         </div>

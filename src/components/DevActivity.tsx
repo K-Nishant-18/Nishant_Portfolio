@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiStar, FiCode, FiGitPullRequest, FiAlertCircle, FiArrowUpRight, FiEye, FiCornerDownRight } from 'react-icons/fi';
-import ScrollRevealText from './ScrollRevealText';
+import { FiStar, FiCode, FiGitPullRequest, FiAlertCircle, FiArrowUpRight, FiEye } from 'react-icons/fi';
+import { BrandOrbs } from '@designcodeio/threeui';
+import '@designcodeio/threeui/style.css';
+import DotText from './DotText';
 import MetricCard from './MetricCard';
 import RepoCard from './RepoCard';
+import { useTheme } from '../context/ThemeContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -69,6 +72,7 @@ const getColor = (lang: string) => LANGUAGE_COLORS[lang] || "#888888";
 
 
 const DevActivity: React.FC = () => {
+  const { isDark } = useTheme();
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -432,21 +436,28 @@ const DevActivity: React.FC = () => {
     >
       <div className="max-w-8xl mx-auto px-6 md:px-16 relative z-10">
 
-        <div ref={titleRef} className="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-black/20 dark:border-white/20 pb-8">
-          <div className="md:col-span-8">
-            <div className="flex items-center gap-4 mb-4">
-              <FiCornerDownRight className="text-red-500 w-6 h-6" />
-              <span className="font-mono text-xs uppercase tracking-widest text-red-500">GitHub Stats</span>
+        <div ref={titleRef} className="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 md:pl-5">
+          <div className="md:col-span-12 flex flex-col gap-3">
+
+            <div className="flex items-center gap-1 md:gap-3 px-24">
+              <div className="hidden sm:grid place-items-center shrink-0 w-[140px] h-[140px]">
+                <div className="shader-frame" style={{ width: 56, height: 56, transform: 'scale(2.5)', transformOrigin: 'center center' }}>
+                  <BrandOrbs variant="github" size="medium" mode={isDark ? 'dark' : 'light'} speed={1.0} />
+                </div>
+                <div className="h-[2px] bg-black/40 dark:bg-white/40 w-[75%] mx-auto md:mt-10" />
+              </div>
+
+              <div className="flex flex-col items-start justify-center gap-2 md:gap-3">
+                <h2 className="relative text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter select-none pointer-events-none">
+                  <DotText text="GITHUB" color={isDark ? '#ffffff' : '#202123'} />
+                </h2>
+                <p className="text-sm md:text-base font-light md:pl-2 text-justify max-w-xs">
+                  Real-time data from the GitHub ecosystem.
+                </p>
+              </div>
             </div>
-            <h2 className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive opacity-60 select-none pointer-events-none">
-              <ScrollRevealText text="CODE_BASE " />
-            </h2>
           </div>
-          <div className="md:col-span-4 flex flex-col justify-end">
-            <p className="text-sm md:text-base font-light text-zinc-600 dark:text-zinc-400 text-justify max-w-xs ml-auto">
-              Real-time data from the GitHub ecosystem.
-            </p>
-          </div>
+
         </div>
 
         {/* --- Profile & Metrics Split --- */}

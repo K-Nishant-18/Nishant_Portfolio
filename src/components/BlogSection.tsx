@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiArrowUpRight, FiCornerDownRight } from 'react-icons/fi';
+import { FiArrowUpRight } from 'react-icons/fi';
 import ScrollRevealText from './ScrollRevealText';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -56,12 +56,9 @@ const BlogSection: React.FC = () => {
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
 
         {/* --- HEADER --- */}
-        <div className="mb-8 md:mb-16 relative">
-          <div className="flex items-center gap-4 mb-4">
-            <FiCornerDownRight className="text-red-500 w-6 h-6" />
-            <span className="font-mono text-xs uppercase tracking-widest text-red-500">Thinking // Journals</span>
-          </div>
-          <h2 ref={titleRef} className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive select-none pointer-events-none whitespace-nowrap opacity-60">
+        <div className="mb-8 md:mb-10 relative">
+          
+          <h2 ref={titleRef} className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive select-none pointer-events-none whitespace-nowrap opacity-75">
             <ScrollRevealText text="INSIGHTS" />
           </h2>
         </div>

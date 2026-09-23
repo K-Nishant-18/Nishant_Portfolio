@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { FiArrowRight, FiCheck } from 'react-icons/fi';
 import ScrollRevealText from './ScrollRevealText'; // Import the new component
-import ContactBlob from './three/ContactBlob';
 
 const Contact: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -110,9 +109,6 @@ const Contact: React.FC = () => {
       <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
         style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '4rem 4rem' }}>
       </div>
-
-      {/* WebGL distorted sphere — subtle ambient 3D moment */}
-      <ContactBlob />
 
       <div className="max-w-[1400px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
