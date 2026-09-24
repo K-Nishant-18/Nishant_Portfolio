@@ -64,3 +64,12 @@ body {
     -webkit-text-stroke: 2px white;
   }
 }
+
+@keyframes seal-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

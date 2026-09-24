@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowUpRight } from 'react-icons/fi';
-import ScrollRevealText from './ScrollRevealText';
+import AsciiBanner from './AsciiBanner';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,7 +20,6 @@ interface BlogPost {
 
 const BlogSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -53,13 +52,13 @@ const BlogSection: React.FC = () => {
 
   return (
     <section ref={sectionRef} id="blog" className="relative py-24 md:py-10  bg-white dark:bg-black font-sans text-black dark:text-white overflow-hidden min-h-screen">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 relative z-10">
 
         {/* --- HEADER --- */}
         <div className="mb-8 md:mb-10 relative">
           
-          <h2 ref={titleRef} className="text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter text-transparent text-stroke-responsive select-none pointer-events-none whitespace-nowrap opacity-75">
-            <ScrollRevealText text="INSIGHTS" />
+          <h2 className="relative select-none pointer-events-none md:ml-[-15px] md:mb-[-15px]">
+            <AsciiBanner text="INSIGHTS" outline className="max-w-xl md:max-w-xl" />
           </h2>
         </div>
 
@@ -89,7 +88,7 @@ const BlogSection: React.FC = () => {
                   </div>
 
                   <div className="my-auto">
-                    <h3 className="text-4xl md:text-5xl font-bold leading-[0.9] mb-6 group-hover:translate-x-2 transition-transform duration-500">
+                    <h3 className="text-4xl md:text-4xl font-bold leading-[0.9] mb-6 group-hover:translate-x-2 transition-transform duration-500">
                       {posts[0].title}
                     </h3>
                     <p className="hidden md:block text-sm md:text-lg font-light leading-relaxed opacity-60 max-w-lg mb-8 line-clamp-3">
@@ -125,7 +124,7 @@ const BlogSection: React.FC = () => {
                         <span>0{index + 2}</span>
                         <span>{formatDate(post.pubDate)}</span>
                       </div>
-                      <h3 className="text-xl md:text-3xl font-bold leading-tight mb-4 group-hover:translate-x-2 transition-transform duration-300">
+                      <h3 className="text-xl md:text-2xl font-bold leading-tight mb-4 group-hover:translate-x-2 transition-transform duration-300">
                         {post.title}
                       </h3>
                     </div>

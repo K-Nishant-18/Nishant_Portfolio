@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiStar, FiCode, FiGitPullRequest, FiAlertCircle, FiArrowUpRight, FiEye } from 'react-icons/fi';
 import { BrandOrbs } from '@designcodeio/threeui';
 import '@designcodeio/threeui/style.css';
-import DotText from './DotText';
+import AsciiBanner from './AsciiBanner';
 import MetricCard from './MetricCard';
 import RepoCard from './RepoCard';
 import { useTheme } from '../context/ThemeContext';
@@ -440,18 +440,18 @@ const DevActivity: React.FC = () => {
           <div className="md:col-span-12 flex flex-col gap-3">
 
             <div className="flex items-center gap-1 md:gap-3 px-24">
-              <div className="hidden sm:grid place-items-center shrink-0 w-[140px] h-[140px]">
-                <div className="shader-frame" style={{ width: 56, height: 56, transform: 'scale(2.5)', transformOrigin: 'center center' }}>
+              <div className="hidden sm:grid place-items-center shrink-0 w-[140px] h-[140px] md:mt-5">
+                <div className="shader-frame" style={{ width: 64, height: 64, transform: 'scale(2.5)', transformOrigin: 'center center' }}>
                   <BrandOrbs variant="github" size="medium" mode={isDark ? 'dark' : 'light'} speed={1.0} />
                 </div>
-                <div className="h-[2px] bg-black/40 dark:bg-white/40 w-[75%] mx-auto md:mt-10" />
+                <div className="h-[2px] bg-black/40 dark:bg-white/40 w-[75%] mx-auto md:mt-16 " />
               </div>
 
               <div className="flex flex-col items-start justify-center gap-2 md:gap-3">
-                <h2 className="relative text-[15vw] md:text-[8vw] leading-[0.8] font-bold uppercase tracking-tighter select-none pointer-events-none">
-                  <DotText text="GITHUB" color={isDark ? '#ffffff' : '#202123'} />
+                <h2 className="relative select-none pointer-events-none ">
+                  <AsciiBanner text="GITHUB" tight className="max-w-xl md:max-w-xl" />
                 </h2>
-                <p className="text-sm md:text-base font-light md:pl-2 text-justify max-w-xs">
+                <p className="text-sm md:text-base font-light md:pl-8 text-justify max-w-s">
                   Real-time data from the GitHub ecosystem.
                 </p>
               </div>

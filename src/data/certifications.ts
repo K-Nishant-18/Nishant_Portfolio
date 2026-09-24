@@ -23,19 +23,8 @@ export const CERTIFICATIONS_DATA: Certification[] = [
     accentColor: '#F80000'
   },
   {
-    id: 'nptel-soft-computing',
-    code: 'AI-02',
-    title: 'Soft Computing Techniques',
-    issuer: 'NPTEL / IIT Kharagpur',
-    date: 'Apr 2025',
-    image: 'https://i.ibb.co/sfGMyV0/NPTEL-Soft-computing-Certificate.png',
-    verificationUrl: 'https://nptel.ac.in/noc',
-    tags: ['AI', 'Fuzzy Logic', 'Neural Networks'],
-    accentColor: '#C1272D'
-  },
-  {
     id: 'hackerrank-sql-advanced',
-    code: 'SQL-03',
+    code: 'SQL-02',
     title: 'SQL (Advanced)',
     issuer: 'HackerRank',
     date: 'Aug 2025',
@@ -46,7 +35,7 @@ export const CERTIFICATIONS_DATA: Certification[] = [
   },
   {
     id: 'coursera-data-structures',
-    code: 'DSA-04',
+    code: 'DSA-03',
     title: 'Data Structures',
     issuer: 'UC San Diego (Coursera)',
     date: 'Jul 2023',
@@ -57,7 +46,7 @@ export const CERTIFICATIONS_DATA: Certification[] = [
   },
   {
     id: 'datacamp-github-foundations',
-    code: 'GIT-05',
+    code: 'GIT-04',
     title: 'GitHub Foundations',
     issuer: 'DataCamp',
     date: 'Aug 2026',
@@ -68,7 +57,7 @@ export const CERTIFICATIONS_DATA: Certification[] = [
   },
   {
     id: 'redis-getting-started',
-    code: 'DB-06',
+    code: 'DB-05',
     title: 'Getting Started with Redis',
     issuer: 'Redis',
     date: 'Aug 2026',
