@@ -439,8 +439,8 @@ const DevActivity: React.FC = () => {
         <div ref={titleRef} className="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8 md:pl-5">
           <div className="md:col-span-12 flex flex-col gap-3">
 
-            <div className="flex items-center gap-1 md:gap-3 px-24">
-              <div className="hidden sm:grid place-items-center shrink-0 w-[140px] h-[140px] md:mt-5">
+<div className="flex items-center gap-1 md:gap-3 px-0 md:px-24">
+              <div className="hidden md:grid place-items-center shrink-0 w-[140px] h-[140px] md:mt-5">
                 <div className="shader-frame" style={{ width: 64, height: 64, transform: 'scale(2.5)', transformOrigin: 'center center' }}>
                   <BrandOrbs variant="github" size="medium" mode={isDark ? 'dark' : 'light'} speed={1.0} />
                 </div>
@@ -448,10 +448,11 @@ const DevActivity: React.FC = () => {
               </div>
 
               <div className="flex flex-col items-start justify-center gap-2 md:gap-3">
-                <h2 className="relative select-none pointer-events-none ">
-                  <AsciiBanner text="GITHUB" tight className="max-w-xl md:max-w-xl" />
+                <h2 className="relative select-none pointer-events-none">
+                  <AsciiBanner text="GITHUB" tight className="max-w-full md:max-w-xl md:hidden" />
+                  <AsciiBanner text="GITHUB" tight className="hidden md:block max-w-full md:max-w-xl" />
                 </h2>
-                <p className="text-sm md:text-base font-light md:pl-8 text-justify max-w-s">
+                <p className="text-xl md:text-xl font-light md:pl-8 text-justify max-w-s">
                   Real-time data from the GitHub ecosystem.
                 </p>
               </div>
