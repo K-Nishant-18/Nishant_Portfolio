@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { FiArrowUpRight, FiInstagram, FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
+import TransitionLink from './TransitionLink';
 
 const Footer: React.FC = () => {
   const [time, setTime] = useState<string>("");
@@ -46,13 +46,13 @@ const Footer: React.FC = () => {
         {/* Column 1: Brand & Context (Full Width on Mobile) */}
         <div className="col-span-2 md:col-span-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-black/40 dark:border-white/40 flex flex-col justify-between">
           <div>
-            <Link to="/" onClick={scrollToTop} className="block group">
+            <TransitionLink to="/" onClick={scrollToTop} className="block group" data-cursor-text="HOME">
               <div className="flex items-center text-4xl sm:text-4xl md:text-3xl lg:text-4xl tracking-tighter">
                 <span className="text-red-600 font-bold">KUMAR</span>
                 <span className="font-light ml-2 dark:text-white">NISHANT</span>
                 <span className="text-red-600 font-bold ml-1">.</span>
               </div>
-            </Link>
+            </TransitionLink>
             <p className="font-mono text-xs mt-6 text-gray-500 uppercase tracking-widest">
               Digital Craftsman<br />
               Backend & DevOps Engineer

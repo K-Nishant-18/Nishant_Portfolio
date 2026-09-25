@@ -6,8 +6,234 @@ const PHOTO_1 = "/Hero-2.png"; // smiling, arms open
 const PHOTO_2 = "/Hero-1.png"; // standing with bag
 // ────────────────────────────────────────────────────────────────────────────
 
+const QUOTE_DEFAULT =
+  "In a world where complexity is inevitable and failure is expected, engineering is the act of preparation.";
+const QUOTE_WORDS = QUOTE_DEFAULT.split(" ");
+
 interface HeroProps {
   startAnimation?: boolean;
+}
+
+/**
+ * HoloReveal — a cursor-following "prism lens" over a grayscale photo.
+ *
+ * - Feathered color reveal with a magnifier anchored at the cursor.
+ * - Specular glare that sweeps across the color as the cursor moves.
+ * - Velocity-driven chromatic aberration: red/cyan prism rings split apart
+ *   on quick swipes and snap back when idle.
+ * - Warm bloom + a gentle trailing glow ring for depth.
+ */
+/**
+ * CinematicPhoto — a glossy, SOTD-style print card.
+ *
+ * The whole card is a physical object:
+ * - tilts in 3D toward the cursor (perspective),
+ * - casts two colored shadows (warm/cool) that slide opposite the tilt,
+ * - wears a specular glare that drifts with the cursor like light on a print,
+ * - slowly Ken-Burns drifts so it never sits frozen,
+ * - and reveals full color through a soft, cinematic circle at the cursor.
+ *
+ * All transforms share the same element, so grayscale and color stay perfectly
+ * registered as the card moves.
+ */
+function CinematicPhoto({
+  src,
+  alt,
+  radius = 0,
+}: {
+  src: string;
+  alt: string;
+  radius?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Normalized cursor position inside the card (0..1).
+  const cursorX = useMotionValue(0.5);
+  const cursorY = useMotionValue(0.5);
+  const hovered = useMotionValue(0);
+
+  const x = useSpring(cursorX, { damping: 28, stiffness: 220, mass: 0.6 });
+  const y = useSpring(cursorY, { damping: 28, stiffness: 220, mass: 0.6 });
+
+  // Reveal spring (0 = closed, 1 = open) mapped to a percentage of the card.
+  const open = useSpring(0, { damping: 22, stiffness: 150, mass: 0.7 });
+
+  // Tilt springs in degrees.
+  const rotX = useSpring(0, { damping: 16, stiffness: 110, mass: 0.8 });
+  const rotY = useSpring(0, { damping: 16, stiffness: 110, mass: 0.8 });
+
+  // Percentage-of-card helpers for masks + glare placement.
+  const xPct = useTransform(x, (v) => `${v * 100}%`);
+  const yPct = useTransform(y, (v) => `${v * 100}%`);
+
+  // Reveal radius (px) — sized by the open spring.
+  const rPx = useTransform(open, (o) => (radius || 170) * o);
+
+  // Soft melty reveal mask.
+  const maskImg = useMotionTemplate`radial-gradient(circle ${rPx}px at ${xPct} ${yPct}, rgb(0,0,0) 78%, rgba(0,0,0,0.4) 93%, transparent 100%)`;
+
+  // Warm bloom hugging the reveal edge.
+  const bloomMask = useMotionTemplate`radial-gradient(circle ${rPx}px at ${xPct} ${yPct}, rgba(255,170,90,0.22) 40%, rgba(255,140,60,0.08) 72%, transparent 100%)`;
+
+  const onMove = (e: React.MouseEvent) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    cursorX.set(nx);
+    cursorY.set(ny);
+    rotY.set((nx - 0.5) * 2 * 10);
+    rotX.set((0.5 - ny) * 2 * 8);
+    if (open.get() === 0) open.set(1);
+  };
+
+  const onLeave = () => {
+    hovered.set(0);
+    open.set(0);
+    rotX.set(0);
+    rotY.set(0);
+  };
+
+  // Shadows slide opposite the tilt, giving the card physical depth.
+  const shadowOpacity = useTransform(hovered, [0, 1], [0.5, 0.95]);
+  const shadowX = useTransform(rotY, (v) => -v * 1.6);
+  const shadowY = useTransform(rotX, (v) => v * 1.6);
+
+  // Specular glare drifts with the cursor + tilt.
+  const glareX = useTransform(x, (v) => `${v * 120 - 60}%`);
+  const glareY = useTransform(y, (v) => `${v * 120 - 60}%`);
+  const glareOpacity = useTransform(hovered, [0, 1], [0, 1]);
+
+  const filmGrain =
+    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>\")";
+
+  return (
+    <div
+      ref={ref}
+      className="cine-card absolute inset-0 overflow-hidden"
+      style={{ zIndex: 3, perspective: 1400, pointerEvents: 'auto' }}
+      onMouseMove={onMove}
+      onMouseEnter={(e) => {
+        hovered.set(1);
+        onMove(e);
+      }}
+      onMouseLeave={onLeave}
+    >
+      {/* Tilt layer: grayscale base + color reveal + glare swivel together. */}
+      <motion.div
+        className="absolute inset-0 will-change-transform"
+        style={{
+          rotateX: rotX,
+          rotateY: rotY,
+          scale: useTransform(hovered, [0, 1], [1, 1.045]),
+          transformStyle: "preserve-3d",
+        }}
+      >
+        {/* Grayscale print with slow Ken-Burns drift. */}
+        <motion.img
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            filter: useTransform(
+              hovered,
+              [0, 1],
+              ["grayscale(100%) brightness(1)", "grayscale(100%) brightness(0.5) contrast(1.1)"]
+            ),
+            pointerEvents: 'none',
+          }}
+          animate={{ scale: [1.03, 1.08, 1.03] }}
+          transition={{ repeat: Infinity, duration: 18, ease: "easeInOut" }}
+        />
+
+        {/* Full color, revealed through the melty mask, anchored at the cursor. */}
+        <motion.img
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            transformOrigin: useMotionTemplate`${xPct} ${yPct}`,
+            scale: useTransform(hovered, [0, 1], [1, 1.12]),
+            WebkitMaskImage: maskImg,
+            maskImage: maskImg,
+            filter: "saturate(1.12) contrast(1.06)",
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Warm bloom clipped to the same circle. */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: bloomMask,
+            WebkitMaskImage: bloomMask,
+            background: "rgba(255,150,70,0.5)",
+            mixBlendMode: "screen",
+            opacity: useTransform(hovered, [0, 1], [0, 0.9]),
+          }}
+        />
+
+        {/* Specular glare: a wide soft light that follows the cursor. */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.10) 46%, rgba(255,255,255,0.32) 50%, rgba(255,255,255,0.10) 54%, transparent 70%)",
+            backgroundPosition: "center",
+            backgroundSize: "220% 220%",
+            mixBlendMode: "overlay",
+            opacity: glareOpacity,
+            transform: useMotionTemplate`translate(${glareX}, ${glareY})`,
+          }}
+        />
+      </motion.div>
+
+      {/* Film grain — sits above everything for a cinematic finish. */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: filmGrain,
+          backgroundSize: "160px 160px",
+          opacity: useTransform(hovered, [0, 1], [0.08, 0.14]),
+          mixBlendMode: "soft-light",
+        }}
+        animate={{ x: [0, -10, 6, -4, 0], y: [0, 6, -8, 4, 0] }}
+        transition={{ repeat: Infinity, duration: 1.1, ease: "linear" }}
+      />
+
+      {/* Colored cast shadows (warm / cool) that slide under the card. */}
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          width: "78%",
+          height: "22%",
+          left: "8%",
+          bottom: "-16%",
+          background: "radial-gradient(50% 50% at 50% 50%, rgba(255,140,80,0.55), transparent 70%)",
+          filter: "blur(14px)",
+          opacity: shadowOpacity,
+          x: shadowX,
+          y: shadowY,
+        }}
+      />
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          width: "90%",
+          height: "26%",
+          right: "6%",
+          top: "-18%",
+          background: "radial-gradient(50% 50% at 50% 50%, rgba(120,180,255,0.5), transparent 70%)",
+          filter: "blur(18px)",
+          opacity: shadowOpacity,
+          x: useTransform(rotY, (v) => v * 1.2),
+          y: useTransform(rotX, (v) => -v * 1.4),
+        }}
+      />
+    </div>
+  );
 }
 
 export default function Hero({ startAnimation = true }: HeroProps) {
@@ -185,14 +411,8 @@ export default function Hero({ startAnimation = true }: HeroProps) {
         .dark .photo2-outline {
           border: 1.5px solid rgba(255, 255, 255, 1);
         }
-        .photo2-img {
-          width: 100%;
-          height: 100%;
-          left: -10px;
-          object-fit: cover;
-          filter: grayscale(100%);
-          position: relative;
-          z-index: 2;
+        .photo2-clip {
+          overflow: hidden;
         }
 
         .photo1-wrapper {
@@ -227,12 +447,6 @@ export default function Hero({ startAnimation = true }: HeroProps) {
           left: 2px;
           z-index: 2;
           overflow: hidden;
-        }
-        .photo1-img img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          filter: grayscale(100%);
         }
 
         /* ARROW IMAGE */
@@ -291,11 +505,71 @@ export default function Hero({ startAnimation = true }: HeroProps) {
         }
         .dark .quote-default { color: #ffffff; }
 
+        /* SOTD word-wipe masks: each word slides up through its own slit */
+        .qe-word {
+          display: inline-block;
+          overflow: hidden;
+          vertical-align: top;
+          padding-top: 0.12em;
+          padding-bottom: 0.12em;
+          margin-top: -0.12em;
+          margin-bottom: -0.12em;
+        }
+        .qe-word > .qe-inner {
+          display: inline-block;
+          transform: translateY(115%);
+          will-change: transform;
+        }
+
         /* Reality Check Quote Reveal */
         .quote-reveal {
           color: #ffffff;
         }
         .dark .quote-reveal { color: #000000; }
+
+        /* Vertical Edge Label — reads bottom-to-top (rotated 90° anti-clockwise) */
+        .hover-hint {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: -2.6vw;
+          z-index: 150;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          writing-mode: vertical-rl;
+          transform: rotate(180deg);
+          font-family: 'Syncopate', 'Courier New', Courier, monospace;
+          font-weight: 500;
+          font-size: 0.6vw;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          color: #000000ff;
+          user-select: none;
+          pointer-events: none;
+        }
+        .dark .hover-hint {
+          color: #eeeeeeff;
+        }
+.hover-hint-line {
+          width: 1px;
+          flex: 0 0 7.5em;
+          margin-top: 0.6em;
+          background: currentColor;
+        }
+        @keyframes hover-hint-float {
+          0%, 100% { transform: rotate(180deg) translateY(0); }
+          50% { transform: rotate(180deg) translateY(-0.5vw); }
+        }
+        .hover-hint {
+          animation: hover-hint-float 3.4s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hover-hint {
+            animation: none;
+          }
+        }
 
         /* INVERT IMAGES FOR LIGHT/DARK IF THEY ARE WHITE BY DEFAULT */
         /* Assuming arrow.png and quote.png are white PNGs because the background was previously black.
@@ -380,6 +654,9 @@ export default function Hero({ startAnimation = true }: HeroProps) {
             width: 70vw; 
             font-size: clamp(16px, 4vw, 24px); 
           }
+          .hover-hint { 
+            display: none; 
+          }
         }
       `}</style>
 
@@ -443,20 +720,13 @@ export default function Hero({ startAnimation = true }: HeroProps) {
               transition={{ ...transitionSettings, delay: 0.6 }}
             />
             <motion.div
+              className="photo2-clip"
               style={{ width: "100%", height: "100%", left: "-10px", position: "relative", overflow: "hidden", zIndex: 2 }}
               initial={{ clipPath: "inset(100% 0 0 0)" }}
               animate={startAnimation ? { clipPath: "inset(0% 0 0 0)" } : { clipPath: "inset(100% 0 0 0)" }}
               transition={{ ...transitionSettings, delay: 0.6 }}
             >
-              <motion.img
-                src={PHOTO_2}
-                className="photo2-img"
-                alt="Kumar Nishant standing"
-                initial={{ scale: 1.9 }}
-                animate={startAnimation ? { scale: 1 } : { scale: 1.9 }}
-                transition={{ ...transitionSettings, delay: 0.6 }}
-                style={{ left: 0 }}
-              />
+              <CinematicPhoto src={PHOTO_2} alt="Kumar Nishant standing in color" radius={200} />
             </motion.div>
           </motion.div>
 
@@ -474,18 +744,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
               animate={startAnimation ? { clipPath: "inset(0% 0 0 0)" } : { clipPath: "inset(100% 0 0 0)" }}
               transition={{ ...transitionSettings, delay: 0.7 }}
             >
-              <motion.img
-                src={PHOTO_1}
-                alt="Kumar Nishant smiling"
-                initial={{ scale: 1.3 }}
-                animate={startAnimation ? { scale: 1 } : { scale: 1.3 }}
-                transition={{ ...transitionSettings, delay: 0.7 }}
-                style={{
-                  position: "relative",
-                  top: 0, left: 0, right: "auto", bottom: "auto",
-                  width: '100%', height: '100%', objectFit: 'cover'
-                }}
-              />
+              <CinematicPhoto src={PHOTO_1} alt="Kumar Nishant smiling in color" radius={240} />
             </motion.div>
           </motion.div>
 
@@ -496,11 +755,11 @@ export default function Hero({ startAnimation = true }: HeroProps) {
             style={{ y: arrowY }}
             initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
             animate={startAnimation ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0.5, rotate: -15 }}
-            transition={{ ...transitionSettings, delay: 1 }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ ...transitionSettings, delay: 0.25 }}
+            whileHover={{ scale: 1, rotate: 90 }}
             whileTap={{ scale: 0.95 }}
           >
-            <img src="/arrow.png" alt="Arrow pointing down-left" style={{ width: '100%', height: 'auto', cursor: 'pointer' }} />
+            <img src="/arrow.png" alt="Arrow pointing down-left" style={{ width: '90%', height: 'auto', cursor: 'pointer' }} />
           </motion.div>
         </div>
 
@@ -535,9 +794,39 @@ export default function Hero({ startAnimation = true }: HeroProps) {
             onMouseLeave={() => setIsQuoteHovered(false)}
             onMouseMove={handleQuoteMouseMove}
           >
-            {/* BOTTOM LAYER: Philosophical Quote (Default) */}
+{/* BOTTOM LAYER: Philosophical Quote (Default) */}
             <div className="quote-default">
-              In a world where complexity is inevitable and failure is expected, engineering is the act of preparation.
+              {QUOTE_WORDS.map((word, i) => (
+                <React.Fragment key={i}>
+                  <span className="qe-word">
+                    <motion.span
+                      className="qe-inner"
+                      variants={{
+                        hidden: { y: "115%" },
+                        visible: {
+                          y: "0%",
+                          transition: {
+                            duration: 0.9,
+                            ease: [0.16, 1, 0.3, 1],
+                            delay: 1.05 + i * 0.03,
+                          },
+                        },
+                      }}
+                      initial="hidden"
+                      animate={startAnimation ? "visible" : "hidden"}
+                    >
+                      {word}
+                    </motion.span>
+                  </span>
+                  {i < QUOTE_WORDS.length - 1 ? " " : null}
+                </React.Fragment>
+              ))}
+            </div>
+
+            {/* VERTICAL EDGE LABEL */}
+            <div className="hover-hint" aria-hidden="true">
+              <span>HOVER ON THIS</span>
+              <span className="hover-hint-line" />
             </div>
 
             {/* TOP LAYER: Reality Check Quote (Revealed via Red Circle Mask) */}

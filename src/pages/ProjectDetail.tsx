@@ -1,17 +1,17 @@
 import { useRef, useLayoutEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowLeft, FiArrowUpRight } from 'react-icons/fi';
 import { projects } from '../data/projects';
 import ArchitectureTabs from '../components/ArchitectureTabs';
 import Footer from '../components/Footer';
+import TransitionLink from '../components/TransitionLink';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
 
     const project = projects.find(p => p.id === id);
@@ -43,13 +43,14 @@ const ProjectDetail: React.FC = () => {
 
             {/* Navigation Overlay */}
             <div className="fixed top-24 left-6 md:top-32 md:left-12 z-50">
-                <button
-                    onClick={() => navigate('/projects')}
+                <TransitionLink
+                    to="/projects"
+                    data-cursor-text="BACK"
                     className="group flex items-center gap-3 backdrop-blur-md bg-white/50 dark:bg-black/50 px-4 py-2 rounded-full border border-red-500/30 shadow-[0_0_15px_rgba(255,0,0,0.2)] hover:shadow-[0_0_25px_rgba(255,0,0,0.6)] hover:bg-white dark:hover:bg-black transition-all duration-300"
                 >
                     <FiArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 text-red-500" />
                     <span className="text-xs font-mono uppercase tracking-widest hidden md:inline-block text-black dark:text-white">Back to Index</span>
-                </button>
+                </TransitionLink>
             </div>
 
             {/* Swiss Grid Background */}

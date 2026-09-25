@@ -444,7 +444,7 @@ const DevActivity: React.FC = () => {
                 <div className="shader-frame" style={{ width: 64, height: 64, transform: 'scale(2.5)', transformOrigin: 'center center' }}>
                   <BrandOrbs variant="github" size="medium" mode={isDark ? 'dark' : 'light'} speed={1.0} />
                 </div>
-                <div className="h-[2px] bg-black/40 dark:bg-white/40 w-[75%] mx-auto md:mt-16 " />
+                <div className="h-[2px] bg-black/40 dark:bg-white/40 w-[75%] mx-auto md:mt-12 " />
               </div>
 
               <div className="flex flex-col items-start justify-center gap-2 md:gap-3">
@@ -452,7 +452,7 @@ const DevActivity: React.FC = () => {
                   <AsciiBanner text="GITHUB" tight className="max-w-full md:max-w-xl md:hidden" />
                   <AsciiBanner text="GITHUB" tight className="hidden md:block max-w-full md:max-w-xl" />
                 </h2>
-                <p className="text-xl md:text-xl font-light md:pl-8 text-justify max-w-s">
+                <p className="text-xl md:text-xl font-light md:pl-8 md:mt-[-15px] text-justify max-w-s">
                   Real-time data from the GitHub ecosystem.
                 </p>
               </div>

@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import TransitionLink from './TransitionLink';
 import { FiSun, FiMoon, FiMenu, FiX, FiDownload, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { gsap } from 'gsap';
 import { useTheme } from '../context/ThemeContext';
 import { useMusic } from '../context/MusicContext';
+import { useTransition } from '../context/TransitionContext';
 
 const Navigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const { isMuted, toggleMute } = useMusic();
+  const { playTransition } = useTransition();
   const location = useLocation();
-  const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +71,7 @@ const Navigation: React.FC = () => {
     if (location.pathname === '/') {
       doScroll();
     } else {
-      navigate('/');
+      playTransition('/');
       // Wait for Home to mount and Contact section to appear
       const tryScroll = (attempts = 0) => {
         const el = document.getElementById('contact');

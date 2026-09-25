@@ -2,16 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowUpRight } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
 import { projects } from '../data/projects';
 import Footer from '../components/Footer';
+import TransitionLink from '../components/TransitionLink';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const Projects: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -91,9 +90,9 @@ const Projects: React.FC = () => {
 
         <div className="projects-grid">
           {projects.map((project, index) => (
-            <div
+            <TransitionLink
               key={index}
-              onClick={() => navigate(`/projects/${project.id}`)}
+              to={`/projects/${project.id}`}
               data-cursor-text="OPEN"
               className="grid-cell group grid grid-cols-1 md:grid-cols-12 gap-0 border-b border-gray-200 dark:border-gray-800 hover:border-black dark:hover:border-white transition-colors duration-300 cursor-pointer overflow-hidden relative"
             >
@@ -137,7 +136,7 @@ const Projects: React.FC = () => {
                 <FiArrowUpRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
               </div>
 
-            </div>
+            </TransitionLink>
           ))}
         </div>
 
