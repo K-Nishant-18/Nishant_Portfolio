@@ -398,11 +398,11 @@ export default function Hero({ startAnimation = true }: HeroProps) {
         }
         .photo2-outline {
           position: absolute;
-          top: 175px;
+          top: 190px;
           left: -210px;
           right: 40px;
           width: 150%;
-          height: 62%;
+          height: 60%;
           bottom: 20px;
           border: 1.5px solid rgba(0, 0, 0, 1); /* Dark outline in light mode */
           z-index: 1;
@@ -452,7 +452,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
         /* ARROW IMAGE */
         .hero-arrow {
           position: absolute;
-          top: 85.5vh;
+          top: 82.5vh;
           left: 32vw;
           width: 7vw;
           z-index: 9;
