@@ -417,7 +417,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
 
         .photo1-wrapper {
           position: absolute;
-          top: 45vh;
+          top: 49vh;
           left: 31vw;
           width: 25vw; /* Reduced from 29vw */
           aspect-ratio: 16/10;
@@ -452,7 +452,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
         /* ARROW IMAGE */
         .hero-arrow {
           position: absolute;
-          top: 82vh;
+          top: 85.5vh;
           left: 32vw;
           width: 7vw;
           z-index: 9;
@@ -616,7 +616,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
           }
 
           .photo1-wrapper { 
-            top: 36vh; 
+            top: 39vh; 
             left: 10vw; 
             width: 45vw; 
           }
@@ -629,7 +629,7 @@ export default function Hero({ startAnimation = true }: HeroProps) {
           }
 
           .hero-arrow { 
-            top: 58vh; 
+            top: 61vh; 
             left: 10vw; 
             width: 14vw; 
           }
