@@ -16,7 +16,7 @@ const AwardWinningAbout: React.FC = () => {
     const [isTouch, setIsTouch] = useState(false);
 
     // --- Image array for the trail effect ---
-    const images = Array.from({ length: 10 }, (_, i) => `/images/${i + 1}.png`);
+    const images = Array.from({ length: 10 }, (_, i) => `/images/${i + 1}.webp`);
 
     // --- Effect for Touch Detection only ---
     useEffect(() => {

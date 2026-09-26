@@ -112,7 +112,7 @@ const ProjectDetail: React.FC = () => {
                     </div>
                     <div className="col-span-12 md:col-span-8 content-block">
                         <div className="relative aspect-[16/9] bg-gray-200 dark:bg-gray-800 overflow-hidden">
-                            <img src={project.image} alt="Project Preview" className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                            <img src={project.image} alt="Project Preview" className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" decoding="async" fetchPriority="high" />
                         </div>
                     </div>
                 </div>

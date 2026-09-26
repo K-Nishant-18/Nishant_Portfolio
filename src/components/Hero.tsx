@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useMotionTemplate, useScroll, useTransform, type Transition } from "framer-motion";
 
 // ─── Replace these with your actual image imports or URLs ───────────────────
-const PHOTO_1 = "/Hero-2.png"; // smiling, arms open
-const PHOTO_2 = "/Hero-1.png"; // standing with bag
+const PHOTO_1 = "/Hero-2.webp"; // smiling, arms open
+const PHOTO_2 = "/Hero-1.webp"; // standing with bag
 // ────────────────────────────────────────────────────────────────────────────
 
 const QUOTE_DEFAULT =
@@ -134,6 +134,8 @@ function CinematicPhoto({
           src={src}
           alt={alt}
           draggable={false}
+          decoding="async"
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover"
           style={{
             filter: useTransform(
@@ -152,6 +154,7 @@ function CinematicPhoto({
           src={src}
           alt={alt}
           draggable={false}
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
           style={{
             transformOrigin: useMotionTemplate`${xPct} ${yPct}`,

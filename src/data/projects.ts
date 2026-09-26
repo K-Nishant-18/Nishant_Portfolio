@@ -24,6 +24,7 @@ export interface Project {
     size?: 'small' | 'medium' | 'large';
     color: string;
     architecture?: ProjectArchitecture;
+    thumbnail?: string;
 }
 
 export const projects: Project[] = [
@@ -36,7 +37,8 @@ export const projects: Project[] = [
         tech: ['Java', 'Spring MVC', 'React.js', 'MySQL', 'Spring Security'],
         year: '2024',
         status: 'Live',
-        image: '/collegiaMockup.png',
+        image: '/projects/collegia.webp',
+        thumbnail: '/projects/collegia-thumb.webp',
         github: 'https://github.com/K-Nishant-18',
         live: 'https://github.com/K-Nishant-18',
         impact: ['500+ Students', '15+ Institutions', '99.9% Uptime'],
@@ -225,7 +227,8 @@ export const projects: Project[] = [
         tech: ['MERN Stack', 'AWS S3', 'Socket.io', 'JWT'],
         year: '2024',
         status: 'Development',
-        image: '/cultural.png',
+        image: '/projects/cultural.webp',
+        thumbnail: '/projects/cultural-thumb.webp',
         github: 'https://github.com/K-Nishant-18',
         live: null,
         impact: ['Cultural Preservation', 'Community Building', 'Heritage Documentation'],
@@ -393,7 +396,8 @@ export const projects: Project[] = [
         tech: ['Spring Boot', 'React.js', 'MongoDB', 'OpenAI API'],
         year: '2024',
         status: 'Development',
-        image: '/0xkidMockup.png',
+        image: '/projects/0xkid.webp',
+        thumbnail: '/projects/0xkid-thumb.webp',
         github: '#',
         live: '#',
         impact: ['Gamified Learning', 'AI Mentorship', 'Child-Friendly UI'],
@@ -567,7 +571,8 @@ export const projects: Project[] = [
         tech: ['Spring Boot', 'PostgreSQL', 'Docker', 'GitHub API'],
         year: '2023',
         status: 'Live',
-        image: '/skillbloom.png',
+        image: '/projects/skillbloom.webp',
+        thumbnail: '/projects/skillbloom-thumb.webp',
         github: 'https://github.com/K-Nishant-18',
         live: 'https://github.com/K-Nishant-18',
         impact: ['1000+ Learners', 'GitHub Integration', 'Automated Assessments'],
@@ -899,7 +904,8 @@ export const projects: Project[] = [
         tech: ['React.js', 'GSAP', 'Tailwind CSS', 'Vite'],
         year: '2023',
         status: 'Live',
-        image: '/portfolio.png',
+        image: '/projects/portfolio.webp',
+        thumbnail: '/projects/portfolio-thumb.webp',
         github: 'https://github.com/K-Nishant-18',
         live: 'https://github.com/K-Nishant-18',
         impact: ['Showcased Skills', 'Professional Branding', 'Interactive UI/UX'],

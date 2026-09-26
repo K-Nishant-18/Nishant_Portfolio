@@ -108,7 +108,7 @@ const Projects: React.FC = () => {
               {/* Main Content (Image + Title) */}
               <div className="col-span-12 md:col-span-5 py-6 md:py-8 px-4 flex items-center gap-6 relative z-10">
                 <div className="w-16 h-16 md:w-24 md:h-16 bg-gray-200 dark:bg-gray-800 overflow-hidden shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500">
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                  <img src={project.thumbnail || project.image} alt={project.title} className="w-full h-full object-cover" loading="lazy" decoding="async" width={320} height={256} />
                 </div>
                 <div>
                   <h2 className="text-2xl md:text-3xl font-light tracking-tight group-hover:translate-x-2 transition-transform duration-300">{project.title}</h2>
