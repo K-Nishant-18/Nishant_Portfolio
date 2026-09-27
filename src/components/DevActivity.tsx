@@ -359,12 +359,11 @@ const DevActivity: React.FC = () => {
         // Fetch Profile Views: extract the number from the komarev badge.
         // The badge SVG can't be read directly in the browser (komarev sends no
         // CORS headers), so it goes through the backend proxy (/api/profile-views).
-        // Try local dev API → Vercel-rewritten relative path → direct Render API
-        // (which is CORS-open), so the number shows even if the API isn't local.
+        // Try local dev API, then the same-origin /api route (served by the
+        // Vercel function in production), so the number shows in both modes.
         const viewSources = [
           import.meta.env.DEV ? 'http://localhost:5000/api/profile-views' : '',
           import.meta.env.PROD ? '/api/profile-views' : '',
-          'https://nishant-portfolio-1.onrender.com/api/profile-views',
         ].filter(Boolean);
 
         for (const url of viewSources) {

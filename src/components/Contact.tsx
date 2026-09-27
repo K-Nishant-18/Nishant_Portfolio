@@ -92,7 +92,11 @@ const Contact: React.FC = () => {
       } else if (res.status === 400 && Array.isArray(data.errors)) {
         setSubmitError(data.errors.map((err: { msg: string }) => err.msg).join(' '));
       } else {
-        setSubmitError('Something went wrong. Please try again, or email me directly at me.knishant@gmail.com.');
+        setSubmitError(
+          data?.error
+            ? `${data.error} You can also email me directly at me.knishant@gmail.com.`
+            : 'Something went wrong. Please try again, or email me directly at me.knishant@gmail.com.'
+        );
       }
     } catch (err) {
       console.error('Collaborate submit failed:', err);

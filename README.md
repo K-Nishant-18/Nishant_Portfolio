@@ -69,16 +69,23 @@ You will need to configure environment variables for both the frontend and backe
 Create a `.env` file in the **root directory**:
 ```env
 # Root / Frontend Variables
-VITE_API_BASE_URL=http://localhost:5000/api
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# NOTE: do not set VITE_API_URL for production. It is inlined at build time, so a
+# localhost value would make every visitor post to their own machine. Leave it
+# unset and the frontend uses the same-origin /api route.
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-Create a `.env` file in the **`/api` directory**:
+Create a `.env` file in the **`/api` directory** (local development only — in production these are set as Vercel environment variables):
 ```env
 # Backend API Variables
-PORT=5000
-RESEND_API_KEY=your_resend_email_api_key
+DATABASE_URL=your_postgres_connection_string
+EMAIL_USER=your_gmail_address
+EMAIL_PASS=your_google_app_password
+EMAIL_TO=where_notifications_are_sent
+# Optional: x-admin-key for /api/messages and bulk guestbook deletes
+ADMIN_API_KEY=some_long_random_string
+# Optional: comma separated CORS allowlist (open when unset)
+ALLOWED_ORIGINS=
 ```
 
 ### 4. Run the Development Server
@@ -98,9 +105,10 @@ Understanding where everything lives is key to modifying the portfolio to fit yo
 
 ```text
 Nishant_Portfolio/
-├── api/                        # Backend logic (Express.js)
-│   ├── routes/                 # API endpoints (e.g., mail, guestbook)
-│   ├── index.ts                # Express setup and entry point
+├── api/                        # Backend logic (Express.js, Vercel Function)
+│   ├── server.ts               # Express app: middleware, routes, SMTP, Postgres
+│   ├── [...path].ts            # Serverless entry, maps to /api/*
+│   ├── swagger.yaml            # OpenAPI spec (served at /api/docs in dev)
 │   └── package.json            # Backend dependencies
 ├── public/                     # Static global assets
 │   ├── previews/               # PDF resumes and static images
@@ -128,22 +136,33 @@ If you are cloning this to build your own portfolio, you should update the follo
 1. **/src/components/About.tsx**: Update your personal bio, current employer, and technical skills list.
 2. **/src/components/Projects.tsx**: Map your own project data, tags, and GitHub URLs here.
 3. **/src/components/Hero.tsx**: Replace the Spline 3D URL if you want a custom 3D element.
-4. **/api/routes/**: Configure your `To:` email addressed in the Resend integration blocks.
+4. **/api/server.ts**: Configure the notification recipient (`EMAIL_TO`) and the admin key used by `/api/messages`.
 
 ---
 
 ## � Deployment Guides
 
-### Deploying the Frontend (Vercel or Netlify)
-1. Push your code to GitHub.
-2. Connect the repository to Vercel/Netlify.
-3. Set the **Build Command** to `npm run build` and **Output Directory** to `dist`.
-4. Ensure you add your `VITE_` prefixed environment variables in the Vercel/Netlify dashboard.
+### Deploying to Vercel (frontend + API)
+The frontend and the API deploy together as a single Vercel project. There is no
+second service to host or maintain.
 
-### Deploying the Backend
-The `/api` folder is designed as a standalone Node.js microservice. You can:
-1. Dockerize it using the included `Dockerfile` and deploy to AWS ECS, Render, or Railway.
-2. Or let Vercel handle it as Serverless Functions (ensure you have a `vercel.json` configured properly).
+1. Push your code to GitHub and connect the repository to Vercel.
+2. Leave **Build Command** as `npm run build` and **Output Directory** as `dist`.
+3. Add the environment variables in **Project Settings → Environment Variables**:
+   `DATABASE_URL`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_TO`, and optionally
+   `ADMIN_API_KEY` and `ALLOWED_ORIGINS`. The API's runtime dependencies come from
+   the root `package.json`, so there is no separate API install step.
+4. Deploy. `vercel.json` rewrites every non-`/api` route to `index.html` (SPA
+   routing); `/api/*` is served by the serverless function in `api/[...path].ts`.
+
+Database migrations run automatically on first invocation: the function issues
+`CREATE TABLE IF NOT EXISTS` for the `guestbook` and `contact_messages` tables.
+
+### Running the API elsewhere
+`api/server.ts` is a plain Express app, so it also runs on any Node host
+(`cd api && npm run build && npm start`, listening on `PORT`, default 5000). The
+`isDirectRun` guard means the listener only starts when the file is executed
+directly, never when it is imported as a function handler.
 
 ---
 

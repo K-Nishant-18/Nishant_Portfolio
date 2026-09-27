@@ -14,12 +14,27 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Detect serverless (Vercel). Used to skip the HTTP listener and to tighten
+// timeouts so a request always finishes inside the function's execution limit.
+const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+// Behind the Vercel proxy, `req.ip` is the proxy's address unless trust proxy is
+// enabled, which would make the rate limiter apply per proxy instead of per
+// visitor.
+app.set('trust proxy', 1);
+
 // PostgreSQL Connection
+// Pool is deliberately tiny: a serverless instance handles a few concurrent
+// requests at most, and Neon should not be saturated by idle connections.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false, // Required for Neon
   },
+  max: 2,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 8000,
+  allowExitOnIdle: true,
 });
 
 pool.connect()
@@ -125,8 +140,18 @@ const initDB = async () => {
             ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS email TEXT;
             ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS avatar TEXT;
             ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS edit_token TEXT;
+
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                project_type TEXT,
+                description TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS project_type TEXT;
         `);
-    console.log('Guestbook table ensured.');
+    console.log('Guestbook + contact tables ensured.');
   } catch (err) {
     console.error('Error initializing DB:', err);
   }
@@ -134,21 +159,40 @@ const initDB = async () => {
 initDB();
 
 // Swagger Documentation
+// swagger.yaml is not part of a serverless bundle, so the docs route is only
+// mounted when the file can actually be read from disk (i.e. local dev).
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-console.log('Loading Swagger YAML...');
-const swaggerDocument = YAML.load('./swagger.yaml');
-console.log('Swagger Document Loaded:', swaggerDocument ? 'Yes' : 'No');
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-console.log('Swagger Route Registered at /api/docs');
+try {
+  const swaggerDocument = YAML.load('./swagger.yaml');
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  console.log('Swagger UI mounted at /api/docs');
+} catch {
+  console.warn('Swagger UI disabled (swagger.yaml not available in this environment).');
+}
 
 // Setup Nodemailer transporter
+// Port 587 (STARTTLS) is used instead of nodemailer's `service: 'gmail'` default of 465,
+// because cloud hosts frequently black-hole outbound 465, which makes sendMail hang
+// until the caller's proxy times out. Timeouts guarantee a fast failure so a mail
+// outage can never take down the request.
+const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+const hasMailCredentials = Boolean(EMAIL_USER && EMAIL_PASS);
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: SMTP_PORT,
+  secure: SMTP_PORT === 465,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: EMAIL_USER,
+    // App passwords are displayed in 4-character groups ("abcd efgh ijkl mnop").
+    // Strip whitespace so a copy-paste with spaces still authenticates.
+    pass: (EMAIL_PASS || '').replace(/\s+/g, ''),
   },
+  connectionTimeout: isServerless ? 5000 : 10000,
+  greetingTimeout: isServerless ? 5000 : 10000,
+  socketTimeout: isServerless ? 5000 : 15000,
 });
 
 // Test endpoint
@@ -178,22 +222,53 @@ app.post('/api/collaborate',
     }
     const { name, email, company, phone, projectType, budget, timeline, description, requirements } = req.body;
 
+    // 1. Persist first — the message must survive even if SMTP is down.
     try {
-      // Send email notification
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-        subject: 'New Collaboration Request',
-        text: `You have received a new collaboration request:\n\nName: ${name}\nEmail: ${email}\nCompany: ${company}\nPhone: ${phone}\nProject Type: ${projectType}\nBudget: ${budget}\nTimeline: ${timeline}\nDescription: ${description}\nRequirements: ${requirements}`,
-      };
-      await transporter.sendMail(mailOptions);
-      res.status(201).json({ success: true, message: 'Collaboration request submitted!' });
+      await pool.query(
+        'INSERT INTO contact_messages (name, email, project_type, description) VALUES ($1, $2, $3, $4)',
+        [name, email, projectType || null, description || null]
+      );
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, error: 'Failed to submit collaboration request.' });
+      console.error('Failed to store contact message:', err);
+      res.status(500).json({ success: false, error: 'Failed to store your message. Please try again.' });
+      return;
     }
+
+    // 2. Notify by email — best effort, never fatal.
+    if (!hasMailCredentials) {
+      console.warn('[Mail] EMAIL_USER/EMAIL_PASS are not set; skipping notification. Message is stored in the DB.');
+    } else {
+      try {
+        const mailOptions = {
+          from: EMAIL_USER,
+          to: process.env.EMAIL_TO || EMAIL_USER,
+          subject: 'New Collaboration Request',
+          text: `You have received a new collaboration request:\n\nName: ${name}\nEmail: ${email}\nCompany: ${company}\nPhone: ${phone}\nProject Type: ${projectType}\nBudget: ${budget}\nTimeline: ${timeline}\nDescription: ${description}\nRequirements: ${requirements}`,
+        };
+        await transporter.sendMail(mailOptions);
+      } catch (err) {
+        console.error('[Mail] Notification failed (message is still stored in the DB):', err);
+      }
+    }
+
+    res.status(201).json({ success: true, message: 'Collaboration request submitted!' });
   }
 );
+
+// Read stored contact messages (admin key required)
+app.get('/api/messages', async (req: Request, res: Response) => {
+  if (!isAdminRequest(req)) {
+    res.status(401).json({ success: false, error: 'Not authorized.' });
+    return;
+  }
+  try {
+    const result = await pool.query('SELECT id, name, email, project_type, description, created_at FROM contact_messages ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching contact messages:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch messages.' });
+  }
+});
 
 // Guestbook endpoint
 app.post('/api/guestbook',
@@ -340,6 +415,15 @@ app.get('/api/commit-stats', async (req: Request, res: Response) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Local development entry point. On Vercel the app is invoked as a serverless
+// function handler (see api/[...path].ts) and must never open a listener.
+const isDirectRun =
+  !isServerless && typeof require !== 'undefined' && typeof module !== 'undefined' && require.main === module;
+
+if (isDirectRun) {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

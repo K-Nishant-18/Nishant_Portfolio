@@ -1,0 +1,6 @@
+api/node_modules
+api/dist
+api/.env
+api/package-lock.json
+*.tsbuildinfo
+vite.config.ts.timestamp-*
