@@ -37,12 +37,27 @@ const pool = new Pool({
   allowExitOnIdle: true,
 });
 
+// Reports only the error code, never the connection string, so a misconfigured
+// DATABASE_URL can be diagnosed from the client response or the function logs.
+const dbErrorCode = (err: unknown): string => {
+  const code = (err as { code?: unknown })?.code;
+  return typeof code === 'string' ? code : 'UNKNOWN';
+};
+
 pool.connect()
   .then((client) => {
     console.log('Connected to Neon PostgreSQL');
     client.release();
   })
-  .catch((err) => console.error('PostgreSQL connection error:', err));
+  .catch((err) => {
+    console.error('PostgreSQL connection error:', {
+      code: dbErrorCode(err),
+      message: (err as Error)?.message,
+      databaseUrlSet: Boolean(process.env.DATABASE_URL),
+      channelBindingUnsupported:
+        (err as Error)?.message?.includes('channel binding') || undefined,
+    });
+  });
 
 // ── Security middleware ──────────────────────────────────────────────
 
@@ -230,7 +245,7 @@ app.post('/api/collaborate',
       );
     } catch (err) {
       console.error('Failed to store contact message:', err);
-      res.status(500).json({ success: false, error: 'Failed to store your message. Please try again.' });
+      res.status(500).json({ success: false, error: 'Failed to store your message. Please try again.', code: dbErrorCode(err) });
       return;
     }
 
@@ -266,7 +281,7 @@ app.get('/api/messages', async (req: Request, res: Response) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching contact messages:', err);
-    res.status(500).json({ success: false, error: 'Failed to fetch messages.' });
+    res.status(500).json({ success: false, error: 'Failed to fetch messages.', code: dbErrorCode(err) });
   }
 });
 
@@ -299,7 +314,7 @@ app.post('/api/guestbook',
       });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ success: false, error: 'Failed to add guestbook entry.' });
+      res.status(500).json({ success: false, error: 'Failed to add guestbook entry.', code: dbErrorCode(err) });
     }
   }
 );
@@ -311,7 +326,7 @@ app.get('/api/guestbook', async (req: Request, res: Response) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching guestbook:', err);
-    res.status(500).json({ success: false, error: 'Failed to fetch guestbook entries.' });
+    res.status(500).json({ success: false, error: 'Failed to fetch guestbook entries.', code: dbErrorCode(err) });
   }
 });
 
@@ -350,7 +365,7 @@ app.delete('/api/guestbook/:id', deleteLimiter, async (req: Request, res: Respon
     res.json({ success: true, message: 'Entry deleted' });
   } catch (err) {
     console.error('Error deleting guestbook entry:', err);
-    res.status(500).json({ success: false, error: 'Failed to delete entry.' });
+    res.status(500).json({ success: false, error: 'Failed to delete entry.', code: dbErrorCode(err) });
   }
 });
 

@@ -94,13 +94,13 @@ const Contact: React.FC = () => {
       } else {
         setSubmitError(
           data?.error
-            ? `${data.error} You can also email me directly at me.knishant@gmail.com.`
-            : 'Something went wrong. Please try again, or email me directly at me.knishant@gmail.com.'
+            ? `${data.error} You can also email me directly at kumar.nishant.eng@gmail.com.`
+            : 'Something went wrong. Please try again, or email me directly at kumar.nishant.eng@gmail.com.'
         );
       }
     } catch (err) {
       console.error('Collaborate submit failed:', err);
-      setSubmitError('Could not reach the server. Please try again, or email me directly at me.knishant@gmail.com.');
+      setSubmitError('Could not reach the server. Please try again, or email me directly at kumar.nishant.eng@gmail.com.');
     } finally {
       setSending(false);
     }
