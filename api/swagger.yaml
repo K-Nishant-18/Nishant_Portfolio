@@ -51,7 +51,10 @@ paths:
           description: Rate limit exceeded
     post:
       summary: Sign Guestbook
-      description: Submit a new entry to the guestbook. Returns an edit token that is required to delete this entry later.
+      description: |
+        Submit a new entry to the guestbook. The entry is stored first, then a notification
+        email is attempted (best effort: a mail failure never fails the request).
+        Returns an edit token that is required to delete this entry later.
       requestBody:
         required: true
         content:
@@ -120,8 +123,11 @@ paths:
           description: Rate limit exceeded
   /collaborate:
     post:
-      summary: Submit Collaboration Request
-      description: Sends a collaboration/inquiry email notification via Nodemailer.
+      summary: Send a message
+      description: |
+        Stores the message in Postgres first, then attempts a notification email.
+        The email is best effort: if SMTP fails the message is still saved and the
+        request still returns 201. Read stored messages with GET /api/messages.
       requestBody:
         required: true
         content:
@@ -139,20 +145,10 @@ paths:
                   type: string
                   format: email
                   maxLength: 120
-                company:
-                  type: string
-                phone:
-                  type: string
                 projectType:
                   type: string
-                budget:
-                  type: string
-                timeline:
-                  type: string
+                  description: Subject line, stored as project_type
                 description:
-                  type: string
-                  maxLength: 2000
-                requirements:
                   type: string
                   maxLength: 2000
       responses:

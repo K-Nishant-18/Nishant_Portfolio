@@ -210,6 +210,35 @@ const transporter = nodemailer.createTransport({
   socketTimeout: isServerless ? 5000 : 15000,
 });
 
+// Renders only the fields that were actually filled in, so notifications never
+// contain "undefined" placeholders.
+const formatMailFields = (fields: Array<[string, unknown]>): string =>
+  fields
+    .filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== '')
+    .map(([label, value]) => `${label}: ${String(value).trim()}`)
+    .join('\n\n');
+
+// Sends a notification email if credentials are configured. Never throws: the
+// entry is already stored by the time this runs, so a mail outage must not fail
+// the request.
+const sendNotificationMail = async (subject: string, body: string, replyTo?: string): Promise<void> => {
+  if (!hasMailCredentials) {
+    console.warn(`[Mail] EMAIL_USER/EMAIL_PASS are not set; skipping "${subject}". Entry is stored in the DB.`);
+    return;
+  }
+  try {
+    await transporter.sendMail({
+      from: EMAIL_USER,
+      to: process.env.EMAIL_TO || EMAIL_USER,
+      replyTo,
+      subject,
+      text: body,
+    });
+  } catch (err) {
+    console.error(`[Mail] Notification failed for "${subject}" (entry is still stored in the DB):`, err);
+  }
+};
+
 // Test endpoint
 app.get('/api/hello', (req: Request, res: Response) => {
   res.json({ message: 'Hello from Express + TypeScript backend (Neon DB)!' });
@@ -235,7 +264,7 @@ app.post('/api/collaborate',
       res.status(400).json({ success: false, errors: errors.array() });
       return;
     }
-    const { name, email, company, phone, projectType, budget, timeline, description, requirements } = req.body;
+    const { name, email, projectType, description } = req.body;
 
     // 1. Persist first — the message must survive even if SMTP is down.
     try {
@@ -250,23 +279,19 @@ app.post('/api/collaborate',
     }
 
     // 2. Notify by email — best effort, never fatal.
-    if (!hasMailCredentials) {
-      console.warn('[Mail] EMAIL_USER/EMAIL_PASS are not set; skipping notification. Message is stored in the DB.');
-    } else {
-      try {
-        const mailOptions = {
-          from: EMAIL_USER,
-          to: process.env.EMAIL_TO || EMAIL_USER,
-          subject: 'New Collaboration Request',
-          text: `You have received a new collaboration request:\n\nName: ${name}\nEmail: ${email}\nCompany: ${company}\nPhone: ${phone}\nProject Type: ${projectType}\nBudget: ${budget}\nTimeline: ${timeline}\nDescription: ${description}\nRequirements: ${requirements}`,
-        };
-        await transporter.sendMail(mailOptions);
-      } catch (err) {
-        console.error('[Mail] Notification failed (message is still stored in the DB):', err);
-      }
-    }
+    const submittedFields: Array<[string, unknown]> = [
+      ['Name', name],
+      ['Email', email],
+      ['Subject', projectType],
+      ['Message', description],
+    ];
+    await sendNotificationMail(
+      "New Message — Let's Connect",
+      `You have received a new message from the portfolio site:\n\n${formatMailFields(submittedFields)}`,
+      email
+    );
 
-    res.status(201).json({ success: true, message: 'Collaboration request submitted!' });
+    res.status(201).json({ success: true, message: 'Message sent!' });
   }
 );
 
@@ -306,6 +331,19 @@ app.post('/api/guestbook',
         'INSERT INTO guestbook (name, message, email, avatar, edit_token) VALUES ($1, $2, $3, $4, $5) RETURNING id',
         [name, message, email || null, avatar || null, editToken]
       );
+
+      // Notify by email — best effort, never fatal.
+      const guestbookFields: Array<[string, unknown]> = [
+        ['Name', name],
+        ['Email', email],
+        ['Message', message],
+      ];
+      await sendNotificationMail(
+        'New Guestbook Entry',
+        `Someone signed your guestbook:\n\n${formatMailFields(guestbookFields)}`,
+        email || undefined
+      );
+
       res.status(201).json({
         success: true,
         message: 'Guestbook entry added!',

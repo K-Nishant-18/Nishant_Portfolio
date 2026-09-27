@@ -20,7 +20,7 @@ const Contact: React.FC = () => {
   const rawApiUrl =
     import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
   const apiBase = rawApiUrl.endsWith('/api') ? rawApiUrl.slice(0, -4) : rawApiUrl;
-  const COLLABORATE_URL = `${apiBase}/api/collaborate`;
+  const CONNECT_URL = `${apiBase}/api/collaborate`;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -73,7 +73,7 @@ const Contact: React.FC = () => {
     setSubmitError(null);
 
     try {
-      const res = await fetch(COLLABORATE_URL, {
+      const res = await fetch(CONNECT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -99,7 +99,7 @@ const Contact: React.FC = () => {
         );
       }
     } catch (err) {
-      console.error('Collaborate submit failed:', err);
+      console.error('Contact form submit failed:', err);
       setSubmitError('Could not reach the server. Please try again, or email me directly at kumar.nishant.eng@gmail.com.');
     } finally {
       setSending(false);
@@ -139,10 +139,10 @@ const Contact: React.FC = () => {
 
             <div className="space-y-6 max-w-md">
               <p className="contact-info-text text-lg md:text-xl text-gray-400 font-light leading-relaxed">
-                I specialize in engineering robust backend systems and scalable DevOps infrastructures.
+                I build backend systems and DevOps infrastructure that hold up in production.
               </p>
               <p className="contact-info-text text-lg md:text-xl text-gray-400 font-light leading-relaxed">
-                Currently open to discussing technical challenges, architectural consulting, or full-time opportunities.
+                Got a project in mind, a role to fill, or just want to say hi? My inbox is open.
               </p>
             </div>
           </div>
@@ -181,7 +181,7 @@ const Contact: React.FC = () => {
               <input
                 type="text"
                 name="subject"
-                placeholder="SUBJECT (E.G. TECHNICAL CONSULTATION, OPPORTUNITY)"
+                placeholder="SUBJECT (E.G. A NEW ROLE, A PROJECT, JUST SAYING HI)"
                 value={formData.subject}
                 onChange={handleChange}
                 className="w-full bg-transparent border-b border-white/50 py-4 text-xl font-light tracking-wide outline-none focus:border-red-600 transition-colors placeholder:text-gray-400 placeholder:text-sm placeholder:tracking-widest"
