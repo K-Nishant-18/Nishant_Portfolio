@@ -30,6 +30,15 @@ export default defineConfig({
           },
         ],
       },
+      // The Archify documents are ~800KB each and are only used on one project
+      // page, so keep them out of the precache and fetch them on demand.
+      // They must be denied the SPA fallback too: with no precache entry to
+      // match, navigateFallback would otherwise answer these navigations with
+      // index.html and the iframe would render the app instead of the diagram.
+      workbox: {
+        globIgnores: ['**/diagrams/**'],
+        navigateFallbackDenylist: [/^\/diagrams\//],
+      },
     }),
   ],
   resolve: {

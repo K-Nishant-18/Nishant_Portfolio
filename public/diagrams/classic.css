@@ -1,0 +1,144 @@
+/*
+ * Site-matched "classic" presentation for the embedded Archify documents.
+ *
+ * The portfolio's visual identity is monochrome: pure black on white, fully
+ * inverted for dark, hairline borders, sharp corners and monospace micro-labels.
+ * The generated documents ship a full-colour "blueprint" preset with its own
+ * title block, status badges and toolbar, which double up against the project
+ * page's own heading and tab bar. This file re-themes the documents onto the
+ * site identity and drops the chrome the page already provides.
+ *
+ * Everything here is additive: the generated document stays the source of truth
+ * and still works standalone if this file is removed.
+ */
+
+/* ------------------------------------------------------------------
+   1. Chrome removal
+   The project page renders the heading and the tab bar, so the document's
+   toolbar and title block (title, theme/preset/live badges, Present) would
+   be duplicated. Hide rather than remove: the document's own runtime reads
+   #btn-theme and #theme-label without null checks, so deleting the nodes
+   would break its theme module.
+   ------------------------------------------------------------------ */
+html .toolbar,
+html .header {
+  display: none !important;
+}
+
+/* Presentation stage is the only mode, and its layout still budgets room for
+   the header we just hid. */
+html[data-present="true"] .container {
+  gap: 0 !important;
+}
+
+/* ------------------------------------------------------------------
+   2. Classic identity
+   A monochrome override of the preset palette. Node kinds stay
+   distinguishable through fill lightness and stroke weight rather than hue,
+   which is what keeps it reading as one system with the site.
+   Declarations use !important so they win regardless of the generated
+   preset selectors' specificity.
+   ------------------------------------------------------------------ */
+
+html[data-preset][data-theme="light"] {
+  --bg: #ffffff;
+  --grid: rgba(0, 0, 0, 0.06);
+  --panel: #ffffff;
+  --panel-border: rgba(0, 0, 0, 0.16);
+  --lane-fill: rgba(0, 0, 0, 0.02);
+  --lane-stroke: rgba(0, 0, 0, 0.14);
+  --text: #000000;
+  --text-muted: rgba(0, 0, 0, 0.62);
+  --text-dim: rgba(0, 0, 0, 0.44);
+  --text-faint: rgba(0, 0, 0, 0.3);
+  --mask: #ffffff;
+  --frontend-fill: rgba(0, 0, 0, 0.04);
+  --frontend-stroke: #000000;
+  --backend-fill: rgba(0, 0, 0, 0.07);
+  --backend-stroke: #000000;
+  --database-fill: rgba(0, 0, 0, 0.02);
+  --database-stroke: rgba(0, 0, 0, 0.72);
+  --cloud-fill: rgba(0, 0, 0, 0.03);
+  --cloud-stroke: rgba(0, 0, 0, 0.5);
+  --security-fill: rgba(0, 0, 0, 0.06);
+  --security-stroke: #000000;
+  --messagebus-fill: rgba(0, 0, 0, 0.05);
+  --messagebus-stroke: rgba(0, 0, 0, 0.82);
+  --external-fill: rgba(0, 0, 0, 0.015);
+  --external-stroke: rgba(0, 0, 0, 0.42);
+  --arrow: rgba(0, 0, 0, 0.5);
+  --arrow-emphasis: #000000;
+  --toolbar-bg: #ffffff;
+  --toolbar-border: rgba(0, 0, 0, 0.14);
+  --toolbar-text: #000000;
+  --toolbar-hover: rgba(0, 0, 0, 0.06);
+  --toolbar-menu-bg: #ffffff;
+}
+
+html[data-preset][data-theme="dark"] {
+  --bg: #000000;
+  --grid: rgba(255, 255, 255, 0.05);
+  --panel: #000000;
+  --panel-border: rgba(255, 255, 255, 0.18);
+  --lane-fill: rgba(255, 255, 255, 0.02);
+  --lane-stroke: rgba(255, 255, 255, 0.14);
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.62);
+  --text-dim: rgba(255, 255, 255, 0.44);
+  --text-faint: rgba(255, 255, 255, 0.3);
+  --mask: #000000;
+  --frontend-fill: rgba(255, 255, 255, 0.05);
+  --frontend-stroke: #ffffff;
+  --backend-fill: rgba(255, 255, 255, 0.09);
+  --backend-stroke: #ffffff;
+  --database-fill: rgba(255, 255, 255, 0.03);
+  --database-stroke: rgba(255, 255, 255, 0.72);
+  --cloud-fill: rgba(255, 255, 255, 0.04);
+  --cloud-stroke: rgba(255, 255, 255, 0.5);
+  --security-fill: rgba(255, 255, 255, 0.07);
+  --security-stroke: #ffffff;
+  --messagebus-fill: rgba(255, 255, 255, 0.06);
+  --messagebus-stroke: rgba(255, 255, 255, 0.82);
+  --external-fill: rgba(255, 255, 255, 0.015);
+  --external-stroke: rgba(255, 255, 255, 0.42);
+  --arrow: rgba(255, 255, 255, 0.5);
+  --arrow-emphasis: #ffffff;
+  --toolbar-bg: #000000;
+  --toolbar-border: rgba(255, 255, 255, 0.14);
+  --toolbar-text: #ffffff;
+  --toolbar-hover: rgba(255, 255, 255, 0.08);
+  --toolbar-menu-bg: #000000;
+}
+
+/* The preset paints a tinted grid texture across the whole page. The site is
+   flat, so drop it and let the diagram sit on a clean surface.
+
+   The page background is set from the theme attribute with literal colours
+   rather than `var(--bg)`, and without a transition. A transition on a
+   document that is scrolled out of view is never advanced by the browser, so
+   the surface could be left holding the previous theme's colour; the page
+   surface opts out of both. */
+html[data-preset] body {
+  background-image: none !important;
+  background-attachment: scroll;
+  transition: none !important;
+}
+html[data-preset][data-theme="light"] body {
+  background-color: #ffffff !important;
+}
+html[data-preset][data-theme="dark"] body {
+  background-color: #000000 !important;
+}
+
+/* The diagram's own background rect is filled with the preset's grid pattern
+   rather than a flat colour, so it keeps the blueprint texture on screen.
+   Repoint it at the theme surface. */
+html[data-preset] svg .c-bg-rect {
+  fill: var(--bg) !important;
+}
+
+/* The generated document tints the surface with a glow in some presets. */
+html[data-preset] .diagram-container {
+  box-shadow: none !important;
+  background: transparent;
+}

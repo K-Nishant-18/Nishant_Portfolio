@@ -1,3 +1,13 @@
+/**
+ * Standalone Archify documents, served from `public/diagrams`. When present for
+ * a project they take precedence over the inline Mermaid sources below.
+ */
+export interface ProjectArchitectureDiagrams {
+    runtime: string;
+    hld: string;
+    lld: string;
+}
+
 export interface ProjectArchitecture {
     hld: string;
     lld: string;
@@ -5,6 +15,7 @@ export interface ProjectArchitecture {
     dataFlow: string;
     infrastructure: string;
     erDiagram: string;
+    diagrams?: ProjectArchitectureDiagrams;
 }
 
 export interface Project {
@@ -1045,7 +1056,12 @@ export const projects: Project[] = [
         string solution
     }
     PROJECT ||--|| ARCHITECTURE : has
-    PROJECT ||--o{ CHALLENGE : overcame`
+    PROJECT ||--o{ CHALLENGE : overcame`,
+            diagrams: {
+                runtime: '/diagrams/runtime-architecture.html',
+                hld: '/diagrams/hld-system-context.html',
+                lld: '/diagrams/lld-modules-and-data.html'
+            }
         }
     },
 ];
