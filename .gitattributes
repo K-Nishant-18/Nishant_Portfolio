@@ -1,2 +1,2 @@
-# Exclude the large, generated HTML diagrams from language statistics.
-UnderstsndThisProject/*.html linguist-documentation
+# Exclude generated architecture diagrams from language statistics.
+public/diagrams/*.html linguist-documentation
