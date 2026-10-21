@@ -142,3 +142,25 @@ html[data-preset] .diagram-container {
   box-shadow: none !important;
   background: transparent;
 }
+
+/* Site does not render the info cards or the overview-map/scroller; hide them
+   so only the diagram surface remains, matching the page's own heading/tab bar. */
+html .cards,
+html .overview-map,
+html .diagram-nav {
+  display: none !important;
+}
+
+/* Kill any remaining scrollbars so the diagram never shows a scroller. */
+html[data-preset] body,
+html[data-preset] .diagram-container {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html[data-preset] body::-webkit-scrollbar,
+html[data-preset] .diagram-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

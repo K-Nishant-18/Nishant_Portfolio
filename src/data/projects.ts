@@ -1058,9 +1058,187 @@ export const projects: Project[] = [
     PROJECT ||--|| ARCHITECTURE : has
     PROJECT ||--o{ CHALLENGE : overcame`,
             diagrams: {
-                runtime: '/diagrams/runtime-architecture.html',
-                hld: '/diagrams/hld-system-context.html',
-                lld: '/diagrams/lld-modules-and-data.html'
+                runtime: '/diagrams/portfolio/runtime-architecture.html',
+                hld: '/diagrams/portfolio/hld-system-context.html',
+                lld: '/diagrams/portfolio/lld-modules-and-data.html'
+            }
+        }
+    },
+    {
+        id: '07',
+        title: 'MunimJi',
+        category: 'Inventory & Billing',
+        description: 'GST-compliant billing and inventory for kirana stores.',
+        longDescription: `MunimJi is an inventory and GST billing application I built for small shops like kirana stores. The problem is real: shopkeepers lose money when stock expires on the shelf, and making GST-compliant bills by hand is slow and error-prone.
+
+It has two sides. The backend is Spring Boot 3.3 with Java 17, following a clean layered architecture - controllers handle HTTP, services hold the business rules, repositories talk to the database. Security is stateless JWT with two roles: OWNER and STAFF. The frontend is React with Tailwind CSS - a POS-style billing screen, product and supplier management, stock alerts, and reports with charts.
+
+The core feature I am most proud of is billing. When a bill is saved, four things happen inside ONE database transaction: I calculate GST per line with CGST/SGST split, distribute any invoice-level discount across lines proportionally, deduct stock from batches using FEFO - first expiry first out - and assign an invoice number like INV-2026-0001. If any product does not have enough stock, the whole transaction rolls back - no invoice, no partial stock deduction.
+
+For quality I wrote 34 JUnit and MockMvc tests, plus a 62-check end-to-end smoke script that proved FEFO ordering, GST amounts, rollback, role-based access and PDF invoice generation. Everything is documented in a README and interview notes. The stack choice was deliberate: H2 so anyone can run it with zero setup, MySQL supported through environment variables for production.`,
+        tech: ['Java 17', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React', 'Tailwind CSS', 'H2', 'MySQL'],
+        year: '2026',
+        status: 'Live',
+        image: 'https://images.pexels.com/photos/3684148/pexels-photo-3684148.jpeg',
+        thumbnail: 'https://images.pexels.com/photos/3684148/pexels-photo-3684148.jpeg',
+        github: 'https://github.com/K-Nishant-18/MunimJi',
+        live: 'https://munim-ji-psi.vercel.app/dashboard',
+        impact: ['Zero expired-stock loss', 'GST-compliant bills', 'Transactional rollback', 'PDF invoicing'],
+        challenges: [
+            {
+                title: 'Atomic Billing Transaction',
+                description: 'GST split, pro-rata discount, FEFO stock deduction, and invoice numbering had to succeed or fail together.',
+                solution: 'Wrapped all four steps in one Spring @Transactional boundary so insufficient stock rolls back the entire invoice with no partial deduction.'
+            },
+            {
+                title: 'Stock Expiration Loss',
+                description: 'Shopkeepers lose money when stock expires on the shelf before it sells.',
+                solution: 'Implemented FEFO (first-expiry-first-out) batch deduction so nearest-expiry stock is consumed first, with stock alerts on the POS.'
+            },
+            {
+                title: 'Role-Based Access',
+                description: 'Owners and staff need different permissions on the same billing surface.',
+                solution: 'Stateless JWT with OWNER and STAFF roles enforced at the controller layer, verified by a 62-check E2E smoke script.'
+            }
+        ],
+        size: 'medium',
+        color: 'from-emerald-500/20 to-teal-500/20',
+        architecture: {
+            hld: `flowchart TB
+    Client["React + Tailwind\nPOS Frontend"]
+    GW["Spring Security\nStateless JWT\nOWNER / STAFF"]
+    API["Spring Boot 3.3\nControllers | Services | Repos"]
+    DB[("H2 dev<br/>MySQL prod (env vars)")]
+    PDF["PDF Invoice\nGenerator"]
+
+    Client -->|HTTPS + JWT| GW
+    GW --> API
+    API --> DB
+    API --> PDF`,
+            lld: `flowchart LR
+    subgraph Controller
+        BC["BillingController\nPOST /bills"]
+    end
+    subgraph Service ["BillingService @Transactional"]
+        GST["calcLineGST\nCGST / SGST"]
+        DISC["distributeDiscount\npro-rata"]
+        STOCK["deductStock FEFO\nby expiry ASC"]
+        NUM["assignInvoiceNumber\nINV-2026-0001"]
+    end
+    subgraph Repository
+        PBR["ProductBatchRepo"]
+        IR["InvoiceRepo"]
+    end
+
+    BC --> GST
+    BC --> DISC
+    BC --> STOCK
+    BC --> NUM
+    STOCK --> PBR
+    BC --> IR`,
+            classDiagram: `classDiagram
+    class Product {
+        +Long id
+        +String name
+        +BigDecimal price
+        +String sku
+        +Boolean expired
+    }
+    class ProductBatch {
+        +Long id
+        +Product product
+        +int quantity
+        +LocalDate expiryDate
+        +deduct(qty)
+    }
+    class Invoice {
+        +String invoiceNumber
+        +BigDecimal total
+        +BigDecimal gstTotal
+        +LocalDateTime createdAt
+        +List~InvoiceItem~ items
+    }
+    class InvoiceItem {
+        +Long id
+        +Product product
+        +int quantity
+        +BigDecimal cgst
+        +BigDecimal sgst
+        +BigDecimal discountedPrice
+    }
+    Invoice "1" --> "*" InvoiceItem : contains
+    Product "1" --> "*" ProductBatch : batches`,
+            dataFlow: `sequenceDiagram
+    participant POS as React POS
+    participant CTRL as BillingController
+    participant SVC as BillingService
+    participant REPO as ProductBatchRepo
+    participant DB as H2 / MySQL
+    participant PDF as PDF Generator
+
+    POS->>CTRL: POST /bills {items, discount}
+    CTRL->>SVC: saveBill(bill)
+    SVC->>SVC: calc CGST/SGST per line
+    SVC->>SVC: distribute discount pro-rata
+    SVC->>REPO: fetch batches ordered by expiry (FEFO)
+    REPO->>DB: SELECT ... ORDER BY expiry ASC
+    DB-->>REPO: batches
+    SVC->>SVC: deduct stock (rollback if insufficient)
+    SVC->>SVC: assign INV-YYYY-NNNN
+    SVC->>PDF: generate invoice PDF
+    PDF-->>POS: bill PDF + invoice number`,
+            infrastructure: `flowchart TB
+    Client["Customer / Shopkeeper Browser"]
+    Edge["Vercel Edge\nStatic Frontend"]
+    API["Spring Boot API\nRender / Production\nJava 17"]
+    DB[("MySQL\nDATABASE_URL env")]
+    H2[("H2\nembedded, dev")]
+    PDF["PDF Render\nService"]
+
+    Client --> Edge
+    Edge --> API
+    API --> DB
+    API -.->|dev fallback| H2
+    API --> PDF`,
+            erDiagram: `erDiagram
+    PRODUCT {
+        bigint id PK
+        varchar name
+        decimal price
+        varchar sku
+        boolean expired
+        timestamp created_at
+    }
+    PRODUCT_BATCH {
+        bigint id PK
+        bigint product_id FK
+        int quantity
+        date expiry_date
+        timestamp created_at
+    }
+    INVOICE {
+        varchar invoice_number PK
+        decimal total_amount
+        decimal gst_amount
+        datetime created_at
+        bigint cashier_id FK
+    }
+    INVOICE_ITEM {
+        bigint id PK
+        varchar invoice_number FK
+        bigint product_id FK
+        int quantity
+        decimal cgst
+        decimal sgst
+        decimal discounted_price
+    }
+    PRODUCT ||--o{ PRODUCT_BATCH : has
+    INVOICE ||--o{ INVOICE_ITEM : contains
+    PRODUCT ||--o{ INVOICE_ITEM : referenced_in`,
+            diagrams: {
+                runtime: '/diagrams/munimji/runtime-architecture.html',
+                hld: '/diagrams/munimji/hld-system-context.html',
+                lld: '/diagrams/munimji/lld-modules-and-data.html'
             }
         }
     },
