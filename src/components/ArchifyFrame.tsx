@@ -18,13 +18,13 @@ interface ArchifyFrameProps {
  * and the document re-themes itself via MutationObserver) instead of changing
  * `src`, which would re-download the whole document.
  */
-const ArchifyFrame: React.FC<ArchifyFrameProps> = ({ src, title, height = 'clamp(460px, 76vh, 940px)' }) => {
+const ArchifyFrame: React.FC<ArchifyFrameProps> = ({ src, title, height = 'clamp(640px, 86vh, 1120px)' }) => {
     const { isDark } = useTheme();
     const frameRef = useRef<HTMLIFrameElement>(null);
     const [ready, setReady] = useState(false);
 
     const theme = isDark ? 'dark' : 'light';
-    const [frameSrc] = useState(() => `${src}?theme=${isDark ? 'dark' : 'light'}`);
+    const [frameSrc] = useState(() => `${src}?embed=1&theme=${isDark ? 'dark' : 'light'}`);
 
     const paint = useCallback((value: string) => {
         const root = frameRef.current?.contentDocument?.documentElement;

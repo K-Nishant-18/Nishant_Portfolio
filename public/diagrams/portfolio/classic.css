@@ -151,6 +151,19 @@ html .diagram-nav {
   display: none !important;
 }
 
+/* Embed mode: drop the reader-width cap so the diagram surface spans the full
+   iframe width (edge to edge) and scales its height proportionally. */
+html[data-embed="true"] .container {
+  max-width: none !important;
+}
+html[data-embed="true"] .diagram-container > svg {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  display: block !important;
+}
+
 /* Kill any remaining scrollbars so the diagram never shows a scroller. */
 html[data-preset] body,
 html[data-preset] .diagram-container {

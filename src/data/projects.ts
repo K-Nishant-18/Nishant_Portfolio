@@ -1069,13 +1069,8 @@ export const projects: Project[] = [
         title: 'MunimJi',
         category: 'Inventory & Billing',
         description: 'GST-compliant billing and inventory for kirana stores.',
-        longDescription: `MunimJi is an inventory and GST billing application I built for small shops like kirana stores. The problem is real: shopkeepers lose money when stock expires on the shelf, and making GST-compliant bills by hand is slow and error-prone.
-
-It has two sides. The backend is Spring Boot 3.3 with Java 17, following a clean layered architecture - controllers handle HTTP, services hold the business rules, repositories talk to the database. Security is stateless JWT with two roles: OWNER and STAFF. The frontend is React with Tailwind CSS - a POS-style billing screen, product and supplier management, stock alerts, and reports with charts.
-
-The core feature I am most proud of is billing. When a bill is saved, four things happen inside ONE database transaction: I calculate GST per line with CGST/SGST split, distribute any invoice-level discount across lines proportionally, deduct stock from batches using FEFO - first expiry first out - and assign an invoice number like INV-2026-0001. If any product does not have enough stock, the whole transaction rolls back - no invoice, no partial stock deduction.
-
-For quality I wrote 34 JUnit and MockMvc tests, plus a 62-check end-to-end smoke script that proved FEFO ordering, GST amounts, rollback, role-based access and PDF invoice generation. Everything is documented in a README and interview notes. The stack choice was deliberate: H2 so anyone can run it with zero setup, MySQL supported through environment variables for production.`,
+        longDescription: `MunimJi is an inventory and GST billing application I built for small shops like kirana stores. The problem is real: shopkeepers lose money when stock expires on the shelf, and making GST-compliant bills by hand is slow and error-prone.`,
+        
         tech: ['Java 17', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React', 'Tailwind CSS', 'H2', 'MySQL'],
         year: '2026',
         status: 'Live',
