@@ -1071,7 +1071,7 @@ export const projects: Project[] = [
         description: 'GST-compliant billing and inventory for kirana stores.',
         longDescription: `MunimJi is an inventory and GST billing application I built for small shops like kirana stores. The problem is real: shopkeepers lose money when stock expires on the shelf, and making GST-compliant bills by hand is slow and error-prone.`,
         
-        tech: ['Java 17', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React', 'Tailwind CSS', 'H2', 'MySQL'],
+        tech: ['Java 17', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React', 'MySQL'],
         year: '2026',
         status: 'Live',
         image: 'https://images.pexels.com/photos/3684148/pexels-photo-3684148.jpeg',
@@ -1089,11 +1089,6 @@ export const projects: Project[] = [
                 title: 'Stock Expiration Loss',
                 description: 'Shopkeepers lose money when stock expires on the shelf before it sells.',
                 solution: 'Implemented FEFO (first-expiry-first-out) batch deduction so nearest-expiry stock is consumed first, with stock alerts on the POS.'
-            },
-            {
-                title: 'Role-Based Access',
-                description: 'Owners and staff need different permissions on the same billing surface.',
-                solution: 'Stateless JWT with OWNER and STAFF roles enforced at the controller layer, verified by a 62-check E2E smoke script.'
             }
         ],
         size: 'medium',
@@ -1242,18 +1237,8 @@ export const projects: Project[] = [
         title: 'Tribe',
         category: 'Team Formation',
         description: 'Team-formation platform for students to find hackathon and open-source collaborators.',
-        longDescription: `I built Tribe, a full-stack team-formation platform for students and early-career builders. The problem it solves is simple: students want to join hackathons or open-source projects, but finding teammates is chaotic — through WhatsApp forwards and word of mouth, with no clear idea of who is available or what skills they bring.
-
-On the frontend, I used React 19 with Vite and Tailwind CSS 4 to build a single-page application with 14 routes, including the feed, post details, dashboard, requests, notifications, profiles, and authentication screens. For state management and data fetching, I kept things lightweight with a custom api.js fetch wrapper, a useFetch hook, and React Router for navigation.
-
-On the backend, I built a Spring Boot 3.3 REST API using Java 22, Spring Security with JWT authentication, Spring Data JPA, and an H2 in-memory database so anyone can run the application without setting up an external database. The architecture is a layered monolith: controllers handle HTTP requests, repositories handle database operations, and a centralized @RestControllerAdvice class standardizes errors into a consistent {status, message} response.
-
-The core workflow is straightforward: a user signs up, publishes a project post with open roles and required skills, and other users submit join requests. The project creator can accept or reject those requests, and both sides receive notifications. Authentication is stateless, with a JwtAuthFilter that reads the Authorization: Bearer header, validates the token, and sets the Spring Security context.
-
-Finally, I wrote MockMvc integration tests covering critical scenarios, including successful and failed logins, preventing non-creators from editing someone else’s post with a 403 response, and testing the complete join-request workflow, including duplicate requests returning 409 Conflict.
-
-The repository has 13 clean commits and a README covering setup, routes, and API documentation. My main goal with Tribe was to build a complete, working team-formation workflow rather than just another project-posting website.`,
-        tech: ['Java 22', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React 19', 'Tailwind CSS 4', 'Vite', 'H2'],
+        longDescription: `I built Tribe, a full-stack team-formation platform for students and early-career builders. The problem it solves is simple: students want to join hackathons or open-source projects, but finding teammates is chaotic — through WhatsApp forwards and word of mouth, with no clear idea of who is available or what skills they bring.`,
+        tech: ['Java 22', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React 19',  'H2'],
         year: '2026',
         status: 'Live',
         image: 'https://images.pexels.com/photos/3184320/pexels-photo-3184320.jpeg',
@@ -1272,11 +1257,7 @@ The repository has 13 clean commits and a README covering setup, routes, and API
                 description: 'Only project creators should accept or reject join requests and edit their own posts.',
                 solution: 'Implemented a JwtAuthFilter validating Bearer tokens and a @RestControllerAdvice standardizing error responses, with 403 for unauthorized edits and 409 for duplicate requests.'
             },
-            {
-                title: 'Zero-Setup Backend',
-                description: 'Asking users to configure an external database creates friction.',
-                solution: 'Used H2 in-memory database via Spring Data JPA so the API runs with zero setup, verified by MockMvc integration tests.'
-            }
+            
         ],
         size: 'medium',
         color: 'from-indigo-500/20 to-purple-500/20',
