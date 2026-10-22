@@ -1237,4 +1237,210 @@ export const projects: Project[] = [
             }
         }
     },
+    {
+        id: '08',
+        title: 'Tribe',
+        category: 'Team Formation',
+        description: 'Team-formation platform for students to find hackathon and open-source collaborators.',
+        longDescription: `I built Tribe, a full-stack team-formation platform for students and early-career builders. The problem it solves is simple: students want to join hackathons or open-source projects, but finding teammates is chaotic — through WhatsApp forwards and word of mouth, with no clear idea of who is available or what skills they bring.
+
+On the frontend, I used React 19 with Vite and Tailwind CSS 4 to build a single-page application with 14 routes, including the feed, post details, dashboard, requests, notifications, profiles, and authentication screens. For state management and data fetching, I kept things lightweight with a custom api.js fetch wrapper, a useFetch hook, and React Router for navigation.
+
+On the backend, I built a Spring Boot 3.3 REST API using Java 22, Spring Security with JWT authentication, Spring Data JPA, and an H2 in-memory database so anyone can run the application without setting up an external database. The architecture is a layered monolith: controllers handle HTTP requests, repositories handle database operations, and a centralized @RestControllerAdvice class standardizes errors into a consistent {status, message} response.
+
+The core workflow is straightforward: a user signs up, publishes a project post with open roles and required skills, and other users submit join requests. The project creator can accept or reject those requests, and both sides receive notifications. Authentication is stateless, with a JwtAuthFilter that reads the Authorization: Bearer header, validates the token, and sets the Spring Security context.
+
+Finally, I wrote MockMvc integration tests covering critical scenarios, including successful and failed logins, preventing non-creators from editing someone else’s post with a 403 response, and testing the complete join-request workflow, including duplicate requests returning 409 Conflict.
+
+The repository has 13 clean commits and a README covering setup, routes, and API documentation. My main goal with Tribe was to build a complete, working team-formation workflow rather than just another project-posting website.`,
+        tech: ['Java 22', 'Spring Boot 3.3', 'Spring Security', 'JWT', 'React 19', 'Tailwind CSS 4', 'Vite', 'H2'],
+        year: '2026',
+        status: 'Live',
+        image: 'https://images.pexels.com/photos/3184320/pexels-photo-3184320.jpeg',
+        thumbnail: 'https://images.pexels.com/photos/3184320/pexels-photo-3184320.jpeg',
+        github: 'https://github.com/K-Nishant-18/Team-up',
+        live: null,
+        impact: ['Team formation', 'Hackathon matching', 'Role-based posts', 'MockMvc tested'],
+        challenges: [
+            {
+                title: 'Chaotic Teammate Discovery',
+                description: 'Students find hackathon teammates through WhatsApp forwards and word of mouth with no visibility into availability or skills.',
+                solution: 'Built a centralized platform where users publish project posts with open roles and required skills, and others submit join requests.'
+            },
+            {
+                title: 'Stateless Auth with Role Boundaries',
+                description: 'Only project creators should accept or reject join requests and edit their own posts.',
+                solution: 'Implemented a JwtAuthFilter validating Bearer tokens and a @RestControllerAdvice standardizing error responses, with 403 for unauthorized edits and 409 for duplicate requests.'
+            },
+            {
+                title: 'Zero-Setup Backend',
+                description: 'Asking users to configure an external database creates friction.',
+                solution: 'Used H2 in-memory database via Spring Data JPA so the API runs with zero setup, verified by MockMvc integration tests.'
+            }
+        ],
+        size: 'medium',
+        color: 'from-indigo-500/20 to-purple-500/20',
+        architecture: {
+            hld: `flowchart TB
+    Client["React 19 SPA\nVite + Tailwind 4\n14 routes"]
+    API["Spring Boot 3.3 REST API\nJava 22"]
+    SEC["Spring Security\nStateless JWT\nJwtAuthFilter"]
+    Repo["Spring Data JPA\nRepositories"]
+    DB[("H2\nin-memory DB")]
+    Notify["Notifications\naccept / reject requests"]
+
+    Client -->|HTTPS + JWT| SEC
+    SEC --> API
+    API --> Repo
+    Repo --> DB
+    API --> Notify`,
+            lld: `flowchart LR
+    subgraph Controller
+        RC["REST Controllers\nAuth | Posts | Users | Requests\nComments | Notifications"]
+    end
+    subgraph Security
+        JWT["JwtAuthFilter\nBearer token validation\nSecurityContext"]
+    end
+    subgraph Service
+        PS["PostService"]
+        RS["RequestService"]
+        NS["NotificationService"]
+    end
+    subgraph Repository
+        PR["PostRepo\n5 repositories"]
+        UR["UserRepo"]
+        RR["RequestRepo"]
+    end
+    subgraph DB [("H2")]
+        Posts[("posts")]
+        Users[("users")]
+        Requests[("join_requests")]
+        Notifications[("notifications")]
+    end
+
+    RC --> JWT
+    RC --> PS
+    RC --> RS
+    RC --> NS
+    PS --> PR
+    RS --> RR
+    NS --> Notifications`,
+            classDiagram: `classDiagram
+    class User {
+        +Long id
+        +String name
+        +String email
+        +String password
+        +String[] skills
+        +Role role
+    }
+    class Post {
+        +Long id
+        +String title
+        +String category
+        +String status
+        +String mode
+        +String deadline
+        +User creator
+    }
+    class PostRole {
+        +String roleName
+        +int count
+        +String[] skills
+    }
+    class JoinRequest {
+        +String role
+        +String message
+        +String status
+        +LocalDateTime respondedAt
+    }
+    class Notification {
+        +String type
+        +String message
+        +boolean read
+    }
+    User "1" --> "*" Post : creates
+    Post "1" --> "*" JoinRequest : receives
+    User "1" --> "*" JoinRequest : submits`,
+            dataFlow: `sequenceDiagram
+    participant U as User
+    participant API as Spring Boot API
+    participant JWT as JwtAuthFilter
+    participant CTRL as REST Controller
+    participant SVC as Service
+    participant DB as H2
+
+    U->>API: POST /auth/register or /auth/login
+    API->>JWT: validate Bearer token
+    JWT-->>API: SecurityContext set
+    U->>API: POST /posts {roles, skills}
+    API->>CTRL: createPost
+    CTRL->>SVC: save post + roles
+    SVC->>DB: INSERT post + post_roles
+    U->>API: POST /join-requests
+    API->>CTRL: submitRequest
+    CTRL->>SVC: create request
+    SVC->>DB: INSERT join_request
+    SVC->>SVC: check duplicate (409)
+    API-->>U: 201 Created`,
+            infrastructure: `flowchart TB
+    Client["Student Browser\nReact SPA (Vite)"]
+    API["Spring Boot API\nJava 22\nRender / Production"]
+    DB[("H2\nin-memory")]
+    Notify["Notification\nService"]
+
+    Client -->|HTTPS + JWT| API
+    API --> DB
+    API --> Notify`,
+            erDiagram: `erDiagram
+    USER {
+        bigint id PK
+        varchar name
+        varchar email
+        varchar password
+        varchar[] skills
+        enum role
+    }
+    POST {
+        bigint id PK
+        varchar title
+        varchar category
+        varchar status
+        varchar mode
+        varchar deadline
+        bigint creator_id FK
+    }
+    POST_ROLE {
+        bigint id PK
+        bigint post_id FK
+        varchar role_name
+        int count
+        varchar[] skills
+    }
+    JOIN_REQUEST {
+        bigint id PK
+        bigint post_id FK
+        bigint user_id FK
+        varchar role
+        varchar message
+        enum status
+        timestamp responded_at
+    }
+    NOTIFICATION {
+        bigint id PK
+        varchar type
+        varchar message
+        boolean read
+        timestamp created_at
+    }
+    USER ||--o{ POST : creates
+    POST ||--o{ JOIN_REQUEST : receives
+    USER ||--o{ JOIN_REQUEST : submits`,
+            diagrams: {
+                runtime: '/diagrams/tribe/runtime-architecture.html',
+                hld: '/diagrams/tribe/hld-system-context.html',
+                lld: '/diagrams/tribe/lld-modules-and-data.html'
+            }
+        }
+    },
 ];

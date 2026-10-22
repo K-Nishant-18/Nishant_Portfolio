@@ -5,14 +5,14 @@ import { FiArrowUpRight } from 'react-icons/fi';
 
 const projects = [
   {
-    id: '01',
-    title: 'COLLEGIA',
-    category: 'System\nArchitecture',
-    year: '2024',
-    description: 'A scalable campus ERP system built with Microservices (Spring Boot). Handles discrete academic modules with independent scaling.',
-    tech: ['Java', 'Microservices', 'Docker'],
-    link: '/projects/01',
-    color: '#FF4D00', // A vibrant Swiss orange/red
+    id: '07',
+    title: 'MUNIMJI',
+    category: 'Inventory\nBilling',
+    year: '2026',
+    description: 'GST-compliant billing and inventory for kirana shops. Transactional billing: GST split, pro-rata discount, FEFO stock deduction and invoice numbering in one atomic Spring Boot transaction — roll back on insufficient stock.',
+    tech: ['Java 17', 'Spring Boot 3.3', 'JWT', 'React', 'Tailwind'],
+    link: '/projects/07',
+    color: '#10B981',
   },
   {
     id: '02',
@@ -92,7 +92,7 @@ const Projects: React.FC = () => {
         <div className="group relative mb-24 md:mb-8 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-start">
           {/* Meta (Absolute Left) */}
           <div className="col-span-12 md:col-span-2 md:sticky md:top-32 self-start mb-8 md:mb-0">
-            <span className="text-sm font-mono block mb-2 text-red-600">01 / 2024</span>
+            <span className="text-sm font-mono block mb-2 text-red-600">07 / 2026</span>
             <h4 className="text-xl font-bold uppercase leading-tight whitespace-pre-wrap text-black dark:text-white">{projects[0].category}</h4>
             <div className="h-px w-8 bg-black dark:bg-white my-4"></div>
             <ul className="text-xs font-mono text-gray-600 dark:text-gray-400 space-y-1">
@@ -110,7 +110,7 @@ const Projects: React.FC = () => {
             <div className="mt-8 max-w-md text-black dark:text-white">
               <p className="text-lg leading-snug">{projects[0].description}</p>
               <div className="mt-6 flex gap-4">
-                <Link to={projects[0].link} className="flex items-center gap-2 text-xs font-bold uppercase border-b border-current pb-1 hover:text-[#FF4D00]">Live <FiArrowUpRight /></Link>
+                <Link to={projects[0].link} className="flex items-center gap-2 text-xs font-bold uppercase border-b border-current pb-1 hover:text-[#10B981]">Live <FiArrowUpRight /></Link>
               </div>
             </div>
           </div>
