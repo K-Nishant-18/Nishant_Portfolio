@@ -162,8 +162,6 @@ html[data-embed="true"] .diagram-container > svg {
   min-height: 0 !important;
   max-height: none !important;
   display: block !important;
-  transform: scale(0.82) !important;
-  transform-origin: center top !important;
 }
 
 /* Kill any remaining scrollbars so the diagram never shows a scroller. */
