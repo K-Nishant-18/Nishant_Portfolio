@@ -15,14 +15,14 @@ const projects = [
     color: '#10B981',
   },
   {
-    id: '02',
-    title: '0XKID',
-    category: 'Backend\nEngineering',
-    year: '2024',
-    description: 'Interactive ed-tech platform with AI code analysis. Sandboxed execution environments for safe code running.',
-    tech: ['MongoDB', 'WebSockets', 'OpenAI'],
-    link: '/projects/03',
-    color: '#FF4D00', // International Klein Blue
+    id: '08',
+    title: 'TRIBE',
+    category: 'Team\nFormation',
+    year: '2026',
+    description: 'Team-formation platform for students to find hackathon and open-source collaborators. Publish project posts with open roles and submit join requests.',
+    tech: ['Java 22', 'Spring Boot 3.3', 'JWT', 'React 19', 'Tailwind'],
+    link: '/projects/08',
+    color: '#8B5CF6',
   },
   {
     id: '03',
@@ -117,7 +117,7 @@ const Projects: React.FC = () => {
         </div>
 
 
-        {/* --- PROJECT 02: 0XKID (Right Heavy) --- */}
+        {/* --- PROJECT 02: TRIBE (Right Heavy) --- */}
         <div className="group relative mb-24 md:mb-8 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-start">
           {/* Title (Massive, Right Aligned) */}
           <div className="col-span-12 md:col-span-10 md:col-start-1 order-2 md:order-2 text-right relative z-20">
@@ -129,14 +129,14 @@ const Projects: React.FC = () => {
             <div className="mt-8 max-w-md ml-auto text-left text-black dark:text-white">
               <p className="text-lg leading-snug">{projects[1].description}</p>
               <div className="mt-6 flex gap-4">
-                <Link to={projects[1].link} className="flex items-center gap-2 text-xs font-bold uppercase border-b border-current pb-1 hover:text-[#0057FF]">Live <FiArrowUpRight /></Link>
+                <Link to={projects[1].link} className="flex items-center gap-2 text-xs font-bold uppercase border-b border-current pb-1 hover:text-[#8B5CF6]">Live <FiArrowUpRight /></Link>
               </div>
             </div>
           </div>
 
           {/* Meta (Right) */}
           <div className="col-span-12 md:col-span-2 order-1 md:order-3 md:sticky md:top-32 self-start mb-8 md:mb-0 text-right flex flex-col items-end">
-            <span className="text-sm font-mono block mb-2 text-red-600">02 / 2024</span>
+            <span className="text-sm font-mono block mb-2 text-red-600">08 / 2026</span>
             <h4 className="text-xl font-bold uppercase leading-tight whitespace-pre-wrap text-black dark:text-white">{projects[1].category}</h4>
             <div className="h-px w-8 bg-black dark:bg-white my-4"></div>
             <ul className="text-xs font-mono text-gray-600 dark:text-gray-400 space-y-1">
