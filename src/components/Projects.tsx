@@ -176,7 +176,13 @@ const Projects: React.FC = () => {
 
 
       </div>
-    </section>
+
+        <div className="mt-5 md:mt-0 flex justify-end">
+          <Link to="/projects" className="group flex items-center gap-2 text-sm font-mono uppercase tracking-widest border-b border-current pb-1 hover:text-black dark:hover:text-white transition-colors">
+            View all my work <FiArrowUpRight className="ml-1 text-xs" />
+          </Link>
+        </div>
+      </section>
   );
 };
 
