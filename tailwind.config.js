@@ -9,5 +9,22 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.text-stroke-black': {
+          '-webkit-text-stroke': '1px #000000',
+        },
+        '.text-stroke-white': {
+          '-webkit-text-stroke': '1px #ffffff',
+        },
+        '.hover-text-stroke-black:hover': {
+          '-webkit-text-stroke': '1px #000000',
+        },
+        '.hover-text-stroke-white:hover': {
+          '-webkit-text-stroke': '1px #ffffff',
+        },
+      });
+    },
+  ],
 };
