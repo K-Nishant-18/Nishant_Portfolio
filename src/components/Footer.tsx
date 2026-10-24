@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiArrowUpRight, FiInstagram, FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
+import { FiArrowUpRight, FiInstagram, FiGithub, FiLinkedin, FiTwitter } from 'react-icons/fi';
 import TransitionLink from './TransitionLink';
 
 const Footer: React.FC = () => {
@@ -29,7 +29,7 @@ const Footer: React.FC = () => {
   const socialLinks = [
     { name: "LINKEDIN", url: "https://www.linkedin.com/in/kumar-nishant-dev/", icon: <FiLinkedin /> },
     { name: "GITHUB", url: "https://github.com/K-Nishant-18", icon: <FiGithub /> },
-    { name: "EMAIL", url: "mailto:me.knishant@gmail.com", icon: <FiMail /> },
+    { name: "TWITTER", url: "https://x.com/me_nishant_18", icon: <FiTwitter /> },
     { name: "INSTAGRAM", url: "https://www.instagram.com/me.nishant_18/", icon: <FiInstagram /> },
   ];
 

@@ -53,7 +53,7 @@ const Projects: React.FC = () => {
   const letterSpacing = useTransform(scrollYProgress, [0, 1], ["10rem", "0.2rem"]); // Using rem to ensure responsiveness
 
   return (
-    <section ref={containerRef} className="relative bg-gray-50 dark:bg-black text-black dark:text-white min-h-[100vh] py-12 px-4 sm:px-8 font-sans md:px-12 z-20">
+    <section ref={containerRef} id="projects" className="relative bg-gray-50 dark:bg-black text-black dark:text-white min-h-[100vh] py-12 px-4 sm:px-8 font-sans md:px-12 z-20">
 
       {/* Background Decor: massive Swiss Grid */}
       <div
