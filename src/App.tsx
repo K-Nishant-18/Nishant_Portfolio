@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -24,6 +24,15 @@ import Transition from './components/Transition';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Scroll to top on route changes - must be inside Router context
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
@@ -38,8 +47,6 @@ function App() {
     // Force scroll to top immediately
     window.scrollTo(0, 0);
   }, []);
-
-
 
   // This effect sets up the Lenis smooth scroll library
   useEffect(() => {
@@ -92,6 +99,7 @@ function App() {
     <ThemeProvider>
       <MusicProvider>
         <Router>
+          <ScrollToTop />
           <TransitionProvider>
             <div className="relative bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 min-h-screen overflow-x-hidden">
               <AnimatePresence mode="wait">
