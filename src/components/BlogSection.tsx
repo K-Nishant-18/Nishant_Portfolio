@@ -57,14 +57,13 @@ const BlogSection: React.FC = () => {
 
   // Fetch dev.to articles via dev.to API (has proper CORS headers)
   useEffect(() => {
-    const fetchMedium = async () => {
+    const fetchBlogs = async () => {
       try {
-        const res = await fetch('https://dev.to/api/articles?username=me_nishant_18&per_page=3', { mode: 'cors' });
-        const data = (await res.json()) as DevToArticle[];
+        const devToRes = await fetch('https://dev.to/api/articles?username=me_nishant_18&per_page=6', { mode: 'cors' });
+        const devToData = (await devToRes.json()) as DevToArticle[];
 
-        if (Array.isArray(data) && data.length > 0) {
-          setPosts(
-            data.map((item: DevToArticle) => ({
+        const devToPosts: BlogPost[] = Array.isArray(devToData)
+          ? devToData.map((item: DevToArticle) => ({
               title: item.title,
               pubDate: item.published_at,
               link: item.url,
@@ -75,41 +74,49 @@ const BlogSection: React.FC = () => {
               content: item.body_html || '',
               categories: item.tags || [],
             }))
-          );
-          setLoading(false);
-          return;
-        }
+          : [];
 
-        // Fallback: try RSS via rss2json
-        const fallbackRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://dev.to/feed/me_nishant_18')}`, { mode: 'cors' });
-        const fallbackData = (await fallbackRes.json()) as RssResponse;
+        // Medium RSS via rss2json
+        const mediumRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://medium.com/feed/@me.knishant')}`, { mode: 'cors' });
+        const mediumData = (await mediumRes.json()) as RssResponse;
 
-        if (fallbackData.status === 'ok' && fallbackData.items && fallbackData.items.length > 0) {
-          setPosts(
-            fallbackData.items.map((item: RssItem) => ({
-              title: item.title,
-              pubDate: item.pubDate,
-              link: item.link,
-              guid: item.guid,
-              author: item.author || 'Nishant',
-              thumbnail: item.thumbnail || '',
-              description: item.description || '',
-              content: item.content || '',
-              categories: item.categories || [],
-            }))
-          );
+        const mediumPosts: BlogPost[] =
+          mediumData.status === 'ok' && mediumData.items && mediumData.items.length > 0
+            ? mediumData.items.map((item: RssItem) => ({
+                title: item.title,
+                pubDate: item.pubDate,
+                link: item.link,
+                guid: item.guid,
+                author: item.author || 'Nishant',
+                thumbnail: item.thumbnail || '',
+                description: item.description || '',
+                content: item.content || '',
+                categories: item.categories || [],
+              }))
+            : [];
+
+        // Merge, dedupe by link, sort newest first
+        const merged = [...devToPosts, ...mediumPosts];
+        const deduped = merged.filter(
+          (post, index, self) => index === self.findIndex((p) => p.link === post.link)
+        );
+        deduped.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+
+        if (deduped.length > 0) {
+          setPosts(deduped);
           setLoading(false);
+          setError(null);
           return;
         }
 
         setLoading(false);
-        setError('Unable to load blog feed. Please visit dev.to directly.');
+        setError('Unable to load blog feed. Please visit dev.to or Medium directly.');
       } catch {
         setLoading(false);
-        setError('Unable to load blog feed. Please visit dev.to directly.');
+        setError('Unable to load blog feed. Please visit dev.to or Medium directly.');
       }
     };
-    fetchMedium();
+    fetchBlogs();
   }, []);
 
   // Helper: Format Date
@@ -229,9 +236,9 @@ const BlogSection: React.FC = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <a href="https://dev.to/me_nishant_18" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-widest hover:text-red-500 transition-colors group">
-            View All on dev.to <FiArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </a>
+          <span className="inline-flex items-center gap-1 text-sm font-mono uppercase tracking-widest">
+            View All on <a href="https://dev.to/me_nishant_18" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline transition-colors group">dev.to</a> <span className="text-black dark:text-white opacity-60">and</span> <a href="https://medium.com/@me.knishant" target="_blank" rel="noopener noreferrer" className="text-red-500 hover:underline transition-colors group">Medium</a>
+          </span>
         </div>
 
       </div>
